@@ -32,6 +32,9 @@ be started from the managed development session.
 
 ### 2026-06-20
 
+- Switched seeding to Payload's supported script runner so the command exits without lingering processes.
+- Fixed standalone seed environment loading and seeded all 10 primary categories.
+- Ran the database-backed integration suite successfully: 2 files and 3 tests passed.
 - Verified homepage, search, category, and admin routes in clean Chrome at desktop and mobile sizes.
 - Added the OpenToli app icon and confirmed its SVG response returns `200`.
 - Removed invalid nested `main` landmarks from the public layout.
@@ -65,33 +68,27 @@ be started from the managed development session.
 | Production build | Pass | Next.js generated all current public and Payload routes |
 | HTTP smoke test | Pass | `/` and `/search?q=authentication` returned `200` |
 | Hydration smoke test | Pass | Clean Chrome profile produced no hydration warning |
-| Database integration | Pending | Docker daemon unavailable in managed session |
+| Database integration | Pass | Category seed and 3 integration tests completed against PostgreSQL |
 | Visual browser QA | Pass | Desktop and mobile clean-Chrome renders inspected |
 
 ## Current Work
 
 M1 still needs:
 
-- Start PostgreSQL locally or connect an approved development database.
-- Generate and apply the initial database migration.
-- Run the category seed and database-backed integration test suite.
+- Verify the generated initial migration from a clean database.
 - Add Tailwind CSS and initialize the shared component system.
 - Verify Payload admin and the public UI in a browser.
 
 ## Next Actions
 
-1. Bring up PostgreSQL 17 and verify its health.
-2. Generate the initial Payload migration and run the ten-category seed.
-3. Run database-backed integration and admin tests.
-4. Add Tailwind CSS and initialize the shared component system.
-5. Complete browser accessibility and responsive checks.
-6. Mark M1 `DONE` only after every roadmap exit criterion has evidence.
+1. Apply the initial migration to a clean PostgreSQL database.
+2. Add Tailwind CSS and initialize the shared component system.
+3. Complete browser accessibility checks for Payload admin.
+4. Mark M1 `DONE` only after every roadmap exit criterion has evidence.
 
 ## Blockers
 
-The installed Docker service is stopped and could not be started from the managed
-development session. This blocks local migration, seed, and database integration checks.
-Application compilation and static route verification are unaffected.
+No active blocker is recorded.
 
 ## Risks
 

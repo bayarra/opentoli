@@ -1,6 +1,20 @@
+import 'dotenv/config'
+
 import { getPayload } from 'payload'
 
-import config from '../payload.config'
+const requiredEnvironmentVariables = ['DATABASE_URL', 'PAYLOAD_SECRET'] as const
+const missingEnvironmentVariables = requiredEnvironmentVariables.filter(
+  (name) => !process.env[name],
+)
+
+if (missingEnvironmentVariables.length > 0) {
+  throw new Error(
+    `Missing required environment variables: ${missingEnvironmentVariables.join(', ')}. ` +
+      'Create .env from .env.example before running the seed.',
+  )
+}
+
+const { default: config } = await import('../payload.config')
 
 const categories = [
   ['Technology & Software', 'Технологи ба программ хангамж', 'technology-software'],
@@ -25,33 +39,36 @@ const categories = [
 
 const payload = await getPayload({ config })
 
-for (const [index, [nameEn, nameMn, slug]] of categories.entries()) {
-  const existing = await payload.find({
-    collection: 'categories',
-    limit: 1,
-    overrideAccess: true,
-    where: { slug: { equals: slug } },
-  })
-
-  const data = {
-    displayOrder: index + 1,
-    isActive: true,
-    nameEn,
-    nameMn,
-    slug,
-  }
-
-  if (existing.docs[0]) {
-    await payload.update({
-      id: existing.docs[0].id,
+try {
+  for (const [index, [nameEn, nameMn, slug]] of categories.entries()) {
+    const existing = await payload.find({
       collection: 'categories',
-      data,
+      limit: 1,
       overrideAccess: true,
+      where: { slug: { equals: slug } },
     })
-  } else {
-    await payload.create({ collection: 'categories', data, overrideAccess: true })
-  }
-}
 
-payload.logger.info(`Seeded ${categories.length} primary categories.`)
-await payload.destroy()
+    const data = {
+      displayOrder: index + 1,
+      isActive: true,
+      nameEn,
+      nameMn,
+      slug,
+    }
+
+    if (existing.docs[0]) {
+      await payload.update({
+        id: existing.docs[0].id,
+        collection: 'categories',
+        data,
+        overrideAccess: true,
+      })
+    } else {
+      await payload.create({ collection: 'categories', data, overrideAccess: true })
+    }
+  }
+
+  payload.logger.info(`Seeded ${categories.length} primary categories.`)
+} finally {
+  await payload.destroy()
+}
