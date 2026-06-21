@@ -101,6 +101,7 @@ risk routing, background jobs, retries, and generation provenance.
 - Provider, model, prompt, schema, source input, and raw outputs are retained.
 - No generated record can be presented as verified or become a canonical Term without M2 review and approval.
 - Raw prompts, provider outputs, job errors, and private review evidence remain restricted.
+- At least one configured non-test AI provider completes the reference term in a non-production environment.
 
 ## M4 - Public Draft Feedback and Reviewer Workspace
 

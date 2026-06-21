@@ -71,6 +71,19 @@ pnpm test:e2e
 pnpm build
 ```
 
+## AI Preparation
+
+The deterministic provider exercises the complete pipeline without an external API key:
+
+```powershell
+npm run ai:prepare:authentication
+npm run ai:work
+```
+
+The first command idempotently prepares the seeded `authentication` term. The second
+processes one ready deterministic job and exits. Generated records remain private
+`needs_review` AI Drafts and cannot publish Terms.
+
 ## Repository Map
 
 ```text

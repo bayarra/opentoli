@@ -3,7 +3,7 @@
 **Last updated:** 2026-06-20
 **Current milestone:** M3 - AI Preparation Pipeline
 **Milestone status:** `IN_PROGRESS`
-**Delivery state:** AI persistence and schema foundation complete
+**Delivery state:** Deterministic AI execution pipeline verified
 
 ## Executive Summary
 
@@ -13,8 +13,9 @@ import batches are modeled. The published `authentication` reference term is sea
 in English and Mongolian, appears in its category, and has a responsive detail page.
 Publication guards, clean migrations, seeding, integration tests, and browser checks pass.
 M3 now has private AI Draft and Generation Job persistence, versioned structured-output
-contracts, idempotency and retry invariants, and retained provenance. Provider execution
-and background job processing remain to be implemented.
+contracts, provider-neutral staged execution, idempotent enqueueing, retry resumption,
+risk routing, retained provenance, and deterministic end-to-end evidence. A non-test AI
+provider still needs to be selected, implemented, and evaluated before M3 is complete.
 
 ## Milestone Status
 
@@ -23,7 +24,7 @@ and background job processing remain to be implemented.
 | M0 | Product and architecture baseline | `DONE` | ADR-0001 and ADR-0002 record the accepted baseline |
 | M1 | Application foundation | `DONE` | Clean migration, seed, tests, build, HTTP, and browser evidence recorded |
 | M2 | Editorial data core | `DONE` | Attributed reviewer/moderator workflow and public vertical slice verified |
-| M3 | AI preparation pipeline | `IN_PROGRESS` | Persistence, schema validation, provenance, migration, and isolation tests pass |
+| M3 | AI preparation pipeline | `IN_PROGRESS` | Deterministic end-to-end execution passes; non-test provider validation remains |
 | M4 | Public draft feedback and reviewer workspace | `PLANNED` | ADR-0003 defines safe visibility and moderated feedback; no interface exists |
 | M5 | Calibration batch | `PLANNED` | Target and sample ambiguous terms are documented |
 | M6 | Public dictionary | `PLANNED` | Required pages are documented |
@@ -35,6 +36,12 @@ and background job processing remain to be implemented.
 
 ### 2026-06-20
 
+- Added a provider-neutral AI interface and deterministic provider with versioned prompt metadata.
+- Added atomic job claiming, staged output retention, retry resumption, usage accounting, and crash recovery.
+- Added risk routing that blocks unsourced drafts and requires domain review for high-risk categories.
+- Ran `authentication` end to end: job 11 and private draft 5 are `needs_review/language_review`.
+- Re-ran `authentication` idempotently and reused job 11 and draft 5 without provider work.
+- Expanded database integration coverage to 5 files and 16 passing tests.
 - Accepted ADR-0003: anyone may view an unverified redacted AI draft, while contributing requires authentication and moderation.
 - Added private AI Drafts and Generation Jobs collections with provenance, retry, and idempotency fields.
 - Added versioned research, generation, and critique JSON Schemas with runtime validation.
@@ -88,22 +95,22 @@ and background job processing remain to be implemented.
 | Production build | Pass | Next.js generated all current public and Payload routes |
 | HTTP smoke test | Pass | `/` and `/search?q=authentication` returned `200` |
 | Hydration smoke test | Pass | Clean Chrome profile produced no hydration warning |
-| Database integration | Pass | 12 self-contained integration tests pass against PostgreSQL without requiring seed data |
+| Database integration | Pass | 16 self-contained integration tests pass against PostgreSQL without requiring seed data |
 | Migration reproducibility | Pass | All 3 migrations applied to a disposable database and reported `Yes` |
 | Visual browser QA | Pass | Desktop and mobile clean-Chrome renders inspected |
 
 ## Current Work
 
-M3 foundation is complete. Generation jobs and review-ready AI drafts can be stored and
-validated, but no provider adapter or background worker executes queued jobs yet.
+M3 execution infrastructure is complete and verified with a deterministic provider. The
+remaining milestone work is a configured non-test provider run and quality evaluation.
 
 ## Next Actions
 
-1. Add a provider-neutral AI adapter and deterministic test provider.
-2. Implement the background research, generation, critique, validation, and routing worker.
-3. Add enqueue/retry services that reuse idempotency keys and preserve partial failures.
-4. Run `authentication` through the AI preparation path without publishing it.
-5. Begin M4 with public-projection fields plus moderated comment and translation-suggestion persistence.
+1. Select the first non-test AI provider and model.
+2. Add its environment secret and structured-output adapter without changing pipeline contracts.
+3. Run `authentication` through the provider and compare it with the reviewed reference entry.
+4. Record cost, latency, validation, and reviewer-quality evidence; then close M3 if gates pass.
+5. Begin M4 with public-projection fields plus authenticated, moderated feedback persistence.
 
 ## Blockers
 
