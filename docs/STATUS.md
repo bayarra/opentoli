@@ -32,6 +32,10 @@ be started from the managed development session.
 
 ### 2026-06-20
 
+- Verified homepage, search, category, and admin routes in clean Chrome at desktop and mobile sizes.
+- Added the OpenToli app icon and confirmed its SVG response returns `200`.
+- Removed invalid nested `main` landmarks from the public layout.
+- Verified the homepage in a clean Chrome profile with no hydration warnings.
 - Scaffolded the official Payload 3.85.1 blank application with Next.js 16 and PostgreSQL.
 - Added a responsive OpenToli homepage, search placeholder, and category placeholders.
 - Added role-aware Users plus Categories and Contexts Payload collections.
@@ -60,8 +64,9 @@ be started from the managed development session.
 | Slug normalization tests | Pass | 2 tests in `formatSlug.int.spec.ts` |
 | Production build | Pass | Next.js generated all current public and Payload routes |
 | HTTP smoke test | Pass | `/` and `/search?q=authentication` returned `200` |
+| Hydration smoke test | Pass | Clean Chrome profile produced no hydration warning |
 | Database integration | Pending | Docker daemon unavailable in managed session |
-| Visual browser QA | Pending | In-app browser controller unavailable in Windows sandbox |
+| Visual browser QA | Pass | Desktop and mobile clean-Chrome renders inspected |
 
 ## Current Work
 
