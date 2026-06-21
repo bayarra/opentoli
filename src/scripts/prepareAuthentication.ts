@@ -3,7 +3,7 @@ import 'dotenv/config'
 import { getPayload } from 'payload'
 
 import { enqueueGenerationJob, processGenerationJob } from '../ai/pipeline/jobs'
-import { DeterministicAIProvider } from '../ai/providers/deterministic'
+import { createConfiguredAIProvider } from '../ai/providers/factory'
 
 const requiredEnvironmentVariables = ['DATABASE_URL', 'PAYLOAD_SECRET'] as const
 const missingEnvironmentVariables = requiredEnvironmentVariables.filter(
@@ -60,7 +60,7 @@ try {
     throw new Error('The authentication term needs at least one source before AI preparation.')
   }
 
-  const provider = new DeterministicAIProvider()
+  const provider = createConfiguredAIProvider()
   const queued = await enqueueGenerationJob({
     payload,
     preparation: {

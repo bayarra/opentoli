@@ -73,7 +73,8 @@ pnpm build
 
 ## AI Preparation
 
-The deterministic provider exercises the complete pipeline without an external API key:
+Configure the provider in `.env`. The current OpenAI configuration uses the Responses API
+with strict structured outputs and makes separate research, generation, and critique calls:
 
 ```powershell
 npm run ai:prepare:authentication
@@ -81,8 +82,17 @@ npm run ai:work
 ```
 
 The first command idempotently prepares the seeded `authentication` term. The second
-processes one ready deterministic job and exits. Generated records remain private
-`needs_review` AI Drafts and cannot publish Terms.
+processes one ready job and exits. Generated records remain private `needs_review` AI
+Drafts and cannot publish Terms. API keys are server-only and must never use a
+`NEXT_PUBLIC_` environment variable.
+
+To exercise the pipeline without paid API calls in the current PowerShell session:
+
+```powershell
+$env:AI_PROVIDER = 'deterministic'
+npm run ai:prepare:authentication
+Remove-Item Env:AI_PROVIDER
+```
 
 ## Repository Map
 
