@@ -16,7 +16,13 @@ type UserWithRole = {
   role?: Role
 }
 
-const getRole = (user: unknown): Role | undefined => (user as UserWithRole | null)?.role
+export const getRole = (user: unknown): Role | undefined => (user as UserWithRole | null)?.role
+
+export const hasRole = (user: unknown, allowedRoles: readonly Role[]): boolean => {
+  const role = getRole(user)
+
+  return Boolean(role && allowedRoles.includes(role))
+}
 
 export const isAdmin = (user: unknown): boolean => getRole(user) === 'admin'
 
@@ -25,15 +31,13 @@ export const adminOnly: Access = ({ req }) => isAdmin(req.user)
 export const adminFieldAccess: FieldAccess = ({ req }) => isAdmin(req.user)
 
 export const editorialAccess: Access = ({ req }) => {
-  const role = getRole(req.user)
-
-  return Boolean(role && ['reviewer', 'language_expert', 'moderator', 'admin'].includes(role))
+  return hasRole(req.user, ['reviewer', 'language_expert', 'moderator', 'admin'])
 }
+
+export const moderatorAccess: Access = ({ req }) => hasRole(req.user, ['moderator', 'admin'])
 
 export const authenticated: Access = ({ req }) => Boolean(req.user)
 
 export const canAccessAdmin = (user: unknown): boolean => {
-  const role = getRole(user)
-
-  return Boolean(role && ['reviewer', 'language_expert', 'moderator', 'admin'].includes(role))
+  return hasRole(user, ['reviewer', 'language_expert', 'moderator', 'admin'])
 }

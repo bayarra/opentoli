@@ -1,26 +1,27 @@
 # OpenToli Project Status
 
 **Last updated:** 2026-06-20
-**Current milestone:** M1 - Application Foundation
-**Milestone status:** `IN_PROGRESS`
-**Delivery state:** Foundation implementation
+**Current milestone:** M3 - AI Preparation Pipeline
+**Milestone status:** `READY`
+**Delivery state:** Editorial core complete
 
 ## Executive Summary
 
-OpenToli now has a buildable Next.js and Payload application, an initial public interface,
-PostgreSQL configuration, CI, role-aware users, category and context collections, and an
-idempotent category seed script. Static verification passes. Database-backed migrations,
-seeding, and integration tests remain pending because the local Docker daemon could not
-be started from the managed development session.
+OpenToli now has a buildable Next.js and Payload application plus its first complete
+database-backed terminology slice. Terms, translations, sources, examples, reviews, and
+import batches are modeled. The published `authentication` reference term is searchable
+in English and Mongolian, appears in its category, and has a responsive detail page.
+Publication guards, clean migrations, seeding, integration tests, and browser checks pass.
+M3 can now add AI preparation without weakening the human publication boundary.
 
 ## Milestone Status
 
 | ID | Milestone | Status | Evidence |
 | --- | --- | --- | --- |
 | M0 | Product and architecture baseline | `DONE` | ADR-0001 and ADR-0002 record the accepted baseline |
-| M1 | Application foundation | `IN_PROGRESS` | Application builds; database verification and UI toolchain remain |
-| M2 | Editorial data core | `PLANNED` | Users, Categories, and Contexts are started; complete term lifecycle remains |
-| M3 | AI preparation pipeline | `PLANNED` | Workflow and provenance requirements are documented |
+| M1 | Application foundation | `DONE` | Clean migration, seed, tests, build, HTTP, and browser evidence recorded |
+| M2 | Editorial data core | `DONE` | Attributed reviewer/moderator workflow and public vertical slice verified |
+| M3 | AI preparation pipeline | `READY` | Editorial dependencies and provenance requirements are satisfied |
 | M4 | Reviewer workspace | `PLANNED` | Review behavior is specified; no interface exists |
 | M5 | Calibration batch | `PLANNED` | Target and sample ambiguous terms are documented |
 | M6 | Public dictionary | `PLANNED` | Required pages are documented |
@@ -32,6 +33,16 @@ be started from the managed development session.
 
 ### 2026-06-20
 
+- Made editorial integration tests self-contained on a migrated database; seed data is no longer a test prerequisite.
+- Added Terms, Translations, Sources, Examples, Reviews, and Import Batches collections.
+- Added server-side publication guards and public draft isolation.
+- Generated and clean-database validated the editorial-core migration.
+- Seeded a sourced `authentication` reference term with translations and an example.
+- Replaced placeholder search and category pages with PostgreSQL-backed results.
+- Added the responsive `/terms/[slug]` detail page.
+- Verified English and Mongolian search-to-term navigation in clean Chrome with no console issues.
+- Verified attributed reviewer/moderator publication and contributor denial.
+- Expanded database integration coverage to 3 files and 8 passing tests.
 - Switched seeding to Payload's supported script runner so the command exits without lingering processes.
 - Fixed standalone seed environment loading and seeded all 10 primary categories.
 - Ran the database-backed integration suite successfully: 2 files and 3 tests passed.
@@ -68,23 +79,20 @@ be started from the managed development session.
 | Production build | Pass | Next.js generated all current public and Payload routes |
 | HTTP smoke test | Pass | `/` and `/search?q=authentication` returned `200` |
 | Hydration smoke test | Pass | Clean Chrome profile produced no hydration warning |
-| Database integration | Pass | Category seed and 3 integration tests completed against PostgreSQL |
+| Database integration | Pass | 8 self-contained integration tests pass against PostgreSQL without requiring seed data |
 | Visual browser QA | Pass | Desktop and mobile clean-Chrome renders inspected |
 
 ## Current Work
 
-M1 still needs:
-
-- Verify the generated initial migration from a clean database.
-- Add Tailwind CSS and initialize the shared component system.
-- Verify Payload admin and the public UI in a browser.
+M3 is ready to start. No AI provider calls or background generation jobs exist yet.
 
 ## Next Actions
 
-1. Apply the initial migration to a clean PostgreSQL database.
-2. Add Tailwind CSS and initialize the shared component system.
-3. Complete browser accessibility checks for Payload admin.
-4. Mark M1 `DONE` only after every roadmap exit criterion has evidence.
+1. Add AI Drafts and generation-job persistence.
+2. Define versioned research, generation, and critique schemas.
+3. Add a provider abstraction and structured-output validation.
+4. Implement idempotent background generation and risk routing.
+5. Run `authentication` through the AI preparation path without publishing it.
 
 ## Blockers
 

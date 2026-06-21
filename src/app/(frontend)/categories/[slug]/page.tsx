@@ -1,13 +1,6 @@
+import { getCategoryWithPublishedTerms, getRecommendedTranslation } from '@/lib/publicTerms'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-
-const categoryNames: Record<string, string> = {
-  'ai-data-science': 'Artificial Intelligence & Data Science',
-  'finance-economics': 'Finance & Economics',
-  'law-government': 'Law & Government',
-  'medicine-health': 'Medicine & Health',
-  'technology-software': 'Technology & Software',
-}
 
 type CategoryPageProps = {
   params: Promise<{ slug: string }>
@@ -15,19 +8,45 @@ type CategoryPageProps = {
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { slug } = await params
-  const name = categoryNames[slug]
+  const data = await getCategoryWithPublishedTerms(slug)
 
-  if (!name) notFound()
+  if (!data) notFound()
 
   return (
-    <main className="search-page">
-      <Link href="/">← OpenToli</Link>
-      <p className="eyebrow">Category</p>
-      <h1>{name}</h1>
-      <p>
-        Reviewed terminology will appear here after the editorial data model and calibration
-        batch are complete.
-      </p>
+    <main className="content-page">
+      <Link className="back-link" href="/">
+        Back to OpenToli
+      </Link>
+      <div className="page-heading">
+        <p className="eyebrow">Category</p>
+        <h1>{data.category.nameEn}</h1>
+        <p lang="mn">{data.category.nameMn}</p>
+        {data.category.descriptionEn ? <p>{data.category.descriptionEn}</p> : null}
+      </div>
+
+      {data.terms.length === 0 ? (
+        <div className="empty-state">
+          <h2>No published terms yet.</h2>
+          <p>Reviewed terminology will appear here as it is approved.</p>
+        </div>
+      ) : null}
+
+      <div className="result-list">
+        {data.terms.map((term) => {
+          const translation = getRecommendedTranslation(term)
+
+          return (
+            <Link className="result-card" href={`/terms/${term.slug}`} key={term.id}>
+              <div>
+                <span className="status-badge">{term.reviewStatus.replaceAll('_', ' ')}</span>
+                <h2>{term.headwordEn}</h2>
+                <p lang="mn">{translation?.translationMn || 'Translation pending'}</p>
+              </div>
+              <p>{term.shortDefinitionEn}</p>
+            </Link>
+          )
+        })}
+      </div>
     </main>
   )
 }

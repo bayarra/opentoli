@@ -71,6 +71,12 @@ export interface Config {
     media: Media;
     categories: Category;
     contexts: Context;
+    terms: Term;
+    translations: Translation;
+    sources: Source;
+    examples: Example;
+    reviews: Review;
+    'import-batches': ImportBatch;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -82,6 +88,12 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     contexts: ContextsSelect<false> | ContextsSelect<true>;
+    terms: TermsSelect<false> | TermsSelect<true>;
+    translations: TranslationsSelect<false> | TranslationsSelect<true>;
+    sources: SourcesSelect<false> | SourcesSelect<true>;
+    examples: ExamplesSelect<false> | ExamplesSelect<true>;
+    reviews: ReviewsSelect<false> | ReviewsSelect<true>;
+    'import-batches': ImportBatchesSelect<false> | ImportBatchesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -204,6 +216,162 @@ export interface Context {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "terms".
+ */
+export interface Term {
+  id: number;
+  headwordEn: string;
+  normalizedHeadwordEn: string;
+  slug: string;
+  partOfSpeech?: ('noun' | 'verb' | 'adjective' | 'adverb' | 'phrase' | 'acronym' | 'other') | null;
+  pronunciation?: string | null;
+  shortDefinitionEn: string;
+  explanationEn: string;
+  explanationMn: string;
+  usageNoteEn?: string | null;
+  usageNoteMn?: string | null;
+  workflowStatus: 'draft' | 'needs_review' | 'needs_discussion' | 'reviewed' | 'approved' | 'archived';
+  reviewStatus: 'not_reviewed' | 'ai_draft' | 'community_reviewed' | 'human_reviewed' | 'expert_reviewed';
+  categories: (number | Category)[];
+  contexts?: (number | Context)[] | null;
+  recommendedTranslation?: (number | null) | Translation;
+  relatedTerms?: (number | Term)[] | null;
+  createdBy?: (number | null) | User;
+  reviewedBy?: (number | null) | User;
+  approvedBy?: (number | null) | User;
+  publishedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "translations".
+ */
+export interface Translation {
+  id: number;
+  term: number | Term;
+  translationMn: string;
+  translationType:
+    | 'recommended'
+    | 'alternative'
+    | 'context_specific'
+    | 'formal'
+    | 'informal'
+    | 'literal'
+    | 'rejected'
+    | 'deprecated';
+  context?: (number | null) | Context;
+  register: 'general' | 'formal' | 'informal' | 'technical' | 'academic' | 'legal' | 'medical' | 'business';
+  explanationEn?: string | null;
+  explanationMn?: string | null;
+  usageNote?: string | null;
+  status: 'draft' | 'needs_review' | 'approved' | 'rejected' | 'deprecated';
+  reviewStatus: 'not_reviewed' | 'ai_draft' | 'community_reviewed' | 'human_reviewed' | 'expert_reviewed';
+  voteScore?: number | null;
+  createdBy?: (number | null) | User;
+  reviewedBy?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sources".
+ */
+export interface Source {
+  id: number;
+  term: number | Term;
+  translation?: (number | null) | Translation;
+  title: string;
+  publisher: string;
+  author?: string | null;
+  url: string;
+  publicationDate?: string | null;
+  accessedDate?: string | null;
+  sourceType:
+    | 'government'
+    | 'standards_body'
+    | 'official_documentation'
+    | 'academic'
+    | 'dictionary'
+    | 'textbook'
+    | 'professional_usage'
+    | 'news'
+    | 'community_discussion'
+    | 'other';
+  licenseNote?: string | null;
+  excerptNote?: string | null;
+  isVerified?: boolean | null;
+  createdBy?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "examples".
+ */
+export interface Example {
+  id: number;
+  term: number | Term;
+  translation?: (number | null) | Translation;
+  exampleEn: string;
+  exampleMn: string;
+  context?: (number | null) | Context;
+  source?: (number | null) | Source;
+  status: 'draft' | 'needs_review' | 'approved' | 'rejected';
+  reviewStatus: 'not_reviewed' | 'ai_draft' | 'community_reviewed' | 'human_reviewed' | 'expert_reviewed';
+  createdBy?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reviews".
+ */
+export interface Review {
+  id: number;
+  term: number | Term;
+  translation?: (number | null) | Translation;
+  reviewer: number | User;
+  reviewType: 'linguistic' | 'technical' | 'editorial' | 'source_validation' | 'final_approval';
+  decision: 'approved' | 'changes_requested' | 'rejected';
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "import-batches".
+ */
+export interface ImportBatch {
+  id: number;
+  name: string;
+  sourceTitle: string;
+  sourceUrl?: string | null;
+  category?: (number | null) | Category;
+  status: 'pending' | 'validating' | 'processing' | 'completed' | 'completed_with_errors' | 'failed';
+  promptVersion?: string | null;
+  modelName?: string | null;
+  schemaVersion?: string | null;
+  totalRows?: number | null;
+  acceptedRows?: number | null;
+  rejectedRows?: number | null;
+  duplicateRows?: number | null;
+  validationReport?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  createdBy?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -241,6 +409,30 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'contexts';
         value: number | Context;
+      } | null)
+    | ({
+        relationTo: 'terms';
+        value: number | Term;
+      } | null)
+    | ({
+        relationTo: 'translations';
+        value: number | Translation;
+      } | null)
+    | ({
+        relationTo: 'sources';
+        value: number | Source;
+      } | null)
+    | ({
+        relationTo: 'examples';
+        value: number | Example;
+      } | null)
+    | ({
+        relationTo: 'reviews';
+        value: number | Review;
+      } | null)
+    | ({
+        relationTo: 'import-batches';
+        value: number | ImportBatch;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -356,6 +548,130 @@ export interface ContextsSelect<T extends boolean = true> {
   descriptionEn?: T;
   descriptionMn?: T;
   category?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "terms_select".
+ */
+export interface TermsSelect<T extends boolean = true> {
+  headwordEn?: T;
+  normalizedHeadwordEn?: T;
+  slug?: T;
+  partOfSpeech?: T;
+  pronunciation?: T;
+  shortDefinitionEn?: T;
+  explanationEn?: T;
+  explanationMn?: T;
+  usageNoteEn?: T;
+  usageNoteMn?: T;
+  workflowStatus?: T;
+  reviewStatus?: T;
+  categories?: T;
+  contexts?: T;
+  recommendedTranslation?: T;
+  relatedTerms?: T;
+  createdBy?: T;
+  reviewedBy?: T;
+  approvedBy?: T;
+  publishedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "translations_select".
+ */
+export interface TranslationsSelect<T extends boolean = true> {
+  term?: T;
+  translationMn?: T;
+  translationType?: T;
+  context?: T;
+  register?: T;
+  explanationEn?: T;
+  explanationMn?: T;
+  usageNote?: T;
+  status?: T;
+  reviewStatus?: T;
+  voteScore?: T;
+  createdBy?: T;
+  reviewedBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sources_select".
+ */
+export interface SourcesSelect<T extends boolean = true> {
+  term?: T;
+  translation?: T;
+  title?: T;
+  publisher?: T;
+  author?: T;
+  url?: T;
+  publicationDate?: T;
+  accessedDate?: T;
+  sourceType?: T;
+  licenseNote?: T;
+  excerptNote?: T;
+  isVerified?: T;
+  createdBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "examples_select".
+ */
+export interface ExamplesSelect<T extends boolean = true> {
+  term?: T;
+  translation?: T;
+  exampleEn?: T;
+  exampleMn?: T;
+  context?: T;
+  source?: T;
+  status?: T;
+  reviewStatus?: T;
+  createdBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reviews_select".
+ */
+export interface ReviewsSelect<T extends boolean = true> {
+  term?: T;
+  translation?: T;
+  reviewer?: T;
+  reviewType?: T;
+  decision?: T;
+  notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "import-batches_select".
+ */
+export interface ImportBatchesSelect<T extends boolean = true> {
+  name?: T;
+  sourceTitle?: T;
+  sourceUrl?: T;
+  category?: T;
+  status?: T;
+  promptVersion?: T;
+  modelName?: T;
+  schemaVersion?: T;
+  totalRows?: T;
+  acceptedRows?: T;
+  rejectedRows?: T;
+  duplicateRows?: T;
+  validationReport?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
 }
