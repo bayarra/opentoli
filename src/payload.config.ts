@@ -9,7 +9,9 @@ import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Categories } from './collections/Categories'
 import { Contexts } from './collections/Contexts'
+import { AIDrafts } from './collections/AIDrafts'
 import { Examples } from './collections/Examples'
+import { GenerationJobs } from './collections/GenerationJobs'
 import { ImportBatches } from './collections/ImportBatches'
 import { Reviews } from './collections/Reviews'
 import { Sources } from './collections/Sources'
@@ -37,6 +39,8 @@ export default buildConfig({
     Examples,
     Reviews,
     ImportBatches,
+    GenerationJobs,
+    AIDrafts,
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
@@ -47,6 +51,7 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
     },
+    push: false,
   }),
   sharp,
   plugins: [],

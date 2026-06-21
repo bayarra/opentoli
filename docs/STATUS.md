@@ -2,8 +2,8 @@
 
 **Last updated:** 2026-06-20
 **Current milestone:** M3 - AI Preparation Pipeline
-**Milestone status:** `READY`
-**Delivery state:** Editorial core complete
+**Milestone status:** `IN_PROGRESS`
+**Delivery state:** AI persistence and schema foundation complete
 
 ## Executive Summary
 
@@ -12,7 +12,9 @@ database-backed terminology slice. Terms, translations, sources, examples, revie
 import batches are modeled. The published `authentication` reference term is searchable
 in English and Mongolian, appears in its category, and has a responsive detail page.
 Publication guards, clean migrations, seeding, integration tests, and browser checks pass.
-M3 can now add AI preparation without weakening the human publication boundary.
+M3 now has private AI Draft and Generation Job persistence, versioned structured-output
+contracts, idempotency and retry invariants, and retained provenance. Provider execution
+and background job processing remain to be implemented.
 
 ## Milestone Status
 
@@ -21,7 +23,7 @@ M3 can now add AI preparation without weakening the human publication boundary.
 | M0 | Product and architecture baseline | `DONE` | ADR-0001 and ADR-0002 record the accepted baseline |
 | M1 | Application foundation | `DONE` | Clean migration, seed, tests, build, HTTP, and browser evidence recorded |
 | M2 | Editorial data core | `DONE` | Attributed reviewer/moderator workflow and public vertical slice verified |
-| M3 | AI preparation pipeline | `READY` | Editorial dependencies and provenance requirements are satisfied |
+| M3 | AI preparation pipeline | `IN_PROGRESS` | Persistence, schema validation, provenance, migration, and isolation tests pass |
 | M4 | Reviewer workspace | `PLANNED` | Review behavior is specified; no interface exists |
 | M5 | Calibration batch | `PLANNED` | Target and sample ambiguous terms are documented |
 | M6 | Public dictionary | `PLANNED` | Required pages are documented |
@@ -33,6 +35,12 @@ M3 can now add AI preparation without weakening the human publication boundary.
 
 ### 2026-06-20
 
+- Added private AI Drafts and Generation Jobs collections with provenance, retry, and idempotency fields.
+- Added versioned research, generation, and critique JSON Schemas with runtime validation.
+- Enforced completed-job evidence before AI draft creation and retained the human publication boundary.
+- Disabled automatic database schema push so committed migrations are authoritative in development and CI.
+- Generated and clean-database validated the M3 AI foundation migration.
+- Expanded database integration coverage to 4 files and 12 passing tests.
 - Made editorial integration tests self-contained on a migrated database; seed data is no longer a test prerequisite.
 - Added Terms, Translations, Sources, Examples, Reviews, and Import Batches collections.
 - Added server-side publication guards and public draft isolation.
@@ -79,20 +87,21 @@ M3 can now add AI preparation without weakening the human publication boundary.
 | Production build | Pass | Next.js generated all current public and Payload routes |
 | HTTP smoke test | Pass | `/` and `/search?q=authentication` returned `200` |
 | Hydration smoke test | Pass | Clean Chrome profile produced no hydration warning |
-| Database integration | Pass | 8 self-contained integration tests pass against PostgreSQL without requiring seed data |
+| Database integration | Pass | 12 self-contained integration tests pass against PostgreSQL without requiring seed data |
+| Migration reproducibility | Pass | All 3 migrations applied to a disposable database and reported `Yes` |
 | Visual browser QA | Pass | Desktop and mobile clean-Chrome renders inspected |
 
 ## Current Work
 
-M3 is ready to start. No AI provider calls or background generation jobs exist yet.
+M3 foundation is complete. Generation jobs and review-ready AI drafts can be stored and
+validated, but no provider adapter or background worker executes queued jobs yet.
 
 ## Next Actions
 
-1. Add AI Drafts and generation-job persistence.
-2. Define versioned research, generation, and critique schemas.
-3. Add a provider abstraction and structured-output validation.
-4. Implement idempotent background generation and risk routing.
-5. Run `authentication` through the AI preparation path without publishing it.
+1. Add a provider-neutral AI adapter and deterministic test provider.
+2. Implement the background research, generation, critique, validation, and routing worker.
+3. Add enqueue/retry services that reuse idempotency keys and preserve partial failures.
+4. Run `authentication` through the AI preparation path without publishing it.
 
 ## Blockers
 

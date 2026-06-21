@@ -39,7 +39,18 @@ Copy-Item .env.example .env
 docker compose up -d postgres
 pnpm install
 pnpm generate:types
+pnpm payload migrate
+pnpm seed
 pnpm dev
+```
+
+After dependencies are installed, the equivalent npm commands are:
+
+```powershell
+npm run generate:types
+npm run payload -- migrate
+npm run seed
+npm run dev
 ```
 
 Open `http://localhost:3000` for the public application and
@@ -47,6 +58,8 @@ Open `http://localhost:3000` for the public application and
 a server-side collection hook.
 
 Do not reuse the local database password or Payload secret in another environment.
+Automatic development schema push is disabled. Apply committed migrations before starting
+the application; create a new migration whenever collection fields change.
 
 ## Quality Commands
 

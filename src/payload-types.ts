@@ -77,6 +77,8 @@ export interface Config {
     examples: Example;
     reviews: Review;
     'import-batches': ImportBatch;
+    'generation-jobs': GenerationJob;
+    'ai-drafts': AiDraft;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -94,6 +96,8 @@ export interface Config {
     examples: ExamplesSelect<false> | ExamplesSelect<true>;
     reviews: ReviewsSelect<false> | ReviewsSelect<true>;
     'import-batches': ImportBatchesSelect<false> | ImportBatchesSelect<true>;
+    'generation-jobs': GenerationJobsSelect<false> | GenerationJobsSelect<true>;
+    'ai-drafts': AiDraftsSelect<false> | AiDraftsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -372,6 +376,187 @@ export interface ImportBatch {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "generation-jobs".
+ */
+export interface GenerationJob {
+  id: number;
+  idempotencyKey: string;
+  inputHeadword: string;
+  category: number | Category;
+  context?: (number | null) | Context;
+  importBatch?: (number | null) | ImportBatch;
+  status: 'queued' | 'running' | 'retry_scheduled' | 'completed' | 'failed' | 'cancelled';
+  stage: 'research' | 'generation' | 'critique' | 'validation' | 'routing' | 'complete';
+  attemptCount: number;
+  maxAttempts: number;
+  modelProvider: string;
+  modelName: string;
+  researchPromptVersion: string;
+  generationPromptVersion: string;
+  critiquePromptVersion: string;
+  schemaVersion: string;
+  inputPayload:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  sourceInputSnapshot:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  researchRawOutput?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  generationRawOutput?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  critiqueRawOutput?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  validationErrors?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  errorCode?: string | null;
+  errorMessage?: string | null;
+  queuedAt: string;
+  startedAt?: string | null;
+  completedAt?: string | null;
+  nextRetryAt?: string | null;
+  inputTokens?: number | null;
+  outputTokens?: number | null;
+  estimatedCostUsd?: number | null;
+  latencyMs?: number | null;
+  requestedBy?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ai-drafts".
+ */
+export interface AiDraft {
+  id: number;
+  term?: (number | null) | Term;
+  generationJob: number | GenerationJob;
+  inputHeadword: string;
+  inputCategory: number | Category;
+  inputContext?: (number | null) | Context;
+  sources?: (number | Source)[] | null;
+  researchPayload:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  generatedPayload:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  critiquePayload:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  schemaVersion: string;
+  modelProvider: string;
+  modelName: string;
+  promptVersion: string;
+  confidenceDimensions: {
+    conceptUnderstanding: 'low' | 'medium' | 'high';
+    translationNaturalness: 'low' | 'medium' | 'high';
+    domainAccuracy: 'low' | 'medium' | 'high';
+    sourceSupport: 'low' | 'medium' | 'high';
+    ambiguity: 'low' | 'medium' | 'high';
+  };
+  riskLevel: 'low' | 'medium' | 'high';
+  reviewRoute:
+    | 'fast_review'
+    | 'language_review'
+    | 'domain_review'
+    | 'community_discussion'
+    | 'duplicate_review'
+    | 'blocked';
+  status: 'generated' | 'editing' | 'needs_review' | 'accepted' | 'partially_accepted' | 'rejected';
+  generatedBy: string;
+  reviewedBy?: (number | null) | User;
+  reviewOutcome?: ('accepted' | 'modified' | 'rejected') | null;
+  acceptedFields?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  modifiedFields?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  rejectionReasons?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -433,6 +618,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'import-batches';
         value: number | ImportBatch;
+      } | null)
+    | ({
+        relationTo: 'generation-jobs';
+        value: number | GenerationJob;
+      } | null)
+    | ({
+        relationTo: 'ai-drafts';
+        value: number | AiDraft;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -672,6 +865,85 @@ export interface ImportBatchesSelect<T extends boolean = true> {
   duplicateRows?: T;
   validationReport?: T;
   createdBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "generation-jobs_select".
+ */
+export interface GenerationJobsSelect<T extends boolean = true> {
+  idempotencyKey?: T;
+  inputHeadword?: T;
+  category?: T;
+  context?: T;
+  importBatch?: T;
+  status?: T;
+  stage?: T;
+  attemptCount?: T;
+  maxAttempts?: T;
+  modelProvider?: T;
+  modelName?: T;
+  researchPromptVersion?: T;
+  generationPromptVersion?: T;
+  critiquePromptVersion?: T;
+  schemaVersion?: T;
+  inputPayload?: T;
+  sourceInputSnapshot?: T;
+  researchRawOutput?: T;
+  generationRawOutput?: T;
+  critiqueRawOutput?: T;
+  validationErrors?: T;
+  errorCode?: T;
+  errorMessage?: T;
+  queuedAt?: T;
+  startedAt?: T;
+  completedAt?: T;
+  nextRetryAt?: T;
+  inputTokens?: T;
+  outputTokens?: T;
+  estimatedCostUsd?: T;
+  latencyMs?: T;
+  requestedBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ai-drafts_select".
+ */
+export interface AiDraftsSelect<T extends boolean = true> {
+  term?: T;
+  generationJob?: T;
+  inputHeadword?: T;
+  inputCategory?: T;
+  inputContext?: T;
+  sources?: T;
+  researchPayload?: T;
+  generatedPayload?: T;
+  critiquePayload?: T;
+  schemaVersion?: T;
+  modelProvider?: T;
+  modelName?: T;
+  promptVersion?: T;
+  confidenceDimensions?:
+    | T
+    | {
+        conceptUnderstanding?: T;
+        translationNaturalness?: T;
+        domainAccuracy?: T;
+        sourceSupport?: T;
+        ambiguity?: T;
+      };
+  riskLevel?: T;
+  reviewRoute?: T;
+  status?: T;
+  generatedBy?: T;
+  reviewedBy?: T;
+  reviewOutcome?: T;
+  acceptedFields?: T;
+  modifiedFields?: T;
+  rejectionReasons?: T;
   updatedAt?: T;
   createdAt?: T;
 }
