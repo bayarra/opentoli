@@ -79,6 +79,7 @@ export interface Config {
     'import-batches': ImportBatch;
     'generation-jobs': GenerationJob;
     'ai-drafts': AiDraft;
+    comments: Comment;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -98,6 +99,7 @@ export interface Config {
     'import-batches': ImportBatchesSelect<false> | ImportBatchesSelect<true>;
     'generation-jobs': GenerationJobsSelect<false> | GenerationJobsSelect<true>;
     'ai-drafts': AiDraftsSelect<false> | AiDraftsSelect<true>;
+    comments: CommentsSelect<false> | CommentsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -523,6 +525,8 @@ export interface AiDraft {
     | 'blocked';
   status: 'generated' | 'editing' | 'needs_review' | 'accepted' | 'partially_accepted' | 'rejected';
   generatedBy: string;
+  publicVisibility: 'private' | 'public';
+  publicFeedbackOpenedAt?: string | null;
   reviewedBy?: (number | null) | User;
   reviewOutcome?: ('accepted' | 'modified' | 'rejected') | null;
   acceptedFields?:
@@ -552,6 +556,27 @@ export interface AiDraft {
     | number
     | boolean
     | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "comments".
+ */
+export interface Comment {
+  id: number;
+  term?: (number | null) | Term;
+  aiDraft?: (number | null) | AiDraft;
+  translation?: (number | null) | Translation;
+  parentComment?: (number | null) | Comment;
+  user: number | User;
+  body: string;
+  suggestedTranslationMn?: string | null;
+  commentType: 'general' | 'translation_suggestion' | 'usage_question' | 'source_note';
+  status: 'pending' | 'approved' | 'rejected' | 'spam' | 'hidden';
+  moderatorNote?: string | null;
+  moderatedBy?: (number | null) | User;
+  moderatedAt?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -626,6 +651,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'ai-drafts';
         value: number | AiDraft;
+      } | null)
+    | ({
+        relationTo: 'comments';
+        value: number | Comment;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -939,11 +968,33 @@ export interface AiDraftsSelect<T extends boolean = true> {
   reviewRoute?: T;
   status?: T;
   generatedBy?: T;
+  publicVisibility?: T;
+  publicFeedbackOpenedAt?: T;
   reviewedBy?: T;
   reviewOutcome?: T;
   acceptedFields?: T;
   modifiedFields?: T;
   rejectionReasons?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "comments_select".
+ */
+export interface CommentsSelect<T extends boolean = true> {
+  term?: T;
+  aiDraft?: T;
+  translation?: T;
+  parentComment?: T;
+  user?: T;
+  body?: T;
+  suggestedTranslationMn?: T;
+  commentType?: T;
+  status?: T;
+  moderatorNote?: T;
+  moderatedBy?: T;
+  moderatedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }

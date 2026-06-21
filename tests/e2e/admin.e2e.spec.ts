@@ -25,6 +25,13 @@ test.describe('Admin Panel', () => {
     await expect(dashboardArtifact).toBeVisible()
   })
 
+  test('recognizes the logged-in user on the contribution page', async () => {
+    await page.goto('http://localhost:3000/contribute')
+
+    await expect(page.getByText(`Signed in as ${testUser.name}.`)).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Create account' })).toHaveCount(0)
+  })
+
   test('can navigate to list view', async () => {
     await page.goto('http://localhost:3000/admin/collections/users')
     await expect(page).toHaveURL('http://localhost:3000/admin/collections/users')

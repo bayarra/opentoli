@@ -8,6 +8,7 @@ import sharp from 'sharp'
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Categories } from './collections/Categories'
+import { Comments } from './collections/Comments'
 import { Contexts } from './collections/Contexts'
 import { AIDrafts } from './collections/AIDrafts'
 import { Examples } from './collections/Examples'
@@ -41,6 +42,7 @@ export default buildConfig({
     ImportBatches,
     GenerationJobs,
     AIDrafts,
+    Comments,
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

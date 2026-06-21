@@ -21,7 +21,13 @@ html {
 body {
   background: var(--background);
   color: var(--ink);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
     sans-serif;
   margin: 0;
 }
@@ -254,7 +260,9 @@ h1 {
   grid-template-columns: 60px 1fr auto;
   padding: 25px 12px;
   text-decoration: none;
-  transition: background 160ms ease, padding 160ms ease;
+  transition:
+    background 160ms ease,
+    padding 160ms ease;
 }
 
 .category-grid a:hover {
@@ -392,7 +400,9 @@ footer {
   grid-template-columns: minmax(280px, 0.8fr) 1fr;
   padding: 32px 18px;
   text-decoration: none;
-  transition: background 160ms ease, padding 160ms ease;
+  transition:
+    background 160ms ease,
+    padding 160ms ease;
 }
 
 .result-card:hover {
@@ -593,6 +603,204 @@ blockquote p {
   margin: 10px 0 0;
 }
 
+.draft-page {
+  display: grid;
+  gap: 28px;
+}
+
+.draft-page .back-link {
+  margin-bottom: 28px;
+}
+
+.unverified-banner {
+  background: #fff7dc;
+  border: 2px solid #d9a91d;
+  border-radius: 18px;
+  color: #392c08;
+  padding: 22px 26px;
+}
+
+.unverified-banner strong {
+  font-size: 1.05rem;
+}
+
+.unverified-banner p {
+  line-height: 1.55;
+  margin: 6px 0 0;
+}
+
+.draft-translation {
+  background: #fff9e8;
+  border-color: #e3bd4e;
+}
+
+.account-page {
+  margin: 0 auto;
+  max-width: 620px;
+  min-height: 100vh;
+  padding: 56px 24px 100px;
+}
+
+.account-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  box-shadow: 0 24px 70px rgba(22, 38, 70, 0.09);
+  padding: 38px;
+}
+
+.account-card h1 {
+  font-size: clamp(2rem, 7vw, 3rem);
+  margin: 8px 0 12px;
+}
+
+.account-card > p:not(.eyebrow) {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.account-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.account-actions a {
+  background: var(--navy);
+  border-radius: 10px;
+  color: #fff;
+  font-weight: 750;
+  padding: 13px 18px;
+}
+
+.account-actions a + a {
+  background: #eef3f9;
+  color: var(--navy);
+}
+
+.account-form,
+.feedback-form {
+  display: grid;
+  gap: 18px;
+  margin-top: 28px;
+}
+
+.account-form label,
+.feedback-form label {
+  display: grid;
+  font-size: 0.9rem;
+  font-weight: 750;
+  gap: 8px;
+}
+
+.account-form input,
+.feedback-form input,
+.feedback-form select,
+.feedback-form textarea {
+  background: #fff;
+  border: 1px solid #b8c2d4;
+  border-radius: 10px;
+  color: var(--navy);
+  font: inherit;
+  padding: 13px 14px;
+}
+
+.account-form input:focus,
+.feedback-form input:focus,
+.feedback-form select:focus,
+.feedback-form textarea:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(48, 124, 216, 0.2);
+  outline: 0;
+}
+
+.account-form button,
+.feedback-form button {
+  background: var(--navy);
+  border: 0;
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 750;
+  padding: 14px 18px;
+}
+
+.account-form button:disabled,
+.feedback-form button:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+.form-error,
+.form-success {
+  border-radius: 10px;
+  margin: 0;
+  padding: 12px 14px;
+}
+
+.form-error {
+  background: #fff0f0;
+  color: #9c2727;
+}
+
+.form-success {
+  background: #ecf8ef;
+  color: #216c35;
+}
+
+.feedback-auth-note {
+  background: #f3f6fa;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.feedback-auth-note p {
+  line-height: 1.55;
+}
+
+.feedback-auth-note div {
+  display: flex;
+  gap: 22px;
+}
+
+.feedback-auth-note a {
+  font-weight: 750;
+}
+
+.feedback-form label span,
+.muted-copy {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.comment-list {
+  display: grid;
+  gap: 18px;
+}
+
+.comment-list article {
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+}
+
+.comment-list article > div {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.comment-list span {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.comment-list p {
+  line-height: 1.6;
+}
+
 @media (max-width: 760px) {
   .site-shell {
     padding: 0 20px;
@@ -680,5 +888,9 @@ blockquote p {
   .recommended-translation,
   .term-section {
     padding: 28px;
+  }
+
+  .account-card {
+    padding: 28px 22px;
   }
 }

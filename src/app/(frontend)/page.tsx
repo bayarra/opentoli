@@ -21,7 +21,7 @@ export default function HomePage() {
         <nav aria-label="Primary navigation">
           <a href="#categories">Categories</a>
           <Link href="/admin">Editorial</Link>
-          <Link className="nav-cta" href="/admin">
+          <Link className="nav-cta" href="/contribute">
             Contribute
           </Link>
         </nav>
@@ -32,8 +32,8 @@ export default function HomePage() {
           <p className="eyebrow">English to Mongolian terminology</p>
           <h1>Clear language for modern ideas.</h1>
           <p className="hero-copy">
-            Find sourced, human-reviewed Mongolian translations for technology, science,
-            finance, law, medicine, and professional life.
+            Find sourced, human-reviewed Mongolian translations for technology, science, finance,
+            law, medicine, and professional life.
           </p>
           <form action="/search" className="search" role="search">
             <label className="sr-only" htmlFor="home-search">

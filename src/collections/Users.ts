@@ -9,11 +9,12 @@ export const Users: CollectionConfig = {
     create: async ({ req }) => {
       if (req.user) return isAdmin(req.user)
 
-      const result = await req.payload.count({ collection: 'users', overrideAccess: true })
-      return result.totalDocs === 0
+      const existingUsers = await req.payload.count({ collection: 'users', overrideAccess: true })
+      return existingUsers.totalDocs === 0
     },
     delete: adminOnly,
-    read: ({ req }) => (isAdmin(req.user) ? true : req.user ? { id: { equals: req.user.id } } : false),
+    read: ({ req }) =>
+      isAdmin(req.user) ? true : req.user ? { id: { equals: req.user.id } } : false,
     update: ({ req }) =>
       isAdmin(req.user) ? true : req.user ? { id: { equals: req.user.id } } : false,
   },
@@ -52,6 +53,10 @@ export const Users: CollectionConfig = {
     {
       name: 'isActive',
       type: 'checkbox',
+      access: {
+        create: adminFieldAccess,
+        update: adminFieldAccess,
+      },
       defaultValue: true,
       index: true,
     },
@@ -62,7 +67,15 @@ export const Users: CollectionConfig = {
         if (operation !== 'create') return data
 
         const result = await req.payload.count({ collection: 'users', overrideAccess: true })
-        if (result.totalDocs === 0) data.role = 'admin'
+        const isPublicRegistration = req.context.publicRegistration === true
+
+        if (isPublicRegistration) {
+          data.isActive = true
+          data.role = 'contributor'
+        } else if (result.totalDocs === 0) {
+          data.isActive = true
+          data.role = 'admin'
+        }
 
         return data
       },

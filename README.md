@@ -86,6 +86,18 @@ processes one ready job and exits. Generated records remain private `needs_revie
 Drafts and cannot publish Terms. API keys are server-only and must never use a
 `NEXT_PUBLIC_` environment variable.
 
+## Public Draft Feedback
+
+Moderators can open a sourced, non-blocked `needs_review` AI Draft by setting its
+`publicVisibility` to `public` in Payload. Its redacted page is then available at
+`/drafts/{id}` with an `Unverified AI Draft` warning and `noindex` metadata. Raw research,
+critique, job, provider, prompt, and private review data are never included in that page.
+
+Anyone can read an explicitly public draft. Contributors register at `/register` or sign
+in at `/login` before submitting feedback. New comments and translation suggestions are
+always `pending`; moderators approve or reject them in the Payload `Comments` collection.
+Feedback never changes an AI Draft, Term, or Translation directly.
+
 To exercise the pipeline without paid API calls in the current PowerShell session:
 
 ```powershell

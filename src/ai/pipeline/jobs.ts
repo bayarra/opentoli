@@ -289,6 +289,7 @@ const completeDraft = async ({
         provider.metadata.generationPromptVersion,
         provider.metadata.critiquePromptVersion,
       ].join('|'),
+      publicVisibility: 'private',
       researchPayload: outputs.research,
       reviewRoute: outputs.generation.reviewRoute,
       riskLevel: outputs.generation.riskLevel,

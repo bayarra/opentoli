@@ -10,7 +10,7 @@ import {
   validateGenerationOutputV1,
   validateResearchPacketV1,
 } from '../ai/schemas/v1'
-import { editorialAccess, moderatorAccess } from '../access/roles'
+import { editorialAccess, moderatorAccess, moderatorFieldAccess } from '../access/roles'
 
 const completeDraftStatuses = [
   'generated',
@@ -106,6 +106,23 @@ export const AIDrafts: CollectionConfig = {
       required: true,
     },
     { name: 'generatedBy', type: 'text', required: true },
+    {
+      name: 'publicVisibility',
+      type: 'select',
+      access: {
+        create: moderatorFieldAccess,
+        update: moderatorFieldAccess,
+      },
+      defaultValue: 'private',
+      index: true,
+      options: ['private', 'public'],
+      required: true,
+    },
+    {
+      name: 'publicFeedbackOpenedAt',
+      type: 'date',
+      admin: { readOnly: true },
+    },
     { name: 'reviewedBy', type: 'relationship', relationTo: 'users' },
     {
       name: 'reviewOutcome',
@@ -146,6 +163,24 @@ export const AIDrafts: CollectionConfig = {
         if (['accepted', 'partially_accepted', 'rejected'].includes(next.status)) {
           if (!next.reviewedBy || !next.reviewOutcome) {
             throw new APIError('A resolved AI draft requires a reviewer and review outcome.', 400)
+          }
+        }
+
+        if (next.publicVisibility === 'public') {
+          if (next.status !== 'needs_review') {
+            throw new APIError(
+              'Only needs-review AI drafts can be opened for public feedback.',
+              400,
+            )
+          }
+          if (next.reviewRoute === 'blocked') {
+            throw new APIError('Blocked AI drafts cannot be opened for public feedback.', 400)
+          }
+          if (!Array.isArray(next.sources) || next.sources.length === 0) {
+            throw new APIError('A sourced AI draft is required for public feedback.', 400)
+          }
+          if (originalDoc?.publicVisibility !== 'public') {
+            data.publicFeedbackOpenedAt = new Date().toISOString()
           }
         }
 

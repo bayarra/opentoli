@@ -30,6 +30,9 @@ export const adminOnly: Access = ({ req }) => isAdmin(req.user)
 
 export const adminFieldAccess: FieldAccess = ({ req }) => isAdmin(req.user)
 
+export const moderatorFieldAccess: FieldAccess = ({ req }) =>
+  hasRole(req.user, ['moderator', 'admin'])
+
 export const editorialAccess: Access = ({ req }) => {
   return hasRole(req.user, ['reviewer', 'language_expert', 'moderator', 'admin'])
 }

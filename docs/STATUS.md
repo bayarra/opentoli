@@ -1,9 +1,9 @@
 # OpenToli Project Status
 
-**Last updated:** 2026-06-20
-**Current milestone:** M3 - AI Preparation Pipeline
+**Last updated:** 2026-06-21
+**Current milestone:** M4 - Public Draft Feedback and Reviewer Workspace
 **Milestone status:** `IN_PROGRESS`
-**Delivery state:** OpenAI adapter implemented; live calibration retry pending
+**Delivery state:** Public draft feedback vertical slice complete; reviewer workspace next
 
 ## Executive Summary
 
@@ -12,29 +12,45 @@ database-backed terminology slice. Terms, translations, sources, examples, revie
 import batches are modeled. The published `authentication` reference term is searchable
 in English and Mongolian, appears in its category, and has a responsive detail page.
 Publication guards, clean migrations, seeding, integration tests, and browser checks pass.
-M3 now has private AI Draft and Generation Job persistence, versioned structured-output
+M3 has private AI Draft and Generation Job persistence, versioned structured-output
 contracts, provider-neutral staged execution, idempotent enqueueing, retry resumption,
-risk routing, retained provenance, and deterministic end-to-end evidence. The configured
-OpenAI `gpt-5-mini` adapter now uses strict Responses API outputs and has mocked contract
-coverage. Its first live request exposed and retained a strict-schema error; that adapter
-issue is fixed, and the same job is ready for a live retry and quality evaluation.
+risk routing, retained provenance, and deterministic end-to-end evidence. Its live OpenAI
+calibration retry remains open. M4 has now started with an explicit safe public projection,
+unverified draft page, registration and sign-in, authenticated pending feedback, moderation,
+duplicate screening, and contributor throttling. Reviewer comparison and decision actions
+remain before M4 can close.
 
 ## Milestone Status
 
-| ID | Milestone | Status | Evidence |
-| --- | --- | --- | --- |
-| M0 | Product and architecture baseline | `DONE` | ADR-0001 and ADR-0002 record the accepted baseline |
-| M1 | Application foundation | `DONE` | Clean migration, seed, tests, build, HTTP, and browser evidence recorded |
-| M2 | Editorial data core | `DONE` | Attributed reviewer/moderator workflow and public vertical slice verified |
-| M3 | AI preparation pipeline | `IN_PROGRESS` | OpenAI adapter contract tests pass; live calibration retry remains |
-| M4 | Public draft feedback and reviewer workspace | `PLANNED` | ADR-0003 defines safe visibility and moderated feedback; no interface exists |
-| M5 | Calibration batch | `PLANNED` | Target and sample ambiguous terms are documented |
-| M6 | Public dictionary | `PLANNED` | Required pages are documented |
-| M7 | Search and discovery | `PLANNED` | Ranking and filters are documented |
-| M8 | Community accounts and contributions | `PLANNED` | Rich contributor features extend the basic authenticated M4 feedback path |
-| M9 | Launch readiness | `PLANNED` | Launch content and quality gates are documented |
+| ID  | Milestone                                    | Status        | Evidence                                                                                                   |
+| --- | -------------------------------------------- | ------------- | ---------------------------------------------------------------------------------------------------------- |
+| M0  | Product and architecture baseline            | `DONE`        | ADR-0001 and ADR-0002 record the accepted baseline                                                         |
+| M1  | Application foundation                       | `DONE`        | Clean migration, seed, tests, build, HTTP, and browser evidence recorded                                   |
+| M2  | Editorial data core                          | `DONE`        | Attributed reviewer/moderator workflow and public vertical slice verified                                  |
+| M3  | AI preparation pipeline                      | `IN_PROGRESS` | OpenAI adapter contract tests pass; live calibration retry remains                                         |
+| M4  | Public draft feedback and reviewer workspace | `IN_PROGRESS` | Redacted draft page, contributor auth, moderation persistence, migration, and 4 integration scenarios pass |
+| M5  | Calibration batch                            | `PLANNED`     | Target and sample ambiguous terms are documented                                                           |
+| M6  | Public dictionary                            | `PLANNED`     | Required pages are documented                                                                              |
+| M7  | Search and discovery                         | `PLANNED`     | Ranking and filters are documented                                                                         |
+| M8  | Community accounts and contributions         | `PLANNED`     | Rich contributor features extend the basic authenticated M4 feedback path                                  |
+| M9  | Launch readiness                             | `PLANNED`     | Launch content and quality gates are documented                                                            |
 
 ## Achievements
+
+### 2026-06-21
+
+- Added explicit moderator-controlled public visibility for sourced, non-blocked `needs_review` AI Drafts.
+- Added a narrow public projection that excludes raw research, generated payloads, critique, jobs, provider and prompt metadata, and unsafe citation URLs.
+- Added `/drafts/[id]` with persistent `Unverified AI Draft` labeling and `noindex` metadata.
+- Added public contributor registration and sign-in without exposing Payload's post-bootstrap Users create endpoint.
+- Added friendly duplicate-email registration handling with a race-safe `409` response instead of logging an expected database error.
+- Added a session-aware `/contribute` page and redirected authenticated users away from login and registration forms.
+- Added pending-by-default comments and translation suggestions with owner access, moderator decisions, duplicate screening, and a five-per-ten-minute contributor limit.
+- Added and locally applied `20260621_185717_m4_public_draft_feedback`.
+- Clean-database forward migration and the M4 down migration passed against a disposable PostgreSQL database.
+- Expanded database integration coverage to 7 files and 23 passing tests.
+- Verified `/`, `/register`, and `/login` return `200`, while a nonexistent public draft returns `404`.
+- Added and passed an authenticated Playwright regression proving logged-in users see contribution guidance rather than a create-account prompt.
 
 ### 2026-06-20
 
@@ -93,32 +109,39 @@ issue is fixed, and the same job is ready for a live retry and quality evaluatio
 
 ## Verification
 
-| Check | Result | Evidence |
-| --- | --- | --- |
-| Payload type generation | Pass | `pnpm generate:types` |
-| TypeScript | Pass | `pnpm typecheck` |
-| ESLint | Pass | `pnpm lint` |
-| Slug normalization tests | Pass | 2 tests in `formatSlug.int.spec.ts` |
-| Production build | Pass | Next.js generated all current public and Payload routes |
-| HTTP smoke test | Pass | `/` and `/search?q=authentication` returned `200` |
-| Hydration smoke test | Pass | Clean Chrome profile produced no hydration warning |
-| Database integration | Pass | 19 self-contained integration tests pass against PostgreSQL without requiring seed data |
-| OpenAI adapter contract | Pass | 3 mocked tests verify strict Responses API requests, parsing, usage, and failures |
-| OpenAI live calibration | Pending | Job 33 retained the initial schema error; fixed adapter awaits retry |
-| Migration reproducibility | Pass | All 3 migrations applied to a disposable database and reported `Yes` |
-| Visual browser QA | Pass | Desktop and mobile clean-Chrome renders inspected |
+| Check                      | Result      | Evidence                                                                                                               |
+| -------------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Payload type generation    | Pass        | `pnpm generate:types`                                                                                                  |
+| TypeScript                 | Pass        | `pnpm typecheck`                                                                                                       |
+| ESLint                     | Pass        | `pnpm lint`                                                                                                            |
+| Slug normalization tests   | Pass        | 2 tests in `formatSlug.int.spec.ts`                                                                                    |
+| Production build           | Pass        | Next.js generated all current public and Payload routes                                                                |
+| HTTP smoke test            | Pass        | `/` and `/search?q=authentication` returned `200`                                                                      |
+| Hydration smoke test       | Pass        | Clean Chrome profile produced no hydration warning                                                                     |
+| Database integration       | Pass        | 23 self-contained integration tests in 7 files pass against PostgreSQL without requiring seed data                     |
+| Public draft feedback      | Pass        | 4 scenarios verify projection redaction, registration roles, pending moderation, throttling, and resolved-draft hiding |
+| OpenAI adapter contract    | Pass        | 3 mocked tests verify strict Responses API requests, parsing, usage, and failures                                      |
+| OpenAI live calibration    | Pending     | Job 33 retained the initial schema error; fixed adapter awaits retry                                                   |
+| Migration reproducibility  | Pass        | All 4 migrations apply from zero; the M4 down migration also passes                                                    |
+| Local HTTP smoke           | Pass        | `/`, `/register`, and `/login` return `200`; an unknown draft returns `404`                                            |
+| M4 auth browser regression | Pass        | 4 admin/browser tests pass, including authenticated `/contribute` session recognition                                  |
+| Historical full rollback   | Known issue | M2 `editorial_core` down migration has an existing lock-relation drop-order defect                                     |
 
 ## Current Work
 
-M3 execution infrastructure and the configured OpenAI adapter are complete. The remaining
-milestone work is retrying live job 33 and evaluating the generated draft.
+The first M4 public-feedback slice is complete. M4 remains in progress because the reviewer
+workspace, candidate comparison, risk-route enforcement at decision time, merge behavior,
+and accessibility/browser evidence are not complete. The M3 live calibration evidence also
+remains open and is tracked in parallel because M4 was started by explicit direction.
 
 ## Next Actions
 
-1. Run `npm run ai:prepare:authentication` to retry OpenAI job 33.
-2. Compare the resulting private AI draft with the reviewed `authentication` reference entry.
-3. Record token, latency, validation, and reviewer-quality evidence; then close M3 if gates pass.
-4. Begin M4 with public-projection fields plus authenticated, moderated feedback persistence.
+1. Build the M4 reviewer workspace with side-by-side evidence, candidate, critique, and feedback views.
+2. Enforce required reviewer expertise and risk routes on accept, modify, reject, reroute, and merge actions.
+3. Record field-level outcomes, reasons, attribution, and canonical Term materialization without automatic publication.
+4. Add keyboard/accessibility and visual browser checks for public draft, auth, feedback, and reviewer flows.
+5. Retry live M3 job 33 and record token, latency, validation, and reviewer-quality evidence.
+6. Repair and separately validate the historical M2 down migration ordering defect.
 
 ## Blockers
 
@@ -126,14 +149,14 @@ No active blocker is recorded.
 
 ## Risks
 
-| Risk | Impact | Current mitigation |
-| --- | --- | --- |
-| AI output sounds natural but is technically wrong | Loss of trust | Independent critique and domain review routes |
-| AI pipeline cost grows during batch generation | Budget pressure | Calibration batch, idempotent jobs, and cost metrics |
-| Conflicting status fields permit accidental publication | Data exposure | Formal publication state machine required in M0 |
-| Search leaks drafts | Unreviewed content becomes public | Public-query and authorization tests required in M2 and M7 |
-| Content work outpaces reviewer capacity | Large unreviewed backlog | Batches of 100 to 200 after calibration |
-| Public feedback attracts spam or abuse | Moderation load and unsafe public content | Authentication, pending-by-default submissions, rate limits, screening, and moderator controls |
+| Risk                                                    | Impact                                    | Current mitigation                                                                             |
+| ------------------------------------------------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| AI output sounds natural but is technically wrong       | Loss of trust                             | Independent critique and domain review routes                                                  |
+| AI pipeline cost grows during batch generation          | Budget pressure                           | Calibration batch, idempotent jobs, and cost metrics                                           |
+| Conflicting status fields permit accidental publication | Data exposure                             | Formal publication state machine required in M0                                                |
+| Search leaks drafts                                     | Unreviewed content becomes public         | Public-query and authorization tests required in M2 and M7                                     |
+| Content work outpaces reviewer capacity                 | Large unreviewed backlog                  | Batches of 100 to 200 after calibration                                                        |
+| Public feedback attracts spam or abuse                  | Moderation load and unsafe public content | Authentication, pending-by-default submissions, rate limits, screening, and moderator controls |
 
 ## Update Log Template
 
