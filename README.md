@@ -85,7 +85,7 @@ tests               Integration and browser tests
 
 ## Product Rules
 
-- Public queries must never return drafts.
+- Public queries may return published Terms and explicitly public, redacted AI draft projections; never raw or private drafts.
 - AI output must retain source, model, prompt, and schema provenance.
 - AI output cannot transition itself to published status.
 - Community votes are advisory and cannot select the recommended translation.

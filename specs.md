@@ -473,6 +473,9 @@ Human Reviewed
 - View sources
 - View discussions
 - View review status
+- View explicitly public AI drafts labeled `Unverified AI Draft`
+
+Public users must register or sign in before commenting or suggesting a translation.
 
 ### 6.2 Registered Contributors
 
@@ -966,12 +969,15 @@ Fields:
 
 - `id`
 - `term_id`
+- `ai_draft_id`
 - `translation_id`
 - `parent_comment_id`
 - `user_id`
 - `body`
+- `suggested_translation_mn`
 - `comment_type`
 - `status`
+- `submission_fingerprint`
 - `created_at`
 - `updated_at`
 - `deleted_at`
@@ -984,6 +990,19 @@ Comment types:
 - `source_note`
 - `review_note`
 - `moderator_note`
+
+Comment status options:
+
+- `pending`
+- `approved`
+- `rejected`
+- `spam`
+- `hidden`
+
+`term_id` or `ai_draft_id` is required, and `user_id` must identify the authenticated
+contributor. Abuse-prevention metadata is private. Contributor submissions always start as
+`pending`, and translation suggestions are proposals rather than direct edits to a Term,
+Translation, or AI Draft.
 
 ### 10.8 Votes Collection
 
@@ -1117,7 +1136,9 @@ Role options:
 
 ### Public Users
 
-Can read, search, browse categories, view discussions, sources, and revision summaries.
+Can read and search published terms, view explicitly public AI drafts, browse categories,
+and view approved discussions, sources, and revision summaries. Authentication is required
+to submit comments or translation suggestions.
 
 ### Contributors
 
@@ -1228,6 +1249,10 @@ System validates structured output and assigns risk-based review route
 ↓
 Draft and full provenance are saved to AI Drafts
 ↓
+Safe draft projection is optionally opened for public feedback with an Unverified AI Draft label
+↓
+Comments and translation suggestions enter moderation
+↓
 Human language or domain review
 ↓
 Moderator or expert approval, when required
@@ -1315,9 +1340,28 @@ AI drafts should be routed according to evidence, ambiguity, and domain risk:
 Medical, legal, financial, and other high-risk terms must not use a reduced review
 path. AI confidence must never bypass a required human or expert review.
 
-### 13.6 Publication Requirements for AI Drafts
+### 13.6 Public Draft Visibility and Canonical Publication
 
-An AI-prepared term may be published only when:
+An AI draft may be visible before verification only through a safe public projection. The
+page must display `Unverified AI Draft`, explain that the content has not been human
+verified, and provide a route for comments and translation suggestions. Public visibility
+does not make the draft a published Term and does not grant it canonical status.
+
+The public projection may include the headword, candidate translations, draft
+explanations, examples, source citations, risk-neutral review status, and approved public
+feedback. It must exclude raw provider output, prompts, job errors, private reviewer notes,
+contact details, abuse-prevention metadata, and other internal generation evidence.
+
+Public AI draft pages are excluded from the canonical sitemap and use `noindex` until a
+human-reviewed publication decision is made. Blocked, rejected, failed, or explicitly
+private drafts are never publicly visible.
+
+Comments and translation suggestions require an authenticated contributor and are stored
+as pending proposals. They do not immediately appear publicly and cannot directly update
+an AI draft, Translation, or Term. Approved feedback remains advisory evidence for
+reviewers.
+
+An AI-prepared term may become a canonical published Term only when:
 
 - A human has selected or edited the recommended translation
 - Required English and Mongolian explanations have been reviewed
@@ -1526,6 +1570,7 @@ MVP search:
 - Category filter
 - Context filter
 - Review-status filter
+- Clearly labeled public AI draft results, ranked below canonical published terms
 
 Search ranking priority:
 
@@ -1560,6 +1605,8 @@ Later features:
 - Category pages
 - Related terms
 - Review badges
+- Public AI draft detail pages with an `Unverified AI Draft` warning
+- Authenticated, moderated comment and translation-suggestion forms
 - Responsive layout
 - SEO metadata
 

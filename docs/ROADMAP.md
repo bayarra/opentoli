@@ -28,11 +28,11 @@ it does not weaken an acceptance gate or create conflicting architectural decisi
 | M1 | Application foundation | M0 | Deployable Next.js, Payload, and PostgreSQL skeleton |
 | M2 | Editorial data core | M1 | Manually authored term can be reviewed and published |
 | M3 | AI preparation pipeline | M2 | Source-grounded draft can be generated, critiqued, and queued |
-| M4 | Reviewer workspace | M3 | Reviewer can resolve a draft and preserve decision evidence |
+| M4 | Public draft feedback and reviewer workspace | M3 | Public can safely review drafts and reviewers can resolve them |
 | M5 | Calibration batch | M4 | Fifty terms processed and pipeline quality measured |
 | M6 | Public dictionary | M2, M5 | Published terms are discoverable and readable publicly |
 | M7 | Search and discovery | M6 | Ranked bilingual search with required filters |
-| M8 | Community contributions | M4, M7 | Moderated public contribution workflow |
+| M8 | Community accounts and contributions | M4, M7 | Attributed contributor workflow extends public feedback |
 | M9 | Launch readiness | M5-M8 | Production controls and launch content gates verified |
 
 ## M0 - Product and Architecture Baseline
@@ -99,18 +99,28 @@ risk routing, background jobs, retries, and generation provenance.
 - Re-running the same job does not create duplicate records or charges unexpectedly.
 - Failures are retryable and visible without losing partial evidence.
 - Provider, model, prompt, schema, source input, and raw outputs are retained.
-- No generated record can become public without M2 review and approval.
+- No generated record can be presented as verified or become a canonical Term without M2 review and approval.
+- Raw prompts, provider outputs, job errors, and private review evidence remain restricted.
 
-## M4 - Reviewer Workspace
+## M4 - Public Draft Feedback and Reviewer Workspace
 
-**Objective:** Make human review faster than manually reconstructing AI research.
+**Objective:** Let anyone inspect clearly unverified AI drafts, let authenticated
+contributors improve them, and make human review faster than manually reconstructing AI
+research.
 
-**Scope:** Evidence view, candidate comparison, critique, confidence dimensions,
-duplicate warnings, field editing, review routing, accept/reject/merge actions, and
-decision attribution.
+**Scope:** Safe public draft projection, `Unverified AI Draft` labeling, basic public
+registration and sign-in, authenticated comments and translation suggestions, moderation,
+rate limits and anti-abuse controls, evidence view, candidate comparison, critique,
+confidence dimensions, duplicate warnings, field editing, review routing,
+accept/reject/merge actions, and decision attribution.
 
 **Exit criteria:**
 
+- Anyone can view an explicitly public AI draft without receiving raw or private generation evidence.
+- Authenticated users can submit comments or translation suggestions that enter a pending moderation queue.
+- Anonymous users attempting to contribute are directed to register or sign in.
+- Public feedback cannot directly modify a draft, select a translation, or publish a Term.
+- Blocked, rejected, failed, and private drafts are not publicly visible.
 - Reviewers can accept, modify, reject, reroute, or merge a draft.
 - Accepted, modified, and rejected fields and reasons are recorded.
 - High-risk terminology cannot bypass its required review route.
@@ -132,14 +142,16 @@ terms such as `agent`, `token`, `session`, and `repository`.
 
 ## M6 - Public Dictionary
 
-**Objective:** Present approved content as a trustworthy bilingual reference.
+**Objective:** Present approved content as a trustworthy bilingual reference while keeping
+public unverified drafts unmistakably separate.
 
 **Scope:** Homepage, term detail, category pages, new terms, review badges, sources,
 related terms, revision summaries, responsive UI, metadata, and accessibility basics.
 
 **Exit criteria:**
 
-- Only published terms appear through public pages and APIs.
+- Only published Terms appear as canonical dictionary entries through public pages and APIs.
+- Explicitly public AI draft projections may appear with an `Unverified AI Draft` label and `noindex` metadata.
 - A term displays translation, context, explanation, examples, sources, and review state.
 - AI-prepared and human-reviewed states are visually distinct.
 - Critical pages pass responsive, accessibility, and metadata checks.
@@ -156,14 +168,16 @@ ranking; normalization; category, context, and review filters; pagination; analy
 - Ranking follows the priority defined in the product specification.
 - English and Mongolian fixtures cover exact, prefix, and alternative matches.
 - Query plans use appropriate indexes at representative data volume.
-- Search never leaks drafts or restricted editorial records.
+- Search may return explicitly public AI draft projections below canonical results, but never leaks restricted drafts or editorial records.
 
-## M8 - Community Contributions
+## M8 - Community Accounts and Contributions
 
-**Objective:** Accept public knowledge without weakening editorial control.
+**Objective:** Add richer identity, ownership, reputation, and contribution tools on top of
+the authenticated moderated feedback path delivered in M4.
 
-**Scope:** Registration, term submissions, translation and explanation suggestions,
-examples, sources, comments, votes, contributor dashboard, and moderation queue.
+**Scope:** Contributor profiles, attributed term submissions, translation and explanation
+suggestions, examples, sources, comments, votes, contributor dashboard, history,
+reputation signals, and expanded moderation tooling.
 
 **Exit criteria:**
 
@@ -193,4 +207,3 @@ performance, accessibility, SEO, operational runbooks, and launch corpus verific
 A deliverable is done only when behavior, tests, documentation, migrations, security
 impact, accessibility impact, and operational impact have been addressed. A milestone
 is done only when every exit criterion has evidence in [`STATUS.md`](STATUS.md).
-

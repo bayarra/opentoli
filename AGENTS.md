@@ -22,6 +22,8 @@ progress. Do not silently resolve a material conflict; record the decision or ra
   screenshots, or a working end-to-end flow.
 - Preserve AI provenance and the human-publication boundary defined in `specs.md`.
 - Never create a path that allows generated content to publish automatically.
+- Public AI drafts must use the redacted projection defined in ADR-0003; never expose raw jobs or private evidence.
+- Authenticated comments and translation suggestions are moderated proposals and must never directly mutate canonical content.
 - Keep unrelated refactors out of milestone work.
 - Add or update tests in proportion to the behavior changed.
 - Record architectural decisions that are difficult to reverse as ADRs under
@@ -45,4 +47,3 @@ Before a milestone can be marked `DONE`:
 - Relevant documentation and migrations are committed with the change.
 - Security, accessibility, and observability implications have been considered.
 - `docs/STATUS.md` contains evidence of completion.
-

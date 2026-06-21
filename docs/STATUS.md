@@ -24,17 +24,18 @@ and background job processing remain to be implemented.
 | M1 | Application foundation | `DONE` | Clean migration, seed, tests, build, HTTP, and browser evidence recorded |
 | M2 | Editorial data core | `DONE` | Attributed reviewer/moderator workflow and public vertical slice verified |
 | M3 | AI preparation pipeline | `IN_PROGRESS` | Persistence, schema validation, provenance, migration, and isolation tests pass |
-| M4 | Reviewer workspace | `PLANNED` | Review behavior is specified; no interface exists |
+| M4 | Public draft feedback and reviewer workspace | `PLANNED` | ADR-0003 defines safe visibility and moderated feedback; no interface exists |
 | M5 | Calibration batch | `PLANNED` | Target and sample ambiguous terms are documented |
 | M6 | Public dictionary | `PLANNED` | Required pages are documented |
 | M7 | Search and discovery | `PLANNED` | Ranking and filters are documented |
-| M8 | Community contributions | `PLANNED` | Roles and contribution features are documented |
+| M8 | Community accounts and contributions | `PLANNED` | Rich contributor features extend the basic authenticated M4 feedback path |
 | M9 | Launch readiness | `PLANNED` | Launch content and quality gates are documented |
 
 ## Achievements
 
 ### 2026-06-20
 
+- Accepted ADR-0003: anyone may view an unverified redacted AI draft, while contributing requires authentication and moderation.
 - Added private AI Drafts and Generation Jobs collections with provenance, retry, and idempotency fields.
 - Added versioned research, generation, and critique JSON Schemas with runtime validation.
 - Enforced completed-job evidence before AI draft creation and retained the human publication boundary.
@@ -102,6 +103,7 @@ validated, but no provider adapter or background worker executes queued jobs yet
 2. Implement the background research, generation, critique, validation, and routing worker.
 3. Add enqueue/retry services that reuse idempotency keys and preserve partial failures.
 4. Run `authentication` through the AI preparation path without publishing it.
+5. Begin M4 with public-projection fields plus moderated comment and translation-suggestion persistence.
 
 ## Blockers
 
@@ -116,6 +118,7 @@ No active blocker is recorded.
 | Conflicting status fields permit accidental publication | Data exposure | Formal publication state machine required in M0 |
 | Search leaks drafts | Unreviewed content becomes public | Public-query and authorization tests required in M2 and M7 |
 | Content work outpaces reviewer capacity | Large unreviewed backlog | Batches of 100 to 200 after calibration |
+| Public feedback attracts spam or abuse | Moderation load and unsafe public content | Authentication, pending-by-default submissions, rate limits, screening, and moderator controls |
 
 ## Update Log Template
 
