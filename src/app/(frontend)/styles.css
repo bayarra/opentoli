@@ -5,7 +5,7 @@
   --muted: #607089;
   --line: #dbe3ee;
   --navy: #143f73;
-  --blue: #1876d2;
+  --blue: #0b63b6;
   --sky: #dff1ff;
   --focus: #ffb020;
 }
@@ -299,6 +299,10 @@ h1 {
 .mongolian-callout span,
 footer {
   color: var(--muted);
+}
+
+.mongolian-callout span {
+  color: #52647d;
 }
 
 footer {
@@ -632,6 +636,11 @@ blockquote p {
 .draft-translation {
   background: #fff9e8;
   border-color: #e3bd4e;
+  color: var(--ink);
+}
+
+.draft-translation span {
+  color: #72540b;
 }
 
 .account-page {

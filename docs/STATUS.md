@@ -1,9 +1,9 @@
 # OpenToli Project Status
 
 **Last updated:** 2026-06-21
-**Current milestone:** M4 - Public Draft Feedback and Simple Editor Workflow
+**Current milestone:** M3 - AI Preparation Pipeline
 **Milestone status:** `IN_PROGRESS`
-**Delivery state:** Simple Draft Inbox workflow implemented and verified; accessibility hardening next
+**Delivery state:** M4 complete; M3 live OpenAI calibration retry next
 
 ## Executive Summary
 
@@ -18,27 +18,33 @@ risk routing, retained provenance, and deterministic end-to-end evidence. Its li
 calibration retry remains open. M4 now has an explicit safe public projection, registration,
 authenticated pending feedback, moderation, and a deliberately simple Editor experience:
 one Draft Inbox, four editable fields, background save, one Publish action, and secondary
-Hide. Audit, source, and AI provenance remain automatic in the background.
+Hide. Audit, source, and AI provenance remain automatic in the background. Keyboard-only
+critical flows and serious WCAG A/AA violations now have automated browser coverage.
 
 ## Milestone Status
 
-| ID  | Milestone                                    | Status        | Evidence                                                                                        |
-| --- | -------------------------------------------- | ------------- | ----------------------------------------------------------------------------------------------- |
-| M0  | Product and architecture baseline            | `DONE`        | ADR-0001 and ADR-0002 record the accepted baseline                                              |
-| M1  | Application foundation                       | `DONE`        | Clean migration, seed, tests, build, HTTP, and browser evidence recorded                        |
-| M2  | Editorial data core                          | `DONE`        | Attributed reviewer/moderator workflow and public vertical slice verified                       |
-| M3  | AI preparation pipeline                      | `IN_PROGRESS` | OpenAI adapter contract tests pass; live calibration retry remains                              |
-| M4  | Public draft feedback and simple editor flow | `IN_PROGRESS` | Draft Inbox, background save, explicit Publish, secondary Hide, and public feedback implemented |
-| M5  | Calibration batch                            | `PLANNED`     | Target and sample ambiguous terms are documented                                                |
-| M6  | Public dictionary                            | `PLANNED`     | Required pages are documented                                                                   |
-| M7  | Search and discovery                         | `PLANNED`     | Ranking and filters are documented                                                              |
-| M8  | Community accounts and contributions         | `PLANNED`     | Rich contributor features extend the basic authenticated M4 feedback path                       |
-| M9  | Launch readiness                             | `PLANNED`     | Launch content and quality gates are documented                                                 |
+| ID  | Milestone                                    | Status        | Evidence                                                                  |
+| --- | -------------------------------------------- | ------------- | ------------------------------------------------------------------------- |
+| M0  | Product and architecture baseline            | `DONE`        | ADR-0001 and ADR-0002 record the accepted baseline                        |
+| M1  | Application foundation                       | `DONE`        | Clean migration, seed, tests, build, HTTP, and browser evidence recorded  |
+| M2  | Editorial data core                          | `DONE`        | Attributed reviewer/moderator workflow and public vertical slice verified |
+| M3  | AI preparation pipeline                      | `IN_PROGRESS` | OpenAI adapter contract tests pass; live calibration retry remains        |
+| M4  | Public draft feedback and simple editor flow | `DONE`        | All exit criteria pass with 26 integration and 9 browser tests            |
+| M5  | Calibration batch                            | `PLANNED`     | Target and sample ambiguous terms are documented                          |
+| M6  | Public dictionary                            | `PLANNED`     | Required pages are documented                                             |
+| M7  | Search and discovery                         | `PLANNED`     | Ranking and filters are documented                                        |
+| M8  | Community accounts and contributions         | `PLANNED`     | Rich contributor features extend the basic authenticated M4 feedback path |
+| M9  | Launch readiness                             | `PLANNED`     | Launch content and quality gates are documented                           |
 
 ## Achievements
 
 ### 2026-06-21
 
+- Completed M4 after adding automated serious WCAG A/AA scans and keyboard-only coverage for public drafts, sign-in, moderated feedback, background editing, and Editor secondary actions.
+- Corrected homepage and public-draft color contrast failures found by axe-core.
+- Fixed feedback confirmation by retaining the form element across the asynchronous request before resetting it.
+- Made `axe-core` an explicit test dependency and changed Playwright's web-server command from unavailable global pnpm to `npm run dev`.
+- Passed 26 integration tests, 9 Chromium browser tests, ESLint, TypeScript, and the production build; no migration was required.
 - Removed the visible high-risk label and publication confirmation from the Draft Inbox and Editor page; AI risk metadata remains internal provenance only.
 - Replaced the risk-confirmation integration scenario with a source-gate scenario proving unsourced drafts cannot publish and sourced drafts publish with one explicit Editor action.
 - Verified the simplified workflow with 26 integration tests, 6 browser tests, ESLint, TypeScript, and a production build; no schema change or migration was required.
@@ -127,9 +133,9 @@ Hide. Audit, source, and AI provenance remain automatic in the background.
 
 | Check                     | Result      | Evidence                                                                                                               |
 | ------------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------- |
-| Payload type generation   | Pass        | `pnpm generate:types`                                                                                                  |
-| TypeScript                | Pass        | `pnpm typecheck`                                                                                                       |
-| ESLint                    | Pass        | `pnpm lint`                                                                                                            |
+| Payload type generation   | Pass        | `npm run generate:types`                                                                                               |
+| TypeScript                | Pass        | `npm run typecheck`                                                                                                    |
+| ESLint                    | Pass        | `npm run lint`                                                                                                         |
 | Slug normalization tests  | Pass        | 2 tests in `formatSlug.int.spec.ts`                                                                                    |
 | Production build          | Pass        | Next.js generated all current public and Payload routes                                                                |
 | HTTP smoke test           | Pass        | `/` and `/search?q=authentication` returned `200`                                                                      |
@@ -141,21 +147,20 @@ Hide. Audit, source, and AI provenance remain automatic in the background.
 | OpenAI live calibration   | Pending     | Job 33 retained the initial schema error; fixed adapter awaits retry                                                   |
 | Migration reproducibility | Pass        | All 5 migrations apply from zero; both M4 down migrations pass in isolation                                            |
 | Local HTTP smoke          | Pass        | `/`, `/register`, and `/login` return `200`; an unknown draft returns `404`                                            |
-| M4 browser regression     | Pass        | 6 browser tests pass, including authenticated contribution and Draft Inbox recognition                                 |
+| M4 browser regression     | Pass        | 9 browser tests pass, including public/auth/feedback/Editor keyboard flows and serious WCAG A/AA scans                 |
 | Historical full rollback  | Known issue | M2 `editorial_core` down migration has an existing lock-relation drop-order defect                                     |
 
 ## Current Work
 
-The simplified M4 implementation passes integration, browser, lint, type, and production
-build checks. M4 remains open only for keyboard and automated accessibility hardening. The
-M3 live calibration evidence also remains open and is tracked in parallel because M4 was
-started by explicit direction.
+M4 is complete: its simplified workflow passes integration, browser, keyboard,
+accessibility, lint, type, and production build checks. Work returns to M3, whose remaining
+exit criterion is a successful non-test provider run for the reference term.
 
 ## Next Actions
 
-1. Add keyboard and automated accessibility checks for public draft, auth, feedback, and Editor flows.
-2. Retry live M3 job 33 and record token, latency, validation, and reviewer-quality evidence.
-3. Repair and separately validate the historical M2 down migration ordering defect.
+1. Retry live M3 job 33 and record token, latency, validation, and reviewer-quality evidence.
+2. Repair and separately validate the historical M2 down migration ordering defect.
+3. Begin the M5 calibration batch only after the M3 live provider criterion passes.
 
 ## Blockers
 

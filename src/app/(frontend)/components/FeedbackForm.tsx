@@ -36,7 +36,8 @@ export function FeedbackForm({ draftId }: FeedbackFormProps) {
     setSubmitted(false)
     setSubmitting(true)
 
-    const form = new FormData(event.currentTarget)
+    const formElement = event.currentTarget
+    const form = new FormData(formElement)
     const commentType = String(form.get('commentType') || 'general')
     const response = await fetch('/api/comments', {
       body: JSON.stringify({
@@ -54,7 +55,7 @@ export function FeedbackForm({ draftId }: FeedbackFormProps) {
     })
 
     if (response.ok) {
-      event.currentTarget.reset()
+      formElement.reset()
       setSubmitted(true)
     } else {
       const data = await response.json().catch(() => null)
