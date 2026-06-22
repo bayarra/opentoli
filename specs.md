@@ -489,16 +489,17 @@ Public users must register or sign in before commenting or suggesting a translat
 - Vote on translation suggestions
 - Edit their own draft submissions
 
-### 6.3 Reviewers
+### 6.3 Editors
 
-- Review AI drafts
-- Review contributor submissions
-- Edit English and Mongolian explanations
-- Approve examples
-- Validate sources
-- Recommend a preferred translation
-- Mark content as reviewed
-- Add reviewer notes
+- Open AI drafts from one Draft Inbox
+- Edit the English headword, Mongolian translation, and explanations directly
+- Review sources and community suggestions on the same page
+- Publish with one explicit human action
+- Hide an unusable draft from the active inbox without deleting its provenance
+
+The MVP presents three user concepts: Visitor, Member, and Editor. Existing granular
+editorial roles may remain as internal compatibility aliases, but they must not create
+different visible workflows or approval stages.
 
 ### 6.4 Moderators
 
@@ -1299,14 +1300,8 @@ separately from the generated draft.
   ],
   "explanation_en": "The process of verifying the identity of a user, system, or device.",
   "explanation_mn": "Хэрэглэгч, систем эсвэл төхөөрөмжийн хэн болохыг шалгаж баталгаажуулах үйл явц.",
-  "categories": [
-    "Technology & Software",
-    "Cybersecurity"
-  ],
-  "contexts": [
-    "software",
-    "security"
-  ],
+  "categories": ["Technology & Software", "Cybersecurity"],
+  "contexts": ["software", "security"],
   "examples": [
     {
       "example_en": "The application requires two-factor authentication.",
@@ -1326,19 +1321,23 @@ separately from the generated draft.
 }
 ```
 
-### 13.5 AI Review Routing
+### 13.5 Simple Editor Workflow
 
-AI drafts should be routed according to evidence, ambiguity, and domain risk:
+The visible MVP workflow is intentionally limited to:
 
-- Fast review for clear, established, well-sourced terminology
-- Language review when the concept is clear but Mongolian wording is uncertain
-- Domain review for medical, legal, financial, scientific, or specialized terms
-- Community discussion when multiple translations are defensible
-- Duplicate review when an existing term may cover the same concept
-- Blocked when evidence is insufficient or the source meaning is unclear
+```text
+AI Draft -> Editor edits -> Publish
+```
 
-Medical, legal, financial, and other high-risk terms must not use a reduced review
-path. AI confidence must never bypass a required human or expert review.
+Editors work from one Draft Inbox. Changes save in the background. The page has one
+primary action, `Publish`, plus a secondary `Hide` action for removing an unusable draft
+from the active inbox. Hide preserves the draft and its provenance; it is not deletion.
+
+AI risk, confidence, critique, and routing metadata may be retained internally for quality
+analysis, but they must not create separate inboxes, reviewer types, reroute controls,
+merge controls, or approval stages in the MVP UI. High-risk drafts display a warning and
+require explicit editor confirmation immediately before publication. Blocked or unsourced
+drafts cannot publish.
 
 ### 13.6 Public Draft Visibility and Canonical Publication
 
@@ -1361,18 +1360,18 @@ as pending proposals. They do not immediately appear publicly and cannot directl
 an AI draft, Translation, or Term. Approved feedback remains advisory evidence for
 reviewers.
 
-An AI-prepared term may become a canonical published Term only when:
+An AI-prepared term may become a canonical published Term only when an Editor explicitly
+uses `Publish` after:
 
 - A human has selected or edited the recommended translation
 - Required English and Mongolian explanations have been reviewed
 - Important or disputed claims have supporting sources
-- No unresolved duplicate warning remains
-- Required domain or language-expert review is complete
+- Any high-risk warning has been explicitly confirmed
 - AI provider, model, prompt version, schema version, and source inputs are retained
 
-The system should record which generated fields were accepted, modified, or rejected
-and the reasons for rejection. This data should improve prompts and review routing,
-not automate approval.
+The system records the editor, field changes, publication time, and retained AI provenance
+automatically. Editors do not manage acceptance categories, routes, merge states, or review
+types. This evidence may improve prompts, but it never automates publication.
 
 ### 13.7 AI Quality Evaluation
 

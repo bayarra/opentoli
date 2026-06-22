@@ -1,23 +1,23 @@
+import { getDraftInbox } from '@/editor/data'
 import { getCurrentUser } from '@/lib/currentUser'
-import { getReviewerQueue } from '@/review/reviewerData'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
 export const metadata: Metadata = {
   robots: { follow: false, index: false },
-  title: 'AI Draft Review | OpenToli',
+  title: 'Draft Inbox | OpenToli',
 }
 
-export default async function AIDraftReviewQueuePage() {
+export default async function DraftInboxPage() {
   const user = await getCurrentUser()
   if (!user) redirect('/login?next=%2Freview%2Fai-drafts')
-  const drafts = await getReviewerQueue(user)
+  const drafts = await getDraftInbox(user)
 
   if (!drafts) {
     return (
       <main className="content-page">
-        <h1>Reviewer access required</h1>
+        <h1>Editor access required</h1>
       </main>
     )
   }
@@ -29,10 +29,10 @@ export default async function AIDraftReviewQueuePage() {
       </Link>
       <header className="reviewer-heading">
         <div>
-          <p className="eyebrow">M4 reviewer workspace</p>
-          <h1>AI draft review queue</h1>
+          <p className="eyebrow">Simple editor workflow</p>
+          <h1>Draft Inbox</h1>
         </div>
-        <p>{drafts.length} unresolved drafts</p>
+        <p>{drafts.length} active drafts</p>
       </header>
       <div className="review-queue">
         {drafts.map((draft) => (
@@ -42,13 +42,13 @@ export default async function AIDraftReviewQueuePage() {
               <span>{draft.category || 'Uncategorized'}</span>
             </div>
             <div className="review-queue-badges">
-              <span className={`risk-badge risk-${draft.riskLevel}`}>{draft.riskLevel} risk</span>
-              <span>{draft.reviewRoute.replaceAll('_', ' ')}</span>
+              {draft.isHighRisk ? <span className="risk-badge risk-high">High risk</span> : null}
+              <span>{draft.isPublic ? 'Public draft' : 'Private draft'}</span>
               <span>{draft.updatedAt.slice(0, 10)}</span>
             </div>
           </Link>
         ))}
-        {drafts.length === 0 ? <p>No unresolved AI drafts.</p> : null}
+        {drafts.length === 0 ? <p>No active AI drafts.</p> : null}
       </div>
     </main>
   )

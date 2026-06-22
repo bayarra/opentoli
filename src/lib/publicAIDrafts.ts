@@ -39,7 +39,7 @@ export const getPublicAIDraftById = async (id: number) => {
   if (
     !draft ||
     draft.publicVisibility !== 'public' ||
-    draft.status !== 'needs_review' ||
+    !['editing', 'needs_review'].includes(draft.status) ||
     draft.reviewRoute === 'blocked'
   ) {
     return null

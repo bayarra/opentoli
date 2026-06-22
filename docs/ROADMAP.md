@@ -8,32 +8,32 @@ generation path before investing heavily in the public experience.
 
 ## Status Convention
 
-| Status | Meaning |
-| --- | --- |
-| `PLANNED` | Defined but not started |
-| `READY` | Dependencies and entry criteria are satisfied |
-| `IN_PROGRESS` | Active implementation work exists |
-| `BLOCKED` | Work cannot proceed; blocker is recorded in `STATUS.md` |
-| `DONE` | Exit criteria are verified and evidence is recorded |
-| `DEFERRED` | Intentionally removed from the current delivery horizon |
+| Status        | Meaning                                                 |
+| ------------- | ------------------------------------------------------- |
+| `PLANNED`     | Defined but not started                                 |
+| `READY`       | Dependencies and entry criteria are satisfied           |
+| `IN_PROGRESS` | Active implementation work exists                       |
+| `BLOCKED`     | Work cannot proceed; blocker is recorded in `STATUS.md` |
+| `DONE`        | Exit criteria are verified and evidence is recorded     |
+| `DEFERRED`    | Intentionally removed from the current delivery horizon |
 
 Only one milestone should normally be `IN_PROGRESS`. Parallel work is acceptable when
 it does not weaken an acceptance gate or create conflicting architectural decisions.
 
 ## Milestone Summary
 
-| ID | Milestone | Depends on | Deliverable |
-| --- | --- | --- | --- |
-| M0 | Product and architecture baseline | None | Approved technical baseline and development workflow |
-| M1 | Application foundation | M0 | Deployable Next.js, Payload, and PostgreSQL skeleton |
-| M2 | Editorial data core | M1 | Manually authored term can be reviewed and published |
-| M3 | AI preparation pipeline | M2 | Source-grounded draft can be generated, critiqued, and queued |
-| M4 | Public draft feedback and reviewer workspace | M3 | Public can safely review drafts and reviewers can resolve them |
-| M5 | Calibration batch | M4 | Fifty terms processed and pipeline quality measured |
-| M6 | Public dictionary | M2, M5 | Published terms are discoverable and readable publicly |
-| M7 | Search and discovery | M6 | Ranked bilingual search with required filters |
-| M8 | Community accounts and contributions | M4, M7 | Attributed contributor workflow extends public feedback |
-| M9 | Launch readiness | M5-M8 | Production controls and launch content gates verified |
+| ID  | Milestone                                    | Depends on | Deliverable                                                    |
+| --- | -------------------------------------------- | ---------- | -------------------------------------------------------------- |
+| M0  | Product and architecture baseline            | None       | Approved technical baseline and development workflow           |
+| M1  | Application foundation                       | M0         | Deployable Next.js, Payload, and PostgreSQL skeleton           |
+| M2  | Editorial data core                          | M1         | Manually authored term can be reviewed and published           |
+| M3  | AI preparation pipeline                      | M2         | Source-grounded draft can be generated, critiqued, and queued  |
+| M4  | Public draft feedback and reviewer workspace | M3         | Public can safely review drafts and reviewers can resolve them |
+| M5  | Calibration batch                            | M4         | Fifty terms processed and pipeline quality measured            |
+| M6  | Public dictionary                            | M2, M5     | Published terms are discoverable and readable publicly         |
+| M7  | Search and discovery                         | M6         | Ranked bilingual search with required filters                  |
+| M8  | Community accounts and contributions         | M4, M7     | Attributed contributor workflow extends public feedback        |
+| M9  | Launch readiness                             | M5-M8      | Production controls and launch content gates verified          |
 
 ## M0 - Product and Architecture Baseline
 
@@ -103,17 +103,15 @@ risk routing, background jobs, retries, and generation provenance.
 - Raw prompts, provider outputs, job errors, and private review evidence remain restricted.
 - At least one configured non-test AI provider completes the reference term in a non-production environment.
 
-## M4 - Public Draft Feedback and Reviewer Workspace
+## M4 - Public Draft Feedback and Simple Editor Workflow
 
 **Objective:** Let anyone inspect clearly unverified AI drafts, let authenticated
-contributors improve them, and make human review faster than manually reconstructing AI
-research.
+contributors improve them, and let an Editor edit and publish from one simple Draft Inbox.
 
 **Scope:** Safe public draft projection, `Unverified AI Draft` labeling, basic public
 registration and sign-in, authenticated comments and translation suggestions, moderation,
-rate limits and anti-abuse controls, evidence view, candidate comparison, critique,
-confidence dimensions, duplicate warnings, field editing, review routing,
-accept/reject/merge actions, and decision attribution.
+rate limits and anti-abuse controls, one Draft Inbox, direct field editing, background save,
+explicit Publish, secondary Hide, and automatic attribution.
 
 **Exit criteria:**
 
@@ -122,9 +120,11 @@ accept/reject/merge actions, and decision attribution.
 - Anonymous users attempting to contribute are directed to register or sign in.
 - Public feedback cannot directly modify a draft, select a translation, or publish a Term.
 - Blocked, rejected, failed, and private drafts are not publicly visible.
-- Reviewers can accept, modify, reject, reroute, or merge a draft.
-- Accepted, modified, and rejected fields and reasons are recorded.
-- High-risk terminology cannot bypass its required review route.
+- Editors can edit and publish from one page without managing routes or review types.
+- Editing saves in the background and Publish is the only primary decision action.
+- Hide removes an unusable draft from the active inbox without deleting its provenance.
+- Publication records the editor and field changes automatically.
+- High-risk terminology requires explicit confirmation immediately before publication.
 - Keyboard operation and critical accessibility checks pass.
 
 ## M5 - Calibration Batch

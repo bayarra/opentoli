@@ -1,5 +1,5 @@
 import { getCurrentUser } from '@/lib/currentUser'
-import { isEditorialUser } from '@/review/permissions'
+import { isEditorUser } from '@/editor/permissions'
 import Link from 'next/link'
 
 export default async function ContributePage() {
@@ -24,9 +24,7 @@ export default async function ContributePage() {
               becomes public.
             </p>
             <div className="account-actions">
-              {isEditorialUser(user) ? (
-                <Link href="/review/ai-drafts">Review AI drafts</Link>
-              ) : null}
+              {isEditorUser(user) ? <Link href="/review/ai-drafts">Open Draft Inbox</Link> : null}
               <Link href="/search">Find a term</Link>
               <Link href="/#categories">Browse categories</Link>
             </div>

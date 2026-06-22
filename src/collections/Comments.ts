@@ -1,7 +1,7 @@
 import type { CollectionConfig, Where } from 'payload'
 import { APIError } from 'payload'
 
-import { authenticated, hasRole, moderatorAccess } from '../access/roles'
+import { authenticated, editorialAccess, hasRole, moderatorAccess } from '../access/roles'
 
 const approvedComments: Where = { status: { equals: 'approved' } }
 const contributionWindowMs = 10 * 60 * 1000
@@ -32,7 +32,7 @@ export const Comments: CollectionConfig = {
       }
       return approvedComments
     },
-    update: moderatorAccess,
+    update: editorialAccess,
   },
   fields: [
     { name: 'term', type: 'relationship', index: true, relationTo: 'terms' },

@@ -1,18 +1,22 @@
 import { enqueueGenerationJob, processGenerationJob } from '@/ai/pipeline/jobs'
 import { DeterministicAIProvider } from '@/ai/providers/deterministic'
+import {
+  hideEditorDraft,
+  parseEditorDraftFields,
+  publishEditorDraft,
+  saveEditorDraft,
+} from '@/editor/drafts'
+import { getDraftInbox } from '@/editor/data'
+import { getPublicAIDraftById } from '@/lib/publicAIDrafts'
 import config from '@/payload.config'
 import type { User } from '@/payload-types'
-import { decideAIDraft, parseAIDraftDecisionInput } from '@/review/decideAIDraft'
 import { getPayload, type Payload } from 'payload'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 let payload: Payload
 let admin: User
-let reviewer: User | undefined
-let languageExpert: User | undefined
-let domainReviewer: User | undefined
-let moderator: User | undefined
-let contributor: User | undefined
+let editor: User
+let contributor: User
 let technologyCategoryId: number
 let medicineCategoryId: number
 let medicineCategoryCreated = false
@@ -23,6 +27,7 @@ const sourceIds: number[] = []
 const jobIds: number[] = []
 const draftIds: number[] = []
 const decisionIds: number[] = []
+const reviewIds: number[] = []
 const suffix = `${process.pid}-${Date.now()}`
 
 const createPreparedDraft = async ({
@@ -55,10 +60,10 @@ const createPreparedDraft = async ({
     collection: 'sources',
     data: {
       isVerified: true,
-      publisher: 'OpenToli Review Tests',
+      publisher: 'OpenToli Editor Tests',
       sourceType: 'official_documentation',
       term: term.id,
-      title: `Review source for ${headword}`,
+      title: `Editor source for ${headword}`,
       url: `https://example.com/${encodeURIComponent(headword)}`,
     },
     overrideAccess: true,
@@ -85,18 +90,18 @@ const createPreparedDraft = async ({
   })
   jobIds.push(queued.job.id)
   const result = await processGenerationJob({ jobId: queued.job.id, payload, provider })
-  if (!result.draft) throw new Error('Review test AI draft was not generated.')
+  if (!result.draft) throw new Error('Editor test AI draft was not generated.')
   draftIds.push(result.draft.id)
   return result.draft
 }
 
-const recordDecisionIds = async (draftId: number) => {
+const collectAuditIds = async () => {
   const decisions = await payload.find({
     collection: 'ai-draft-decisions',
     depth: 0,
-    limit: 100,
+    limit: 200,
     overrideAccess: true,
-    where: { aiDraft: { equals: draftId } },
+    where: { aiDraft: { in: draftIds } },
   })
   for (const decision of decisions.docs) {
     if (!decisionIds.includes(decision.id)) decisionIds.push(decision.id)
@@ -106,17 +111,25 @@ const recordDecisionIds = async (draftId: number) => {
         : decision.resultingTranslation?.id
     if (translationId && !translationIds.includes(translationId)) translationIds.push(translationId)
   }
+  const reviews = await payload.find({
+    collection: 'reviews',
+    depth: 0,
+    limit: 200,
+    overrideAccess: true,
+    where: { reviewer: { equals: editor.id } },
+  })
+  reviewIds.push(...reviews.docs.map((review) => review.id))
 }
 
-describe('AI draft reviewer workflow', () => {
+describe('simple AI draft editor workflow', () => {
   beforeAll(async () => {
     payload = await getPayload({ config: await config })
     admin = await payload.create({
       collection: 'users',
       data: {
-        email: `review-admin-${suffix}@opentoli.local`,
-        name: 'Review Admin',
-        password: `review-admin-${suffix}-password`,
+        email: `editor-admin-${suffix}@opentoli.local`,
+        name: 'Editor Admin',
+        password: `editor-admin-${suffix}-password`,
         role: 'admin',
       },
       overrideAccess: true,
@@ -126,9 +139,9 @@ describe('AI draft reviewer workflow', () => {
       data: {
         displayOrder: 996,
         isActive: true,
-        nameEn: `Review Technology ${suffix}`,
-        nameMn: `Review Technology ${suffix}`,
-        slug: `review-technology-${suffix}`,
+        nameEn: `Editor Technology ${suffix}`,
+        nameMn: `Editor Technology ${suffix}`,
+        slug: `editor-technology-${suffix}`,
       },
       overrideAccess: true,
     })
@@ -146,8 +159,8 @@ describe('AI draft reviewer workflow', () => {
         data: {
           displayOrder: 997,
           isActive: true,
-          nameEn: `Review Medicine ${suffix}`,
-          nameMn: `Review Medicine ${suffix}`,
+          nameEn: `Editor Medicine ${suffix}`,
+          nameMn: `Editor Medicine ${suffix}`,
           slug: 'medicine-health',
         },
         overrideAccess: true,
@@ -156,29 +169,35 @@ describe('AI draft reviewer workflow', () => {
     medicineCategoryId = medicine.id
     medicineCategoryName = medicine.nameEn
 
-    const createUser = (name: string, role: User['role'], areasOfExpertise?: number[]) =>
-      payload.create({
-        collection: 'users',
-        data: {
-          areasOfExpertise,
-          email: `${name.toLocaleLowerCase('en-US').replaceAll(' ', '-')}-${suffix}@opentoli.local`,
-          name,
-          password: `${name}-${suffix}-password`,
-          role,
-        },
-        overrideAccess: true,
-      })
-    reviewer = await createUser('Review Reviewer', 'reviewer')
-    languageExpert = await createUser('Review Language Expert', 'language_expert')
-    domainReviewer = await createUser('Review Domain Expert', 'reviewer', [medicine.id])
-    moderator = await createUser('Review Moderator', 'moderator')
-    contributor = await createUser('Review Contributor', 'contributor')
+    editor = await payload.create({
+      collection: 'users',
+      data: {
+        email: `editor-${suffix}@opentoli.local`,
+        name: 'Simple Editor',
+        password: `editor-${suffix}-password`,
+        role: 'reviewer',
+      },
+      overrideAccess: true,
+    })
+    contributor = await payload.create({
+      collection: 'users',
+      data: {
+        email: `editor-contributor-${suffix}@opentoli.local`,
+        name: 'Simple Member',
+        password: `editor-contributor-${suffix}-password`,
+        role: 'contributor',
+      },
+      overrideAccess: true,
+    })
   })
 
   afterAll(async () => {
-    for (const draftId of draftIds) await recordDecisionIds(draftId)
+    await collectAuditIds()
     for (const id of decisionIds.reverse()) {
       await payload.delete({ collection: 'ai-draft-decisions', id, overrideAccess: true })
+    }
+    for (const id of reviewIds.reverse()) {
+      await payload.delete({ collection: 'reviews', id, overrideAccess: true })
     }
     for (const id of draftIds.reverse()) {
       await payload.delete({ collection: 'ai-drafts', id, overrideAccess: true })
@@ -195,245 +214,135 @@ describe('AI draft reviewer workflow', () => {
     for (const id of termIds.reverse()) {
       await payload.delete({ collection: 'terms', id, overrideAccess: true })
     }
-    for (const id of [
-      contributor?.id,
-      moderator?.id,
-      domainReviewer?.id,
-      languageExpert?.id,
-      reviewer?.id,
-      admin?.id,
-    ].filter((id): id is number => typeof id === 'number')) {
+    for (const id of [contributor.id, editor.id, admin.id]) {
       await payload.delete({ collection: 'users', id, overrideAccess: true })
     }
-    if (medicineCategoryCreated && medicineCategoryId) {
+    if (medicineCategoryCreated) {
       await payload.delete({
         collection: 'categories',
         id: medicineCategoryId,
         overrideAccess: true,
       })
     }
-    if (technologyCategoryId) {
-      await payload.delete({
-        collection: 'categories',
-        id: technologyCategoryId,
-        overrideAccess: true,
-      })
-    }
+    await payload.delete({
+      collection: 'categories',
+      id: technologyCategoryId,
+      overrideAccess: true,
+    })
   })
 
-  it('requires the assigned expertise and materializes modifications as unpublished drafts', async () => {
-    if (!reviewer || !languageExpert || !contributor) throw new Error('Review users are missing.')
+  it('lets an Editor save direct field edits while members cannot edit', async () => {
     const draft = await createPreparedDraft({
       categoryId: technologyCategoryId,
-      categoryName: `Review Technology ${suffix}`,
-      categorySlug: `review-technology-${suffix}`,
-      headword: `review modification ${suffix}`,
+      categoryName: `Editor Technology ${suffix}`,
+      categorySlug: `editor-technology-${suffix}`,
+      headword: `simple editing ${suffix}`,
     })
-    expect(draft.reviewRoute).toBe('language_review')
+    const fields = parseEditorDraftFields({
+      explanationEn: 'A human-edited English explanation.',
+      explanationMn: 'A human-edited Mongolian explanation.',
+      headwordEn: draft.inputHeadword,
+      recommendedTranslationMn: `human edited translation ${suffix}`,
+    })
 
     await expect(
-      decideAIDraft({
-        actorId: reviewer.id,
-        draftId: draft.id,
-        input: parseAIDraftDecisionInput({ action: 'accept', notes: 'General acceptance.' }),
-        payload,
-      }),
-    ).rejects.toThrow('requires a language expert')
-    await expect(
-      decideAIDraft({
-        actorId: contributor.id,
-        draftId: draft.id,
-        input: parseAIDraftDecisionInput({
-          action: 'reject',
-          notes: 'Not authorized.',
-          rejectionReasons: ['No access'],
-        }),
-        payload,
-      }),
-    ).rejects.toThrow('Editorial reviewer access')
+      saveEditorDraft({ actorId: contributor.id, draftId: draft.id, fields, payload }),
+    ).rejects.toThrow('Editor access')
+    await payload.update({
+      collection: 'ai-drafts',
+      data: { publicVisibility: 'public' },
+      id: draft.id,
+      overrideAccess: true,
+      user: admin,
+    })
+    const saved = await saveEditorDraft({ actorId: editor.id, draftId: draft.id, fields, payload })
 
-    const result = await decideAIDraft({
-      actorId: languageExpert.id,
+    expect(saved.status).toBe('editing')
+    expect(saved.modifiedFields).toMatchObject({
+      recommendedTranslationMn: { to: `human edited translation ${suffix}` },
+    })
+    expect(validateSavedTranslation(saved.generatedPayload)).toBe(
+      `human edited translation ${suffix}`,
+    )
+    expect((await getPublicAIDraftById(draft.id))?.recommendedTranslationMn).toBe(
+      `human edited translation ${suffix}`,
+    )
+  })
+
+  it('publishes with one human action and requires high-risk confirmation', async () => {
+    const draft = await createPreparedDraft({
+      categoryId: medicineCategoryId,
+      categoryName: medicineCategoryName,
+      categorySlug: 'medicine-health',
+      headword: `simple medical publishing ${suffix}`,
+    })
+    expect(draft.riskLevel).toBe('high')
+
+    await expect(
+      publishEditorDraft({
+        actorId: editor.id,
+        confirmHighRisk: false,
+        draftId: draft.id,
+        payload,
+      }),
+    ).rejects.toThrow('Confirm the high-risk warning')
+
+    const result = await publishEditorDraft({
+      actorId: editor.id,
+      confirmHighRisk: true,
       draftId: draft.id,
-      input: parseAIDraftDecisionInput({
-        action: 'modify',
-        notes: 'Selected a more natural Mongolian form.',
-        selectedTranslationMn: `reviewed Mongolian wording ${suffix}`,
-      }),
       payload,
     })
     decisionIds.push(result.decision.id)
-    if (!result.term || !result.translation) throw new Error('Canonical drafts were not created.')
-    if (!termIds.includes(result.term.id)) termIds.push(result.term.id)
     translationIds.push(result.translation.id)
-
-    expect(result.draft).toMatchObject({
-      publicVisibility: 'private',
-      reviewOutcome: 'modified',
-      status: 'partially_accepted',
-    })
     expect(result.term).toMatchObject({
-      _status: 'draft',
-      reviewStatus: 'expert_reviewed',
-      workflowStatus: 'reviewed',
+      _status: 'published',
+      reviewStatus: 'human_reviewed',
+      workflowStatus: 'approved',
     })
-    expect(result.translation).toMatchObject({ status: 'needs_review' })
+    expect(result.translation.status).toBe('approved')
+    expect(result.draft.publicVisibility).toBe('private')
+
     const publicTerms = await payload.find({
       collection: 'terms',
       overrideAccess: false,
       where: { id: { equals: result.term.id } },
     })
-    expect(publicTerms.docs).toHaveLength(0)
-    await expect(
-      payload.update({
-        collection: 'ai-drafts',
-        data: { status: 'rejected' },
-        id: draft.id,
-        overrideAccess: true,
-      }),
-    ).rejects.toThrow('reviewer workspace')
+    expect(publicTerms.docs).toHaveLength(1)
   })
 
-  it('prevents high-risk route reduction and accepts only a matching domain expert', async () => {
-    if (!reviewer || !moderator || !domainReviewer) throw new Error('Review users are missing.')
-    const draft = await createPreparedDraft({
-      categoryId: medicineCategoryId,
-      categoryName: medicineCategoryName,
-      categorySlug: 'medicine-health',
-      headword: `review medical term ${suffix}`,
-    })
-    expect(draft).toMatchObject({ reviewRoute: 'domain_review', riskLevel: 'high' })
-
-    await expect(
-      decideAIDraft({
-        actorId: reviewer.id,
-        draftId: draft.id,
-        input: parseAIDraftDecisionInput({ action: 'accept', notes: 'No domain expertise.' }),
-        payload,
-      }),
-    ).rejects.toThrow('expertise in its category')
-    await expect(
-      decideAIDraft({
-        actorId: moderator.id,
-        draftId: draft.id,
-        input: parseAIDraftDecisionInput({
-          action: 'reroute',
-          newReviewRoute: 'fast_review',
-          notes: 'Attempted reduced route.',
-        }),
-        payload,
-      }),
-    ).rejects.toThrow('cannot be moved to a reduced review route')
-
-    const result = await decideAIDraft({
-      actorId: domainReviewer.id,
-      draftId: draft.id,
-      input: parseAIDraftDecisionInput({ action: 'accept', notes: 'Domain meaning verified.' }),
-      payload,
-    })
-    decisionIds.push(result.decision.id)
-    if (!result.translation || !result.term) throw new Error('Domain drafts were not materialized.')
-    translationIds.push(result.translation.id)
-    expect(result.draft.status).toBe('accepted')
-    expect(result.term._status).toBe('draft')
-  })
-
-  it('records reroute and merge actions without mutating the merge target', async () => {
-    if (!moderator) throw new Error('Review moderator is missing.')
+  it('hides an unusable draft without deleting its provenance', async () => {
     const draft = await createPreparedDraft({
       categoryId: technologyCategoryId,
-      categoryName: `Review Technology ${suffix}`,
-      categorySlug: `review-technology-${suffix}`,
-      headword: `review duplicate ${suffix}`,
+      categoryName: `Editor Technology ${suffix}`,
+      categorySlug: `editor-technology-${suffix}`,
+      headword: `simple hidden draft ${suffix}`,
     })
-    const target = await payload.create({
-      collection: 'terms',
-      data: {
-        categories: [technologyCategoryId],
-        explanationEn: 'Canonical duplicate target.',
-        explanationMn: 'Canonical duplicate target.',
-        headwordEn: `canonical duplicate ${suffix}`,
-        reviewStatus: 'human_reviewed',
-        shortDefinitionEn: 'Canonical duplicate target.',
-        workflowStatus: 'reviewed',
-      },
-      draft: true,
+    await payload.update({
+      collection: 'ai-drafts',
+      data: { publicVisibility: 'public' },
+      id: draft.id,
       overrideAccess: true,
+      user: admin,
     })
-    termIds.push(target.id)
+    expect(await getPublicAIDraftById(draft.id)).not.toBeNull()
 
-    const rerouted = await decideAIDraft({
-      actorId: moderator.id,
-      draftId: draft.id,
-      input: parseAIDraftDecisionInput({
-        action: 'reroute',
-        newReviewRoute: 'duplicate_review',
-        notes: 'Likely duplicate found.',
-      }),
-      payload,
-    })
-    decisionIds.push(rerouted.decision.id)
-    expect(rerouted.draft.reviewRoute).toBe('duplicate_review')
-
-    const merged = await decideAIDraft({
-      actorId: moderator.id,
-      draftId: draft.id,
-      input: parseAIDraftDecisionInput({
-        action: 'merge',
-        mergeTargetTermId: target.id,
-        notes: 'Confirmed duplicate of canonical target.',
-      }),
-      payload,
-    })
-    decisionIds.push(merged.decision.id)
-    expect(merged.draft).toMatchObject({ reviewOutcome: 'merged', status: 'rejected' })
-    const unchangedTarget = await payload.findByID({
-      collection: 'terms',
-      draft: true,
-      id: target.id,
-      overrideAccess: true,
-    })
-    expect(unchangedTarget.explanationEn).toBe('Canonical duplicate target.')
-  })
-
-  it('requires and retains rejection reasons in the immutable decision ledger', async () => {
-    if (!reviewer) throw new Error('Review reviewer is missing.')
-    const draft = await createPreparedDraft({
-      categoryId: technologyCategoryId,
-      categoryName: `Review Technology ${suffix}`,
-      categorySlug: `review-technology-${suffix}`,
-      headword: `review rejection ${suffix}`,
-    })
-    await expect(
-      decideAIDraft({
-        actorId: reviewer.id,
-        draftId: draft.id,
-        input: parseAIDraftDecisionInput({ action: 'reject', notes: 'Rejected after review.' }),
-        payload,
-      }),
-    ).rejects.toThrow('rejection reason')
-
-    const result = await decideAIDraft({
-      actorId: reviewer.id,
-      draftId: draft.id,
-      input: parseAIDraftDecisionInput({
-        action: 'reject',
-        notes: 'Source meaning does not support this wording.',
-        rejectionReasons: ['Unsupported semantic claim'],
-      }),
-      payload,
-    })
+    const result = await hideEditorDraft({ actorId: editor.id, draftId: draft.id, payload })
     decisionIds.push(result.decision.id)
-    expect(result.draft).toMatchObject({ reviewOutcome: 'rejected', status: 'rejected' })
-    expect(result.decision.rejectionReasons).toEqual(['Unsupported semantic claim'])
-    await expect(
-      payload.update({
-        collection: 'ai-draft-decisions',
-        data: { notes: 'Tampered audit entry.' },
-        id: result.decision.id,
-        overrideAccess: false,
-        user: admin,
-      }),
-    ).rejects.toThrow()
+    expect(result.draft).toMatchObject({ publicVisibility: 'private', status: 'rejected' })
+    expect(await getPublicAIDraftById(draft.id)).toBeNull()
+    expect((await getDraftInbox(editor))?.some((item) => item.id === draft.id)).toBe(false)
+
+    const retainedJob = await payload.findByID({
+      collection: 'generation-jobs',
+      id: jobIds[jobIds.length - 1]!,
+      overrideAccess: true,
+    })
+    expect(retainedJob.generationRawOutput).toBeTruthy()
   })
 })
+
+const validateSavedTranslation = (value: unknown) => {
+  if (!value || typeof value !== 'object' || !('recommendedTranslationMn' in value)) return null
+  return (value as { recommendedTranslationMn: unknown }).recommendedTranslationMn
+}

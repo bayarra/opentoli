@@ -10,7 +10,7 @@ import {
   validateGenerationOutputV1,
   validateResearchPacketV1,
 } from '../ai/schemas/v1'
-import { editorialAccess, moderatorAccess, moderatorFieldAccess } from '../access/roles'
+import { editorFieldAccess, editorialAccess, moderatorAccess } from '../access/roles'
 
 const completeDraftStatuses = [
   'generated',
@@ -110,8 +110,8 @@ export const AIDrafts: CollectionConfig = {
       name: 'publicVisibility',
       type: 'select',
       access: {
-        create: moderatorFieldAccess,
-        update: moderatorFieldAccess,
+        create: editorFieldAccess,
+        update: editorFieldAccess,
       },
       defaultValue: 'private',
       index: true,
@@ -189,11 +189,8 @@ export const AIDrafts: CollectionConfig = {
         }
 
         if (next.publicVisibility === 'public') {
-          if (next.status !== 'needs_review') {
-            throw new APIError(
-              'Only needs-review AI drafts can be opened for public feedback.',
-              400,
-            )
+          if (!['editing', 'needs_review'].includes(next.status)) {
+            throw new APIError('Only active AI drafts can be opened for public feedback.', 400)
           }
           if (next.reviewRoute === 'blocked') {
             throw new APIError('Blocked AI drafts cannot be opened for public feedback.', 400)

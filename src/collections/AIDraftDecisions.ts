@@ -1,7 +1,8 @@
 import type { CollectionConfig } from 'payload'
 
 import { editorialAccess } from '../access/roles'
-import { reviewActions } from '../review/permissions'
+
+const retainedDecisionActions = ['accept', 'modify', 'reject', 'reroute', 'merge'] as const
 
 export const AIDraftDecisions: CollectionConfig = {
   slug: 'ai-draft-decisions',
@@ -28,7 +29,7 @@ export const AIDraftDecisions: CollectionConfig = {
       name: 'action',
       type: 'select',
       index: true,
-      options: [...reviewActions],
+      options: [...retainedDecisionActions],
       required: true,
     },
     {

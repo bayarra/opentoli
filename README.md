@@ -88,27 +88,26 @@ Drafts and cannot publish Terms. API keys are server-only and must never use a
 
 ## Public Draft Feedback
 
-Moderators can open a sourced, non-blocked `needs_review` AI Draft by setting its
+Editors can open a sourced, non-blocked active AI Draft by setting its
 `publicVisibility` to `public` in Payload. Its redacted page is then available at
 `/drafts/{id}` with an `Unverified AI Draft` warning and `noindex` metadata. Raw research,
 critique, job, provider, prompt, and private review data are never included in that page.
 
 Anyone can read an explicitly public draft. Contributors register at `/register` or sign
 in at `/login` before submitting feedback. New comments and translation suggestions are
-always `pending`; moderators approve or reject them in the Payload `Comments` collection.
+always `pending`; Editors moderate them in the Payload `Comments` collection.
 Feedback never changes an AI Draft, Term, or Translation directly.
 
-## Reviewer Workspace
+## Draft Inbox
 
-Authenticated reviewers open `/review/ai-drafts` to compare generated candidates,
-research, sources, confidence dimensions, independent critique, community feedback, and
-decision history. Review actions are accept, accept with edits, reject, reroute, and merge.
+Editors open `/review/ai-drafts`, choose a draft, and edit the headword, translation, and
+explanations on one page. Changes save in the background. `Publish` is the only primary
+action and explicitly creates or updates the canonical published Term with human
+attribution. AI and community actions still cannot publish.
 
-Review routes are enforced server-side. Language review requires a language expert;
-high-risk and domain review requires the draft category in the reviewer's areas of
-expertise; community and duplicate resolution require a moderator or administrator.
-Accepted wording is materialized as a canonical Payload **draft** with an attributed,
-immutable AI Draft Decision. It is never published by the review action.
+`Hide` is available under `More` for unusable drafts. It removes the draft from the active
+inbox without deleting AI provenance. High-risk drafts display a warning and require an
+extra confirmation at Publish. Blocked and unsourced drafts cannot publish.
 
 To exercise the pipeline without paid API calls in the current PowerShell session:
 

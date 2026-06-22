@@ -1,0 +1,51 @@
+# ADR-0004: Simple Editor Workflow
+
+- Status: Accepted
+- Date: 2026-06-21
+- Owners: Project maintainers
+
+## Context
+
+The first M4 reviewer implementation exposed separate accept, modify, reject, reroute, and
+merge actions plus route-specific reviewer requirements. Although auditable, that workflow
+made the MVP harder to understand and operate than the product needs.
+
+## Decision
+
+Use one visible editorial workflow:
+
+```text
+AI Draft -> Editor edits -> Publish
+```
+
+The editor works from one Draft Inbox. Headword, translation, and explanations save in the
+background. `Publish` is the only primary decision and is always an explicit human action.
+`Hide` is a secondary inbox-management action that preserves the draft and all provenance.
+
+Visitors may read explicitly public unverified drafts. Members may submit moderated
+feedback. Editors may edit and publish. Existing granular editorial roles are treated as
+compatibility aliases for Editor rather than separate workflows.
+
+Risk, confidence, critique, route, provider, prompt, source, and generation metadata remain
+available internally for provenance and quality analysis. They do not create visible review
+stages. High-risk drafts require an explicit confirmation at Publish, while blocked or
+unsourced drafts cannot publish.
+
+Publishing atomically records the editor and field changes, materializes canonical content,
+and publishes it. AI and community actions still cannot publish.
+
+## Consequences
+
+Editors have one inbox, one editable page, and one main action. Training and operational
+cost are lower. Advanced multi-reviewer routing and merge tools are deferred until real
+usage demonstrates a need.
+
+The application must keep audit and provenance automatically so simplicity does not weaken
+the human-publication boundary.
+
+## References
+
+- [`0002-editorial-state-machine.md`](0002-editorial-state-machine.md)
+- [`0003-public-ai-drafts-and-feedback.md`](0003-public-ai-drafts-and-feedback.md)
+- [`../ROADMAP.md`](../ROADMAP.md)
+- [`../../specs.md`](../../specs.md)

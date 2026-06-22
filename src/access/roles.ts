@@ -26,15 +26,17 @@ export const hasRole = (user: unknown, allowedRoles: readonly Role[]): boolean =
 
 export const isAdmin = (user: unknown): boolean => getRole(user) === 'admin'
 
+export const isEditor = (user: unknown): boolean =>
+  hasRole(user, ['reviewer', 'language_expert', 'moderator', 'admin'])
+
 export const adminOnly: Access = ({ req }) => isAdmin(req.user)
 
 export const adminFieldAccess: FieldAccess = ({ req }) => isAdmin(req.user)
 
-export const moderatorFieldAccess: FieldAccess = ({ req }) =>
-  hasRole(req.user, ['moderator', 'admin'])
+export const editorFieldAccess: FieldAccess = ({ req }) => isEditor(req.user)
 
 export const editorialAccess: Access = ({ req }) => {
-  return hasRole(req.user, ['reviewer', 'language_expert', 'moderator', 'admin'])
+  return isEditor(req.user)
 }
 
 export const moderatorAccess: Access = ({ req }) => hasRole(req.user, ['moderator', 'admin'])

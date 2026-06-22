@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 import { APIError } from 'payload'
 
-import { editorialAccess, hasRole, moderatorAccess } from '../access/roles'
+import { editorialAccess, hasRole, isEditor, moderatorAccess } from '../access/roles'
 import { formatSlug } from '../utilities/formatSlug'
 
 const humanReviewStatuses = ['human_reviewed', 'expert_reviewed'] as const
@@ -151,10 +151,10 @@ export const Terms: CollectionConfig = {
 
         const nextDocument = { ...originalDoc, ...data }
         const isTrustedSeed = req.context?.trustedSeed === true
-        const canPublish = hasRole(req.user, ['moderator', 'admin']) || isTrustedSeed
+        const canPublish = isEditor(req.user) || isTrustedSeed
 
         if (!canPublish) {
-          throw new APIError('Only a moderator or administrator can publish a term.', 403)
+          throw new APIError('Only an editor can publish a term.', 403)
         }
 
         if (nextDocument.workflowStatus !== 'approved') {
@@ -170,7 +170,10 @@ export const Terms: CollectionConfig = {
         }
 
         if (!isTrustedSeed && (!nextDocument.reviewedBy || !nextDocument.approvedBy)) {
-          throw new APIError('Reviewer and approver attribution are required before publication.', 400)
+          throw new APIError(
+            'Reviewer and approver attribution are required before publication.',
+            400,
+          )
         }
 
         data.publishedAt = data.publishedAt || originalDoc?.publishedAt || new Date().toISOString()
