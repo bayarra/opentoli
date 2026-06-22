@@ -49,7 +49,7 @@ export async function POST(request: Request, { params }: RouteProps) {
   if (!user) return Response.json({ message: 'Sign in as an Editor.' }, { status: 401 })
 
   try {
-    const input = (await request.json()) as { action?: unknown; confirmHighRisk?: unknown }
+    const input = (await request.json()) as { action?: unknown }
     const draftId = await draftIdFrom(params)
     if (input.action === 'hide') {
       const result = await hideEditorDraft({
@@ -63,7 +63,6 @@ export async function POST(request: Request, { params }: RouteProps) {
 
     const result = await publishEditorDraft({
       actorId: (user as User).id,
-      confirmHighRisk: input.confirmHighRisk === true,
       draftId,
       payload,
     })

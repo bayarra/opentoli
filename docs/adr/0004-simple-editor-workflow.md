@@ -28,8 +28,7 @@ compatibility aliases for Editor rather than separate workflows.
 
 Risk, confidence, critique, route, provider, prompt, source, and generation metadata remain
 available internally for provenance and quality analysis. They do not create visible review
-stages. High-risk drafts require an explicit confirmation at Publish, while blocked or
-unsourced drafts cannot publish.
+stages or publication confirmations. Blocked or unsourced drafts cannot publish.
 
 Publishing atomically records the editor and field changes, materializes canonical content,
 and publishes it. AI and community actions still cannot publish.

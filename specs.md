@@ -1335,9 +1335,8 @@ from the active inbox. Hide preserves the draft and its provenance; it is not de
 
 AI risk, confidence, critique, and routing metadata may be retained internally for quality
 analysis, but they must not create separate inboxes, reviewer types, reroute controls,
-merge controls, or approval stages in the MVP UI. High-risk drafts display a warning and
-require explicit editor confirmation immediately before publication. Blocked or unsourced
-drafts cannot publish.
+merge controls, warnings, or approval stages in the MVP UI. Blocked or unsourced drafts
+cannot publish.
 
 ### 13.6 Public Draft Visibility and Canonical Publication
 
@@ -1366,7 +1365,6 @@ uses `Publish` after:
 - A human has selected or edited the recommended translation
 - Required English and Mongolian explanations have been reviewed
 - Important or disputed claims have supporting sources
-- Any high-risk warning has been explicitly confirmed
 - AI provider, model, prompt version, schema version, and source inputs are retained
 
 The system records the editor, field changes, publication time, and retained AI provenance

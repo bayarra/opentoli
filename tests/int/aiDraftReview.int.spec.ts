@@ -18,9 +18,6 @@ let admin: User
 let editor: User
 let contributor: User
 let technologyCategoryId: number
-let medicineCategoryId: number
-let medicineCategoryCreated = false
-let medicineCategoryName: string
 const termIds: number[] = []
 const translationIds: number[] = []
 const sourceIds: number[] = []
@@ -146,29 +143,6 @@ describe('simple AI draft editor workflow', () => {
       overrideAccess: true,
     })
     technologyCategoryId = technology.id
-    const existingMedicine = await payload.find({
-      collection: 'categories',
-      limit: 1,
-      overrideAccess: true,
-      where: { slug: { equals: 'medicine-health' } },
-    })
-    const medicine =
-      existingMedicine.docs[0] ||
-      (await payload.create({
-        collection: 'categories',
-        data: {
-          displayOrder: 997,
-          isActive: true,
-          nameEn: `Editor Medicine ${suffix}`,
-          nameMn: `Editor Medicine ${suffix}`,
-          slug: 'medicine-health',
-        },
-        overrideAccess: true,
-      }))
-    medicineCategoryCreated = !existingMedicine.docs[0]
-    medicineCategoryId = medicine.id
-    medicineCategoryName = medicine.nameEn
-
     editor = await payload.create({
       collection: 'users',
       data: {
@@ -217,13 +191,6 @@ describe('simple AI draft editor workflow', () => {
     for (const id of [contributor.id, editor.id, admin.id]) {
       await payload.delete({ collection: 'users', id, overrideAccess: true })
     }
-    if (medicineCategoryCreated) {
-      await payload.delete({
-        collection: 'categories',
-        id: medicineCategoryId,
-        overrideAccess: true,
-      })
-    }
     await payload.delete({
       collection: 'categories',
       id: technologyCategoryId,
@@ -269,27 +236,38 @@ describe('simple AI draft editor workflow', () => {
     )
   })
 
-  it('publishes with one human action and requires high-risk confirmation', async () => {
+  it('publishes with one human action and requires a source', async () => {
     const draft = await createPreparedDraft({
-      categoryId: medicineCategoryId,
-      categoryName: medicineCategoryName,
-      categorySlug: 'medicine-health',
-      headword: `simple medical publishing ${suffix}`,
+      categoryId: technologyCategoryId,
+      categoryName: `Editor Technology ${suffix}`,
+      categorySlug: `editor-technology-${suffix}`,
+      headword: `simple publishing ${suffix}`,
     })
-    expect(draft.riskLevel).toBe('high')
+
+    await payload.update({
+      collection: 'ai-drafts',
+      data: { sources: [] },
+      id: draft.id,
+      overrideAccess: true,
+    })
 
     await expect(
       publishEditorDraft({
         actorId: editor.id,
-        confirmHighRisk: false,
         draftId: draft.id,
         payload,
       }),
-    ).rejects.toThrow('Confirm the high-risk warning')
+    ).rejects.toThrow('At least one source')
+
+    await payload.update({
+      collection: 'ai-drafts',
+      data: { sources: [sourceIds[sourceIds.length - 1]!] },
+      id: draft.id,
+      overrideAccess: true,
+    })
 
     const result = await publishEditorDraft({
       actorId: editor.id,
-      confirmHighRisk: true,
       draftId: draft.id,
       payload,
     })

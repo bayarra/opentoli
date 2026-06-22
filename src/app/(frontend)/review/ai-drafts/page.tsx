@@ -42,7 +42,6 @@ export default async function DraftInboxPage() {
               <span>{draft.category || 'Uncategorized'}</span>
             </div>
             <div className="review-queue-badges">
-              {draft.isHighRisk ? <span className="risk-badge risk-high">High risk</span> : null}
               <span>{draft.isPublic ? 'Public draft' : 'Private draft'}</span>
               <span>{draft.updatedAt.slice(0, 10)}</span>
             </div>

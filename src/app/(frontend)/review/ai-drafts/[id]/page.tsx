@@ -35,21 +35,11 @@ export default async function AIDraftEditorPage({ params }: EditorPageProps) {
           <p>{[data.category, data.context].filter(Boolean).join(' / ')}</p>
         </div>
         <div className="review-queue-badges">
-          {draft.riskLevel === 'high' ? (
-            <span className="risk-badge risk-high">High risk</span>
-          ) : null}
           <span>
             {draft.publicVisibility === 'public' ? 'Public unverified draft' : 'Private draft'}
           </span>
         </div>
       </header>
-
-      {draft.riskLevel === 'high' ? (
-        <section className="high-risk-warning" role="alert">
-          <strong>High-risk terminology</strong>
-          <p>Review the wording and sources carefully. Publishing requires confirmation below.</p>
-        </section>
-      ) : null}
 
       <section className="review-panel">
         <p className="eyebrow">Term fields</p>
@@ -62,7 +52,6 @@ export default async function AIDraftEditorPage({ params }: EditorPageProps) {
               headwordEn: generated.headwordEn,
               recommendedTranslationMn: generated.recommendedTranslationMn,
             }}
-            isHighRisk={draft.riskLevel === 'high'}
           />
         ) : (
           <p>This draft is no longer active.</p>

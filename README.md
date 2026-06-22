@@ -106,8 +106,7 @@ action and explicitly creates or updates the canonical published Term with human
 attribution. AI and community actions still cannot publish.
 
 `Hide` is available under `More` for unusable drafts. It removes the draft from the active
-inbox without deleting AI provenance. High-risk drafts display a warning and require an
-extra confirmation at Publish. Blocked and unsourced drafts cannot publish.
+inbox without deleting AI provenance. Blocked and unsourced drafts cannot publish.
 
 To exercise the pipeline without paid API calls in the current PowerShell session:
 

@@ -36,7 +36,6 @@ export const getDraftInbox = async (user: User) => {
     category: relationLabel(draft.inputCategory, 'nameEn'),
     headwordEn: draft.inputHeadword,
     id: draft.id,
-    isHighRisk: draft.riskLevel === 'high',
     isPublic: draft.publicVisibility === 'public',
     updatedAt: draft.updatedAt,
   }))

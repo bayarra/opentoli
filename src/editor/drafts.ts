@@ -285,12 +285,10 @@ const materializePublishedTerm = async ({
 
 export const publishEditorDraft = async ({
   actorId,
-  confirmHighRisk,
   draftId,
   payload,
 }: {
   actorId: number
-  confirmHighRisk: boolean
   draftId: number
   payload: Payload
 }) => {
@@ -300,9 +298,6 @@ export const publishEditorDraft = async ({
   }
   if (!Array.isArray(draft.sources) || draft.sources.length === 0) {
     throw new EditorWorkflowError('At least one source is required before publication.')
-  }
-  if (draft.riskLevel === 'high' && !confirmHighRisk) {
-    throw new EditorWorkflowError('Confirm the high-risk warning before publication.')
   }
 
   const req = await createLocalReq({ context: { aiDraftDecision: true }, user: actor }, payload)

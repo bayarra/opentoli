@@ -13,11 +13,9 @@ type DraftFields = {
 type EditorFormProps = {
   draftId: number
   initial: DraftFields
-  isHighRisk: boolean
 }
 
-export function AIDraftEditorForm({ draftId, initial, isHighRisk }: EditorFormProps) {
-  const [confirmHighRisk, setConfirmHighRisk] = useState(false)
+export function AIDraftEditorForm({ draftId, initial }: EditorFormProps) {
   const [dirty, setDirty] = useState(false)
   const [error, setError] = useState('')
   const [fields, setFields] = useState(initial)
@@ -73,7 +71,7 @@ export function AIDraftEditorForm({ draftId, initial, isHighRisk }: EditorFormPr
       return
     }
     const response = await fetch(`/api/editor/ai-drafts/${draftId}`, {
-      body: JSON.stringify({ action: 'publish', confirmHighRisk }),
+      body: JSON.stringify({ action: 'publish' }),
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -156,17 +154,6 @@ export function AIDraftEditorForm({ draftId, initial, isHighRisk }: EditorFormPr
           value={fields.explanationMn}
         />
       </label>
-      {isHighRisk ? (
-        <label className="high-risk-confirmation">
-          <input
-            checked={confirmHighRisk}
-            disabled={publishing}
-            onChange={(event) => setConfirmHighRisk(event.target.checked)}
-            type="checkbox"
-          />
-          I reviewed the high-risk warning and confirm this term is ready to publish.
-        </label>
-      ) : null}
       {error ? (
         <p className="form-error" role="alert">
           {error}

@@ -124,7 +124,7 @@ explicit Publish, secondary Hide, and automatic attribution.
 - Editing saves in the background and Publish is the only primary decision action.
 - Hide removes an unusable draft from the active inbox without deleting its provenance.
 - Publication records the editor and field changes automatically.
-- High-risk terminology requires explicit confirmation immediately before publication.
+- Blocked or unsourced drafts cannot publish.
 - Keyboard operation and critical accessibility checks pass.
 
 ## M5 - Calibration Batch

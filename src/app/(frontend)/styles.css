@@ -877,21 +877,6 @@ blockquote p {
   padding: 7px 10px;
 }
 
-.risk-badge.risk-high {
-  background: #fff0f0;
-  color: #9c2727;
-}
-
-.risk-badge.risk-medium {
-  background: #fff7dc;
-  color: #775b08;
-}
-
-.risk-badge.risk-low {
-  background: #ecf8ef;
-  color: #216c35;
-}
-
 .reviewer-grid {
   display: grid;
   gap: 24px;
@@ -988,33 +973,6 @@ blockquote p {
   font-size: 0.86rem;
   min-height: 1.4em;
   text-align: right;
-}
-
-.high-risk-warning {
-  background: #fff0f0;
-  border: 1px solid #e1a0a0;
-  border-radius: 18px;
-  color: #6e1e1e;
-  padding: 22px 26px;
-}
-
-.high-risk-warning p {
-  line-height: 1.55;
-  margin: 6px 0 0;
-}
-
-.review-decision-form .high-risk-confirmation {
-  align-items: start;
-  background: #fff7dc;
-  border-radius: 12px;
-  display: grid;
-  font-weight: 600;
-  grid-template-columns: auto 1fr;
-  padding: 16px;
-}
-
-.high-risk-confirmation input {
-  margin-top: 2px;
 }
 
 .editor-more-actions {

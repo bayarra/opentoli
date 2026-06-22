@@ -39,12 +39,15 @@ Hide. Audit, source, and AI provenance remain automatic in the background.
 
 ### 2026-06-21
 
+- Removed the visible high-risk label and publication confirmation from the Draft Inbox and Editor page; AI risk metadata remains internal provenance only.
+- Replaced the risk-confirmation integration scenario with a source-gate scenario proving unsourced drafts cannot publish and sourced drafts publish with one explicit Editor action.
+- Verified the simplified workflow with 26 integration tests, 6 browser tests, ESLint, TypeScript, and a production build; no schema change or migration was required.
 - Accepted ADR-0004 and replaced the multi-action reviewer experience with `AI Draft -> Editor edits -> Publish`.
 - Reduced the private workspace to one Draft Inbox, four editable fields, background save, one Publish button, sources, and community suggestions.
 - Moved Hide under a secondary `More` control and retained all AI evidence instead of deleting hidden drafts.
 - Made Publish an atomic, attributed human action that approves the selected translation and publishes the canonical Term.
 - Replaced route-specific reviewer requirements with one Editor permission concept; granular stored roles remain compatibility aliases.
-- Kept high-risk confirmation and blocked/unsourced publication guards without exposing routing controls.
+- Kept blocked and unsourced publication guards without exposing risk or routing controls.
 - Added explicit Editor-controlled public visibility for sourced, non-blocked active AI Drafts.
 - Added a narrow public projection that excludes raw research, generated payloads, critique, jobs, provider and prompt metadata, and unsafe citation URLs.
 - Added `/drafts/[id]` with persistent `Unverified AI Draft` labeling and `noindex` metadata.
@@ -122,24 +125,24 @@ Hide. Audit, source, and AI provenance remain automatic in the background.
 
 ## Verification
 
-| Check                     | Result      | Evidence                                                                                                                |
-| ------------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------- |
-| Payload type generation   | Pass        | `pnpm generate:types`                                                                                                   |
-| TypeScript                | Pass        | `pnpm typecheck`                                                                                                        |
-| ESLint                    | Pass        | `pnpm lint`                                                                                                             |
-| Slug normalization tests  | Pass        | 2 tests in `formatSlug.int.spec.ts`                                                                                     |
-| Production build          | Pass        | Next.js generated all current public and Payload routes                                                                 |
-| HTTP smoke test           | Pass        | `/` and `/search?q=authentication` returned `200`                                                                       |
-| Hydration smoke test      | Pass        | Clean Chrome profile produced no hydration warning                                                                      |
-| Database integration      | Pass        | 26 self-contained integration tests in 8 files pass against PostgreSQL without requiring seed data                      |
-| Public draft feedback     | Pass        | 4 scenarios verify projection redaction, registration roles, pending moderation, throttling, and resolved-draft hiding  |
-| Simple Editor workflow    | Pass        | 3 scenarios verify background save, member denial, one-action publication, high-risk confirmation, Hide, and provenance |
-| OpenAI adapter contract   | Pass        | 3 mocked tests verify strict Responses API requests, parsing, usage, and failures                                       |
-| OpenAI live calibration   | Pending     | Job 33 retained the initial schema error; fixed adapter awaits retry                                                    |
-| Migration reproducibility | Pass        | All 5 migrations apply from zero; both M4 down migrations pass in isolation                                             |
-| Local HTTP smoke          | Pass        | `/`, `/register`, and `/login` return `200`; an unknown draft returns `404`                                             |
-| M4 browser regression     | Pass        | 6 browser tests pass, including authenticated contribution and Draft Inbox recognition                                  |
-| Historical full rollback  | Known issue | M2 `editorial_core` down migration has an existing lock-relation drop-order defect                                      |
+| Check                     | Result      | Evidence                                                                                                               |
+| ------------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Payload type generation   | Pass        | `pnpm generate:types`                                                                                                  |
+| TypeScript                | Pass        | `pnpm typecheck`                                                                                                       |
+| ESLint                    | Pass        | `pnpm lint`                                                                                                            |
+| Slug normalization tests  | Pass        | 2 tests in `formatSlug.int.spec.ts`                                                                                    |
+| Production build          | Pass        | Next.js generated all current public and Payload routes                                                                |
+| HTTP smoke test           | Pass        | `/` and `/search?q=authentication` returned `200`                                                                      |
+| Hydration smoke test      | Pass        | Clean Chrome profile produced no hydration warning                                                                     |
+| Database integration      | Pass        | 26 self-contained integration tests in 8 files pass against PostgreSQL without requiring seed data                     |
+| Public draft feedback     | Pass        | 4 scenarios verify projection redaction, registration roles, pending moderation, throttling, and resolved-draft hiding |
+| Simple Editor workflow    | Pass        | 3 scenarios verify background save, member denial, sourced one-action publication, Hide, and provenance                |
+| OpenAI adapter contract   | Pass        | 3 mocked tests verify strict Responses API requests, parsing, usage, and failures                                      |
+| OpenAI live calibration   | Pending     | Job 33 retained the initial schema error; fixed adapter awaits retry                                                   |
+| Migration reproducibility | Pass        | All 5 migrations apply from zero; both M4 down migrations pass in isolation                                            |
+| Local HTTP smoke          | Pass        | `/`, `/register`, and `/login` return `200`; an unknown draft returns `404`                                            |
+| M4 browser regression     | Pass        | 6 browser tests pass, including authenticated contribution and Draft Inbox recognition                                 |
+| Historical full rollback  | Known issue | M2 `editorial_core` down migration has an existing lock-relation drop-order defect                                     |
 
 ## Current Work
 
@@ -162,7 +165,7 @@ No active blocker is recorded.
 
 | Risk                                                    | Impact                                    | Current mitigation                                                                             |
 | ------------------------------------------------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| AI output sounds natural but is technically wrong       | Loss of trust                             | Required sources, explicit Editor publication, and high-risk confirmation                      |
+| AI output sounds natural but is technically wrong       | Loss of trust                             | Required sources, explicit Editor publication, and retained provenance                         |
 | AI pipeline cost grows during batch generation          | Budget pressure                           | Calibration batch, idempotent jobs, and cost metrics                                           |
 | Conflicting status fields permit accidental publication | Data exposure                             | Formal publication state machine required in M0                                                |
 | Search leaks drafts                                     | Unreviewed content becomes public         | Public-query and authorization tests required in M2 and M7                                     |
