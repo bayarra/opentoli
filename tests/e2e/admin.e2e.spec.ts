@@ -32,6 +32,12 @@ test.describe('Admin Panel', () => {
     await expect(page.getByRole('link', { name: 'Create account' })).toHaveCount(0)
   })
 
+  test('opens the private AI draft review queue', async () => {
+    await page.goto('http://localhost:3000/review/ai-drafts')
+
+    await expect(page.getByRole('heading', { name: 'AI draft review queue' })).toBeVisible()
+  })
+
   test('can navigate to list view', async () => {
     await page.goto('http://localhost:3000/admin/collections/users')
     await expect(page).toHaveURL('http://localhost:3000/admin/collections/users')

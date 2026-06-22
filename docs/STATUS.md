@@ -3,7 +3,7 @@
 **Last updated:** 2026-06-21
 **Current milestone:** M4 - Public Draft Feedback and Reviewer Workspace
 **Milestone status:** `IN_PROGRESS`
-**Delivery state:** Public draft feedback vertical slice complete; reviewer workspace next
+**Delivery state:** Public feedback and reviewer decision vertical slices complete; accessibility hardening next
 
 ## Executive Summary
 
@@ -17,23 +17,24 @@ contracts, provider-neutral staged execution, idempotent enqueueing, retry resum
 risk routing, retained provenance, and deterministic end-to-end evidence. Its live OpenAI
 calibration retry remains open. M4 has now started with an explicit safe public projection,
 unverified draft page, registration and sign-in, authenticated pending feedback, moderation,
-duplicate screening, and contributor throttling. Reviewer comparison and decision actions
-remain before M4 can close.
+duplicate screening, contributor throttling, a private evidence workspace, immutable
+decision history, risk-route enforcement, and canonical draft materialization. M4 remains
+open for accessibility hardening and final end-to-end decision-page browser coverage.
 
 ## Milestone Status
 
-| ID  | Milestone                                    | Status        | Evidence                                                                                                   |
-| --- | -------------------------------------------- | ------------- | ---------------------------------------------------------------------------------------------------------- |
-| M0  | Product and architecture baseline            | `DONE`        | ADR-0001 and ADR-0002 record the accepted baseline                                                         |
-| M1  | Application foundation                       | `DONE`        | Clean migration, seed, tests, build, HTTP, and browser evidence recorded                                   |
-| M2  | Editorial data core                          | `DONE`        | Attributed reviewer/moderator workflow and public vertical slice verified                                  |
-| M3  | AI preparation pipeline                      | `IN_PROGRESS` | OpenAI adapter contract tests pass; live calibration retry remains                                         |
-| M4  | Public draft feedback and reviewer workspace | `IN_PROGRESS` | Redacted draft page, contributor auth, moderation persistence, migration, and 4 integration scenarios pass |
-| M5  | Calibration batch                            | `PLANNED`     | Target and sample ambiguous terms are documented                                                           |
-| M6  | Public dictionary                            | `PLANNED`     | Required pages are documented                                                                              |
-| M7  | Search and discovery                         | `PLANNED`     | Ranking and filters are documented                                                                         |
-| M8  | Community accounts and contributions         | `PLANNED`     | Rich contributor features extend the basic authenticated M4 feedback path                                  |
-| M9  | Launch readiness                             | `PLANNED`     | Launch content and quality gates are documented                                                            |
+| ID  | Milestone                                    | Status        | Evidence                                                                                                              |
+| --- | -------------------------------------------- | ------------- | --------------------------------------------------------------------------------------------------------------------- |
+| M0  | Product and architecture baseline            | `DONE`        | ADR-0001 and ADR-0002 record the accepted baseline                                                                    |
+| M1  | Application foundation                       | `DONE`        | Clean migration, seed, tests, build, HTTP, and browser evidence recorded                                              |
+| M2  | Editorial data core                          | `DONE`        | Attributed reviewer/moderator workflow and public vertical slice verified                                             |
+| M3  | AI preparation pipeline                      | `IN_PROGRESS` | OpenAI adapter contract tests pass; live calibration retry remains                                                    |
+| M4  | Public draft feedback and reviewer workspace | `IN_PROGRESS` | Public feedback plus attributed accept/modify/reject/reroute/merge workflows; 27 integration and 5 browser tests pass |
+| M5  | Calibration batch                            | `PLANNED`     | Target and sample ambiguous terms are documented                                                                      |
+| M6  | Public dictionary                            | `PLANNED`     | Required pages are documented                                                                                         |
+| M7  | Search and discovery                         | `PLANNED`     | Ranking and filters are documented                                                                                    |
+| M8  | Community accounts and contributions         | `PLANNED`     | Rich contributor features extend the basic authenticated M4 feedback path                                             |
+| M9  | Launch readiness                             | `PLANNED`     | Launch content and quality gates are documented                                                                       |
 
 ## Achievements
 
@@ -51,6 +52,13 @@ remain before M4 can close.
 - Expanded database integration coverage to 7 files and 23 passing tests.
 - Verified `/`, `/register`, and `/login` return `200`, while a nonexistent public draft returns `404`.
 - Added and passed an authenticated Playwright regression proving logged-in users see contribution guidance rather than a create-account prompt.
+- Added a private `/review/ai-drafts` queue and detail workspace with candidates, sources, research, confidence, critique, feedback, and decision history.
+- Added atomic accept, modify, reject, reroute, and merge actions with immutable actor, route, field-outcome, reason, and resulting-record evidence.
+- Enforced language-expert, category-expert, moderator, and high-risk review-route requirements server-side.
+- Materialized accepted AI wording only into attributed canonical Term and Translation drafts; review actions cannot publish.
+- Added and locally applied `20260621_193929_m4_reviewer_workspace`.
+- Expanded database integration coverage to 8 files and 27 passing tests.
+- Passed 5 authenticated browser tests, including the private reviewer queue.
 
 ### 2026-06-20
 
@@ -118,30 +126,31 @@ remain before M4 can close.
 | Production build           | Pass        | Next.js generated all current public and Payload routes                                                                |
 | HTTP smoke test            | Pass        | `/` and `/search?q=authentication` returned `200`                                                                      |
 | Hydration smoke test       | Pass        | Clean Chrome profile produced no hydration warning                                                                     |
-| Database integration       | Pass        | 23 self-contained integration tests in 7 files pass against PostgreSQL without requiring seed data                     |
+| Database integration       | Pass        | 27 self-contained integration tests in 8 files pass against PostgreSQL without requiring seed data                     |
 | Public draft feedback      | Pass        | 4 scenarios verify projection redaction, registration roles, pending moderation, throttling, and resolved-draft hiding |
+| Reviewer decision workflow | Pass        | 4 scenarios verify expertise, draft materialization, reroute, merge, reject, audit immutability, and no publication    |
 | OpenAI adapter contract    | Pass        | 3 mocked tests verify strict Responses API requests, parsing, usage, and failures                                      |
 | OpenAI live calibration    | Pending     | Job 33 retained the initial schema error; fixed adapter awaits retry                                                   |
-| Migration reproducibility  | Pass        | All 4 migrations apply from zero; the M4 down migration also passes                                                    |
+| Migration reproducibility  | Pass        | All 5 migrations apply from zero; both M4 down migrations pass in isolation                                            |
 | Local HTTP smoke           | Pass        | `/`, `/register`, and `/login` return `200`; an unknown draft returns `404`                                            |
-| M4 auth browser regression | Pass        | 4 admin/browser tests pass, including authenticated `/contribute` session recognition                                  |
+| M4 browser regression      | Pass        | 5 admin/browser tests pass, including authenticated contribution and reviewer queue recognition                        |
 | Historical full rollback   | Known issue | M2 `editorial_core` down migration has an existing lock-relation drop-order defect                                     |
 
 ## Current Work
 
-The first M4 public-feedback slice is complete. M4 remains in progress because the reviewer
-workspace, candidate comparison, risk-route enforcement at decision time, merge behavior,
-and accessibility/browser evidence are not complete. The M3 live calibration evidence also
-remains open and is tracked in parallel because M4 was started by explicit direction.
+The first two M4 vertical slices are complete: public feedback and attributed reviewer
+decisions. M4 remains in progress for keyboard/accessibility hardening and a browser test
+that exercises a complete decision submission against a fixture. The M3 live calibration
+evidence also remains open and is tracked in parallel because M4 was started by explicit
+direction.
 
 ## Next Actions
 
-1. Build the M4 reviewer workspace with side-by-side evidence, candidate, critique, and feedback views.
-2. Enforce required reviewer expertise and risk routes on accept, modify, reject, reroute, and merge actions.
-3. Record field-level outcomes, reasons, attribution, and canonical Term materialization without automatic publication.
-4. Add keyboard/accessibility and visual browser checks for public draft, auth, feedback, and reviewer flows.
-5. Retry live M3 job 33 and record token, latency, validation, and reviewer-quality evidence.
-6. Repair and separately validate the historical M2 down migration ordering defect.
+1. Add keyboard and automated accessibility checks for public draft, auth, feedback, and reviewer flows.
+2. Add a browser fixture that submits and verifies a complete reviewer decision.
+3. Add final moderator approval UI for reviewed canonical drafts without weakening publication guards.
+4. Retry live M3 job 33 and record token, latency, validation, and reviewer-quality evidence.
+5. Repair and separately validate the historical M2 down migration ordering defect.
 
 ## Blockers
 

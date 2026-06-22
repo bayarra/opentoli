@@ -79,6 +79,7 @@ export interface Config {
     'import-batches': ImportBatch;
     'generation-jobs': GenerationJob;
     'ai-drafts': AiDraft;
+    'ai-draft-decisions': AiDraftDecision;
     comments: Comment;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -99,6 +100,7 @@ export interface Config {
     'import-batches': ImportBatchesSelect<false> | ImportBatchesSelect<true>;
     'generation-jobs': GenerationJobsSelect<false> | GenerationJobsSelect<true>;
     'ai-drafts': AiDraftsSelect<false> | AiDraftsSelect<true>;
+    'ai-draft-decisions': AiDraftDecisionsSelect<false> | AiDraftDecisionsSelect<true>;
     comments: CommentsSelect<false> | CommentsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -528,7 +530,7 @@ export interface AiDraft {
   publicVisibility: 'private' | 'public';
   publicFeedbackOpenedAt?: string | null;
   reviewedBy?: (number | null) | User;
-  reviewOutcome?: ('accepted' | 'modified' | 'rejected') | null;
+  reviewOutcome?: ('accepted' | 'modified' | 'rejected' | 'merged') | null;
   acceptedFields?:
     | {
         [k: string]: unknown;
@@ -556,6 +558,70 @@ export interface AiDraft {
     | number
     | boolean
     | null;
+  decidedAt?: string | null;
+  mergedIntoTerm?: (number | null) | Term;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ai-draft-decisions".
+ */
+export interface AiDraftDecision {
+  id: number;
+  aiDraft: number | AiDraft;
+  actor: number | User;
+  action: 'accept' | 'modify' | 'reject' | 'reroute' | 'merge';
+  previousStatus: 'generated' | 'editing' | 'needs_review' | 'accepted' | 'partially_accepted' | 'rejected';
+  newStatus: 'generated' | 'editing' | 'needs_review' | 'accepted' | 'partially_accepted' | 'rejected';
+  previousReviewRoute:
+    | 'fast_review'
+    | 'language_review'
+    | 'domain_review'
+    | 'community_discussion'
+    | 'duplicate_review'
+    | 'blocked';
+  newReviewRoute:
+    | 'fast_review'
+    | 'language_review'
+    | 'domain_review'
+    | 'community_discussion'
+    | 'duplicate_review'
+    | 'blocked';
+  riskLevel: 'low' | 'medium' | 'high';
+  selectedTranslationMn?: string | null;
+  acceptedFields?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  modifiedFields?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  rejectionReasons?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  notes: string;
+  resultingTerm?: (number | null) | Term;
+  resultingTranslation?: (number | null) | Translation;
+  mergeTargetTerm?: (number | null) | Term;
+  decisionAt: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -651,6 +717,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'ai-drafts';
         value: number | AiDraft;
+      } | null)
+    | ({
+        relationTo: 'ai-draft-decisions';
+        value: number | AiDraftDecision;
       } | null)
     | ({
         relationTo: 'comments';
@@ -975,6 +1045,33 @@ export interface AiDraftsSelect<T extends boolean = true> {
   acceptedFields?: T;
   modifiedFields?: T;
   rejectionReasons?: T;
+  decidedAt?: T;
+  mergedIntoTerm?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ai-draft-decisions_select".
+ */
+export interface AiDraftDecisionsSelect<T extends boolean = true> {
+  aiDraft?: T;
+  actor?: T;
+  action?: T;
+  previousStatus?: T;
+  newStatus?: T;
+  previousReviewRoute?: T;
+  newReviewRoute?: T;
+  riskLevel?: T;
+  selectedTranslationMn?: T;
+  acceptedFields?: T;
+  modifiedFields?: T;
+  rejectionReasons?: T;
+  notes?: T;
+  resultingTerm?: T;
+  resultingTranslation?: T;
+  mergeTargetTerm?: T;
+  decisionAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }

@@ -98,6 +98,18 @@ in at `/login` before submitting feedback. New comments and translation suggesti
 always `pending`; moderators approve or reject them in the Payload `Comments` collection.
 Feedback never changes an AI Draft, Term, or Translation directly.
 
+## Reviewer Workspace
+
+Authenticated reviewers open `/review/ai-drafts` to compare generated candidates,
+research, sources, confidence dimensions, independent critique, community feedback, and
+decision history. Review actions are accept, accept with edits, reject, reroute, and merge.
+
+Review routes are enforced server-side. Language review requires a language expert;
+high-risk and domain review requires the draft category in the reviewer's areas of
+expertise; community and duplicate resolution require a moderator or administrator.
+Accepted wording is materialized as a canonical Payload **draft** with an attributed,
+immutable AI Draft Decision. It is never published by the review action.
+
 To exercise the pipeline without paid API calls in the current PowerShell session:
 
 ```powershell

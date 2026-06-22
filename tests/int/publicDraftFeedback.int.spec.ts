@@ -317,7 +317,7 @@ describe('public AI draft feedback', () => {
     expect((await getPublicAIDraftById(aiDraftId))?.comments).toHaveLength(1)
   })
 
-  it('throttles contribution bursts and hides a resolved draft', async () => {
+  it('throttles contribution bursts and hides a private draft', async () => {
     for (let index = 0; index < 4; index += 1) {
       const comment = await payload.create({
         collection: 'comments',
@@ -351,12 +351,7 @@ describe('public AI draft feedback', () => {
 
     await payload.update({
       collection: 'ai-drafts',
-      data: {
-        publicVisibility: 'private',
-        reviewOutcome: 'rejected',
-        reviewedBy: moderator.id,
-        status: 'rejected',
-      },
+      data: { publicVisibility: 'private' },
       id: aiDraftId,
       overrideAccess: false,
       user: moderator,

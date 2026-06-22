@@ -127,16 +127,35 @@ export const AIDrafts: CollectionConfig = {
     {
       name: 'reviewOutcome',
       type: 'select',
-      options: ['accepted', 'modified', 'rejected'],
+      options: ['accepted', 'modified', 'rejected', 'merged'],
     },
     { name: 'acceptedFields', type: 'json' },
     { name: 'modifiedFields', type: 'json' },
     { name: 'rejectionReasons', type: 'json' },
+    { name: 'decidedAt', type: 'date', admin: { readOnly: true } },
+    { name: 'mergedIntoTerm', type: 'relationship', relationTo: 'terms' },
   ],
   hooks: {
     beforeChange: [
       async ({ data, operation, originalDoc, req }) => {
         const next = { ...originalDoc, ...data }
+        const statusChanged =
+          operation === 'update' && data.status && data.status !== originalDoc?.status
+        const routeChanged =
+          operation === 'update' &&
+          data.reviewRoute &&
+          data.reviewRoute !== originalDoc?.reviewRoute
+
+        const resolvedStatuses = ['accepted', 'partially_accepted', 'rejected']
+        if (
+          (routeChanged ||
+            (statusChanged &&
+              (resolvedStatuses.includes(data.status) ||
+                resolvedStatuses.includes(originalDoc?.status)))) &&
+          req.context.aiDraftDecision !== true
+        ) {
+          throw new APIError('Use the reviewer workspace to resolve or reroute an AI draft.', 403)
+        }
 
         if (next.schemaVersion !== AI_SCHEMA_VERSION) {
           throw new APIError(`AI drafts must use schema version ${AI_SCHEMA_VERSION}.`, 400)
@@ -161,8 +180,11 @@ export const AIDrafts: CollectionConfig = {
         }
 
         if (['accepted', 'partially_accepted', 'rejected'].includes(next.status)) {
-          if (!next.reviewedBy || !next.reviewOutcome) {
-            throw new APIError('A resolved AI draft requires a reviewer and review outcome.', 400)
+          if (!next.reviewedBy || !next.reviewOutcome || !next.decidedAt) {
+            throw new APIError(
+              'A resolved AI draft requires a reviewer, outcome, and decision timestamp.',
+              400,
+            )
           }
         }
 

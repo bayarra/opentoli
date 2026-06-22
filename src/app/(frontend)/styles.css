@@ -801,6 +801,249 @@ blockquote p {
   line-height: 1.6;
 }
 
+.reviewer-page {
+  display: grid;
+  gap: 28px;
+}
+
+.reviewer-page .back-link {
+  margin-bottom: 20px;
+}
+
+.reviewer-heading {
+  align-items: end;
+  display: flex;
+  gap: 28px;
+  justify-content: space-between;
+}
+
+.reviewer-heading h1 {
+  font-size: clamp(2.25rem, 7vw, 4.5rem);
+  margin: 8px 0;
+}
+
+.review-queue {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.review-queue > a {
+  align-items: center;
+  color: inherit;
+  display: flex;
+  gap: 24px;
+  justify-content: space-between;
+  padding: 22px 24px;
+  text-decoration: none;
+}
+
+.review-queue > a + a {
+  border-top: 1px solid var(--line);
+}
+
+.review-queue > a:hover {
+  background: #f6f9fc;
+}
+
+.review-queue > a > div:first-child {
+  display: grid;
+  gap: 6px;
+}
+
+.review-queue > a strong {
+  font-size: 1.1rem;
+}
+
+.review-queue > a span,
+.review-queue-badges span {
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-transform: capitalize;
+}
+
+.review-queue-badges {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.review-queue-badges span {
+  background: #f0f3f8;
+  border-radius: 999px;
+  padding: 7px 10px;
+}
+
+.risk-badge.risk-high {
+  background: #fff0f0;
+  color: #9c2727;
+}
+
+.risk-badge.risk-medium {
+  background: #fff7dc;
+  color: #775b08;
+}
+
+.risk-badge.risk-low {
+  background: #ecf8ef;
+  color: #216c35;
+}
+
+.reviewer-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.review-panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 30px;
+}
+
+.review-panel h2,
+.review-panel h3 {
+  margin-top: 20px;
+}
+
+.review-panel > p:not(.eyebrow),
+.review-candidate p,
+.critique-check p,
+.review-comment p,
+.decision-history p {
+  line-height: 1.6;
+}
+
+.review-candidate,
+.critique-check,
+.review-source,
+.review-comment,
+.decision-history {
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 7px;
+  margin-top: 16px;
+  padding-top: 16px;
+}
+
+.review-candidate span,
+.critique-check span,
+.review-source span,
+.review-comment span,
+.decision-history span {
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-transform: capitalize;
+}
+
+.critique-check {
+  border-left: 4px solid var(--line);
+  padding-left: 14px;
+}
+
+.critique-warning {
+  border-left-color: #d9a91d;
+}
+
+.critique-fail {
+  border-left-color: #b73b3b;
+}
+
+.critique-pass {
+  border-left-color: #36904d;
+}
+
+.confidence-list,
+.confidence-list dd {
+  margin: 0;
+}
+
+.confidence-list > div {
+  align-items: center;
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+}
+
+.confidence-list dt {
+  text-transform: capitalize;
+}
+
+.confidence-list dd {
+  font-weight: 750;
+  text-transform: capitalize;
+}
+
+.compact-grid > div {
+  min-width: 0;
+}
+
+.review-comment > div,
+.decision-history > div {
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+}
+
+.review-decision-form {
+  display: grid;
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.review-decision-form label {
+  display: grid;
+  font-size: 0.9rem;
+  font-weight: 750;
+  gap: 8px;
+}
+
+.review-decision-form input,
+.review-decision-form select,
+.review-decision-form textarea {
+  background: #fff;
+  border: 1px solid #b8c2d4;
+  border-radius: 10px;
+  color: var(--navy);
+  font: inherit;
+  padding: 13px 14px;
+}
+
+.review-decision-form input:focus,
+.review-decision-form select:focus,
+.review-decision-form textarea:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(48, 124, 216, 0.2);
+  outline: 0;
+}
+
+.review-form-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.review-decision-form button {
+  background: var(--navy);
+  border: 0;
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 750;
+  padding: 14px 18px;
+}
+
+.review-decision-form button:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
 @media (max-width: 760px) {
   .site-shell {
     padding: 0 20px;
@@ -892,5 +1135,20 @@ blockquote p {
 
   .account-card {
     padding: 28px 22px;
+  }
+
+  .reviewer-heading,
+  .review-queue > a {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .review-queue-badges {
+    justify-content: flex-start;
+  }
+
+  .reviewer-grid,
+  .review-form-grid {
+    grid-template-columns: 1fr;
   }
 }
