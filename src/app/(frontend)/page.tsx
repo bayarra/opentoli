@@ -32,7 +32,7 @@ export default function HomePage() {
         </form>
         <div className="hero-actions" aria-label="Primary workflow links">
           <Link href="/workflow">How OpenToli works</Link>
-          <Link href="/review/ai-drafts">Open Draft Inbox</Link>
+          <Link href="/workspace">Editor workspace</Link>
         </div>
         <p className="hero-note">
           AI prepares the research. Contributors suggest improvements. Editors publish the final

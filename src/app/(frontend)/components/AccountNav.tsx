@@ -49,7 +49,7 @@ export function AccountNav() {
 
     return (
       <div className="account-nav" aria-label={`Account: ${label}`}>
-        {user.role && editorRoles.has(user.role) ? <Link href="/review/ai-drafts">Draft Inbox</Link> : null}
+        {user.role && editorRoles.has(user.role) ? <Link href="/workspace">Workspace</Link> : null}
         <Link href="/profile">Profile</Link>
       </div>
     )

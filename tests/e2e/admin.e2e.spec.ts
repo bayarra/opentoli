@@ -46,7 +46,7 @@ test.describe('Admin Panel', () => {
       await expect(profilePage.getByRole('heading', { name: testUser.name })).toBeVisible()
       await expect(profilePage.getByText(testUser.email)).toBeVisible()
       await expect(profilePage.getByText('Admin', { exact: true })).toBeVisible()
-      await expect(profileSummary.getByRole('link', { name: 'Draft Inbox' })).toBeVisible()
+      await expect(profileSummary.getByRole('link', { name: 'Workspace' })).toBeVisible()
       await expect(primaryNav.getByRole('button', { name: 'Log out' })).toHaveCount(0)
 
       await profileNext.getByRole('button', { name: 'Log out' }).click()
@@ -63,6 +63,14 @@ test.describe('Admin Panel', () => {
     await page.goto('http://localhost:3000/review/ai-drafts')
 
     await expect(page.getByRole('heading', { name: 'Draft Inbox' })).toBeVisible()
+  })
+
+  test('opens the web Workspace for terminology and agent work', async () => {
+    await page.goto('http://localhost:3000/workspace')
+
+    await expect(page.getByRole('heading', { name: /Terminology and agent work/ })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Open Draft Inbox' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Recent generation jobs' })).toBeVisible()
   })
 
   test('can navigate to list view', async () => {

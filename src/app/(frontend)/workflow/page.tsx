@@ -24,9 +24,9 @@ const steps = [
   {
     action: 'Edit and publish',
     audience: 'Editors',
-    body: 'Open the Draft Inbox, edit the English headword, Mongolian translation, English explanation, and Mongolian explanation, then choose Publish. Hide only removes an unusable draft from the active inbox.',
-    href: '/review/ai-drafts',
-    link: 'Open Draft Inbox',
+    body: 'Open the Workspace to monitor drafts, feedback, jobs, and batches. From there, use the Draft Inbox to edit the English headword, Mongolian translation, English explanation, and Mongolian explanation, then choose Publish.',
+    href: '/workspace',
+    link: 'Open Workspace',
   },
 ]
 
@@ -66,7 +66,7 @@ export default function WorkflowPage() {
           </p>
         </div>
         <div className="workflow-actions">
-          <Link href="/review/ai-drafts">Editor inbox</Link>
+          <Link href="/workspace">Editor workspace</Link>
           <Link href="/admin">Admin maintenance</Link>
         </div>
       </section>

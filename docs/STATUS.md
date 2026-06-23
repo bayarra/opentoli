@@ -31,7 +31,7 @@ manifest, and the first five private preparation jobs are queued without provide
 | M1  | Application foundation                       | `DONE`        | Clean migration, seed, tests, build, HTTP, and browser evidence recorded  |
 | M2  | Editorial data core                          | `DONE`        | Attributed reviewer/moderator workflow and public vertical slice verified |
 | M3  | AI preparation pipeline                      | `DONE`        | Live OpenAI job 33 completed; draft 22 retained; idempotency verified     |
-| M4  | Public draft feedback and simple editor flow | `DONE`        | All exit criteria pass with 26 integration and 10 browser tests           |
+| M4  | Public draft feedback and simple editor flow | `DONE`        | All exit criteria pass with 26 integration and 11 browser tests           |
 | M5  | Calibration batch                            | `IN_PROGRESS` | Fixed 50-term manifest validates; first five jobs are queued              |
 | M6  | Public dictionary                            | `PLANNED`     | Required pages are documented                                             |
 | M7  | Search and discovery                         | `PLANNED`     | Ranking and filters are documented                                        |
@@ -50,6 +50,10 @@ manifest, and the first five private preparation jobs are queued without provide
 - Simplified navigation by removing the header logout button and duplicate Contribute CTAs; logout now lives on Profile, while repeated actions use the main menu.
 - Changed default already-authenticated login/register redirects to Profile so `/contribute` is no longer the account hub.
 - Passed `npm run typecheck`, `npm run lint`, `npm run test:e2e`, and `npm run build` after simplifying account and Contribute navigation.
+- Added `/workspace` as the Editor-facing OpenToli web hub for terminology and agent work, with safe summaries for active drafts, public feedback, AI job status, import batches, and recently published terms.
+- Moved editor navigation from direct Draft Inbox to Workspace while keeping Draft Inbox available as the primary action inside the Workspace.
+- Added browser coverage proving an authenticated Editor can open the Workspace and see Draft Inbox, recent generation jobs, and terminology/agent status.
+- Passed `npm run typecheck`, `npm run lint`, `npm run test:e2e`, `npm run build`, and `npm run test:int` after adding the Workspace.
 - Added `/workflow` to explain Visitor, Member, and Editor responsibilities and to state that normal terminology work should happen in OpenToli web, not Payload admin.
 - Added `/drafts` as the contributor-facing list of public unverified AI drafts, including an empty state that explains what to do when no drafts are open.
 - Added a persistent `Back to OpenToli` link to the Payload admin shell for users who enter admin maintenance screens.
@@ -179,9 +183,10 @@ manifest, and the first five private preparation jobs are queued without provide
 | M5 first enqueue          | Pass        | First run created 5 Terms, 7 Sources, and 5 Generation Jobs; second run reused all records without provider calls      |
 | Migration reproducibility | Pass        | All 5 migrations apply from zero; both M4 down migrations pass in isolation                                            |
 | Local HTTP smoke          | Pass        | `/`, `/register`, and `/login` return `200`; an unknown draft returns `404`                                            |
-| M4 browser regression     | Pass        | 10 browser tests pass, including public/auth/feedback/Editor keyboard flows and serious WCAG A/AA scans                |
-| Web workflow navigation   | Pass        | Global web navigation, `/workflow`, `/drafts`, and admin Back link build successfully; 10 browser tests pass            |
-| Web account workflow      | Pass        | `/profile`, header account links, editor Draft Inbox visibility, and Profile-only Payload-backed logout pass in 10 browser tests |
+| M4 browser regression     | Pass        | 11 browser tests pass, including public/auth/feedback/Editor keyboard flows and serious WCAG A/AA scans                |
+| Web workflow navigation   | Pass        | Global web navigation, `/workflow`, `/drafts`, `/workspace`, and admin Back link build successfully; 11 browser tests pass |
+| Web account workflow      | Pass        | `/profile`, header account links, editor Workspace visibility, and Profile-only Payload-backed logout pass in 11 browser tests |
+| Editor web Workspace      | Pass        | `/workspace` shows safe draft, feedback, generation job, batch, and published-term summaries without raw AI outputs     |
 | Historical full rollback  | Known issue | M2 `editorial_core` down migration has an existing lock-relation drop-order defect                                     |
 
 ## Current Work

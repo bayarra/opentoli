@@ -58,7 +58,7 @@ export default async function ProfilePage() {
           </dl>
           <div className="account-actions">
             <Link href="/drafts">Public drafts</Link>
-            {isEditorUser(user) ? <Link href="/review/ai-drafts">Draft Inbox</Link> : null}
+            {isEditorUser(user) ? <Link href="/workspace">Workspace</Link> : null}
           </div>
         </section>
 
@@ -67,8 +67,9 @@ export default async function ProfilePage() {
           <h2 id="profile-next-heading">What can I do?</h2>
           {isEditorUser(user) ? (
             <p>
-              Open the Draft Inbox, edit the public fields, then Publish or Hide from the web
-              editor. Admin remains for maintenance and data repair only.
+              Open the Workspace to monitor drafts, feedback, jobs, and batches. Use the Draft
+              Inbox from there to edit public fields, then Publish or Hide from the web editor.
+              Admin remains for maintenance and data repair only.
             </p>
           ) : (
             <p>
