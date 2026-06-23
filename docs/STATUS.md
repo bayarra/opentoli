@@ -1,9 +1,9 @@
 # OpenToli Project Status
 
-**Last updated:** 2026-06-21
-**Current milestone:** M3 - AI Preparation Pipeline
-**Milestone status:** `IN_PROGRESS`
-**Delivery state:** M4 complete; M3 live OpenAI calibration retry next
+**Last updated:** 2026-06-23
+**Current milestone:** M5 - Calibration Batch
+**Milestone status:** `READY`
+**Delivery state:** M3 and M4 complete; M5 calibration batch ready to begin
 
 ## Executive Summary
 
@@ -14,12 +14,13 @@ in English and Mongolian, appears in its category, and has a responsive detail p
 Publication guards, clean migrations, seeding, integration tests, and browser checks pass.
 M3 has private AI Draft and Generation Job persistence, versioned structured-output
 contracts, provider-neutral staged execution, idempotent enqueueing, retry resumption,
-risk routing, retained provenance, and deterministic end-to-end evidence. Its live OpenAI
-calibration retry remains open. M4 now has an explicit safe public projection, registration,
+risk routing, retained provenance, deterministic end-to-end evidence, and a completed live
+OpenAI reference run for `authentication`. M4 now has an explicit safe public projection, registration,
 authenticated pending feedback, moderation, and a deliberately simple Editor experience:
 one Draft Inbox, four editable fields, background save, one Publish action, and secondary
 Hide. Audit, source, and AI provenance remain automatic in the background. Keyboard-only
-critical flows and serious WCAG A/AA violations now have automated browser coverage.
+critical flows and serious WCAG A/AA violations now have automated browser coverage. The
+next milestone is the controlled 50-term Technology and Software calibration batch.
 
 ## Milestone Status
 
@@ -28,15 +29,23 @@ critical flows and serious WCAG A/AA violations now have automated browser cover
 | M0  | Product and architecture baseline            | `DONE`        | ADR-0001 and ADR-0002 record the accepted baseline                        |
 | M1  | Application foundation                       | `DONE`        | Clean migration, seed, tests, build, HTTP, and browser evidence recorded  |
 | M2  | Editorial data core                          | `DONE`        | Attributed reviewer/moderator workflow and public vertical slice verified |
-| M3  | AI preparation pipeline                      | `IN_PROGRESS` | OpenAI adapter contract tests pass; live calibration retry remains        |
+| M3  | AI preparation pipeline                      | `DONE`        | Live OpenAI job 33 completed; draft 22 retained; idempotency verified     |
 | M4  | Public draft feedback and simple editor flow | `DONE`        | All exit criteria pass with 26 integration and 9 browser tests            |
-| M5  | Calibration batch                            | `PLANNED`     | Target and sample ambiguous terms are documented                          |
+| M5  | Calibration batch                            | `READY`       | M3 and M4 gates are complete; target and sample terms are documented      |
 | M6  | Public dictionary                            | `PLANNED`     | Required pages are documented                                             |
 | M7  | Search and discovery                         | `PLANNED`     | Ranking and filters are documented                                        |
 | M8  | Community accounts and contributions         | `PLANNED`     | Rich contributor features extend the basic authenticated M4 feedback path |
 | M9  | Launch readiness                             | `PLANNED`     | Launch content and quality gates are documented                           |
 
 ## Achievements
+
+### 2026-06-23
+
+- Completed the live M3 OpenAI calibration for `authentication`: generation job 33 finished on attempt 2 with `openai:gpt-5-mini`, retained 3,365 input tokens, 3,025 output tokens, 35,002 ms latency, and no validation errors.
+- Retained private AI draft 22 as `needs_review/blocked` with one source, five alternatives, three examples, human review required, and critique evidence requiring language, domain, and source-validation review.
+- Verified idempotency with `npm run ai:prepare:authentication`: the command reused job 33 and draft 22 without changing the published Term or creating duplicate work.
+- Verified the worker queue with `npm run ai:work`: no configured generation job remains ready.
+- Marked M3 as `DONE` and moved the current milestone to M5 calibration readiness.
 
 ### 2026-06-21
 
@@ -144,7 +153,7 @@ critical flows and serious WCAG A/AA violations now have automated browser cover
 | Public draft feedback     | Pass        | 4 scenarios verify projection redaction, registration roles, pending moderation, throttling, and resolved-draft hiding |
 | Simple Editor workflow    | Pass        | 3 scenarios verify background save, member denial, sourced one-action publication, Hide, and provenance                |
 | OpenAI adapter contract   | Pass        | 3 mocked tests verify strict Responses API requests, parsing, usage, and failures                                      |
-| OpenAI live calibration   | Pending     | Job 33 retained the initial schema error; fixed adapter awaits retry                                                   |
+| OpenAI live calibration   | Pass        | Job 33 completed with `openai:gpt-5-mini`: 3,365 input tokens, 3,025 output tokens, 35,002 ms latency, no validation errors |
 | Migration reproducibility | Pass        | All 5 migrations apply from zero; both M4 down migrations pass in isolation                                            |
 | Local HTTP smoke          | Pass        | `/`, `/register`, and `/login` return `200`; an unknown draft returns `404`                                            |
 | M4 browser regression     | Pass        | 9 browser tests pass, including public/auth/feedback/Editor keyboard flows and serious WCAG A/AA scans                 |
@@ -152,15 +161,15 @@ critical flows and serious WCAG A/AA violations now have automated browser cover
 
 ## Current Work
 
-M4 is complete: its simplified workflow passes integration, browser, keyboard,
-accessibility, lint, type, and production build checks. Work returns to M3, whose remaining
-exit criterion is a successful non-test provider run for the reference term.
+M3 and M4 are complete. Current work moves to M5: a controlled 50-term Technology and
+Software calibration batch that measures quality, cost, latency, human edit rate, and
+review outcomes before larger corpus generation.
 
 ## Next Actions
 
-1. Retry live M3 job 33 and record token, latency, validation, and reviewer-quality evidence.
-2. Repair and separately validate the historical M2 down migration ordering defect.
-3. Begin the M5 calibration batch only after the M3 live provider criterion passes.
+1. Define and source the fixed 50-term M5 calibration input set, including ambiguous terms such as `agent`, `token`, `session`, and `repository`.
+2. Run the calibration jobs in small controlled batches and record cost, latency, acceptance, edit, rejection, disagreement, duplicate, and review-route metrics.
+3. Repair and separately validate the historical M2 down migration ordering defect.
 
 ## Blockers
 
