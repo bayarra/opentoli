@@ -66,7 +66,6 @@ export default function WorkflowPage() {
           </p>
         </div>
         <div className="workflow-actions">
-          <Link href="/contribute">Contributor guide</Link>
           <Link href="/review/ai-drafts">Editor inbox</Link>
           <Link href="/admin">Admin maintenance</Link>
         </div>

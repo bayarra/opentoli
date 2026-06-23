@@ -11,7 +11,7 @@ const safeNextPath = (value?: string) =>
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const { next } = await searchParams
   if (await getCurrentUser())
-    redirect(safeNextPath(next) === '/' ? '/contribute' : safeNextPath(next))
+    redirect(safeNextPath(next) === '/' ? '/profile' : safeNextPath(next))
 
   return (
     <main className="account-page">

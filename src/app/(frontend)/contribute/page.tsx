@@ -1,5 +1,4 @@
 import { getCurrentUser } from '@/lib/currentUser'
-import { isEditorUser } from '@/editor/permissions'
 import Link from 'next/link'
 
 export default async function ContributePage() {
@@ -27,12 +26,10 @@ export default async function ContributePage() {
               You do not need Payload admin for normal contribution work. Use OpenToli web pages so
               suggestions stay attributed, moderated, and separate from canonical terms.
             </p>
-            <div className="account-actions">
-              {isEditorUser(user) ? <Link href="/review/ai-drafts">Open Draft Inbox</Link> : null}
-              <Link href="/drafts">Review public drafts</Link>
-              <Link href="/search">Find a term</Link>
-              <Link href="/workflow">How workflow works</Link>
-            </div>
+            <p className="muted-copy">
+              Use the main menu for Public drafts, Search, Workflow, Profile, and the Editor Draft
+              Inbox when your role has access.
+            </p>
           </>
         ) : (
           <>
@@ -44,11 +41,10 @@ export default async function ContributePage() {
               Contributors work from public draft pages. Editors review drafts from the web Draft
               Inbox. The admin panel is not the normal place to suggest translations.
             </p>
-            <div className="account-actions">
-              <Link href="/login?next=%2Fcontribute">Sign in</Link>
-              <Link href="/register?next=%2Fcontribute">Create account</Link>
-              <Link href="/workflow">See workflow</Link>
-            </div>
+            <p className="muted-copy">
+              Use the main menu to log in, create an account, open Public drafts, or read the
+              Workflow guide.
+            </p>
           </>
         )}
       </div>

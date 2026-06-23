@@ -32,6 +32,33 @@ test.describe('Admin Panel', () => {
     await expect(page.getByRole('link', { name: 'Create account' })).toHaveCount(0)
   })
 
+  test('shows the web profile and logs out', async ({ browser }) => {
+    const context = await browser.newContext()
+    const profilePage = await context.newPage()
+
+    try {
+      await login({ page: profilePage, user: testUser })
+      await profilePage.goto('http://localhost:3000/profile')
+
+      const profileSummary = profilePage.locator('.profile-summary')
+      const profileNext = profilePage.locator('.profile-next')
+      const primaryNav = profilePage.getByRole('navigation', { name: 'Primary navigation' })
+      await expect(profilePage.getByRole('heading', { name: testUser.name })).toBeVisible()
+      await expect(profilePage.getByText(testUser.email)).toBeVisible()
+      await expect(profilePage.getByText('Admin', { exact: true })).toBeVisible()
+      await expect(profileSummary.getByRole('link', { name: 'Draft Inbox' })).toBeVisible()
+      await expect(primaryNav.getByRole('button', { name: 'Log out' })).toHaveCount(0)
+
+      await profileNext.getByRole('button', { name: 'Log out' }).click()
+
+      await expect(profilePage).toHaveURL('http://localhost:3000/')
+      await profilePage.goto('http://localhost:3000/profile')
+      await expect(profilePage).toHaveURL(/\/login\?next=%2Fprofile$/)
+    } finally {
+      await context.close()
+    }
+  })
+
   test('opens the private Draft Inbox', async () => {
     await page.goto('http://localhost:3000/review/ai-drafts')
 

@@ -1,5 +1,6 @@
 import React from 'react'
 import './styles.css'
+import { AccountNav } from '@/app/(frontend)/components/AccountNav'
 import Link from 'next/link'
 
 export const metadata = {
@@ -30,10 +31,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
               <Link href="/search">Search</Link>
               <Link href="/workflow">Workflow</Link>
               <Link href="/drafts">Public drafts</Link>
-              <Link href="/review/ai-drafts">Draft Inbox</Link>
-              <Link className="nav-cta" href="/contribute">
-                Contribute
-              </Link>
+              <AccountNav />
             </nav>
           </div>
         </header>

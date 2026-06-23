@@ -67,7 +67,6 @@ export default function HomePage() {
         </div>
         <div className="workflow-actions">
           <Link href="/drafts">Review public drafts</Link>
-          <Link href="/contribute">Contributor guide</Link>
           <Link href="/workflow">Full workflow</Link>
         </div>
       </section>
