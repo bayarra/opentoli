@@ -86,6 +86,24 @@ processes one ready job and exits. Generated records remain private `needs_revie
 Drafts and cannot publish Terms. API keys are server-only and must never use a
 `NEXT_PUBLIC_` environment variable.
 
+## M5 Calibration
+
+The fixed Technology and Software calibration manifest is tracked at
+`data/calibration/m5-technology-software.json`. Validate it before preparing jobs:
+
+```powershell
+npm run m5:validate
+```
+
+Prepare the first five calibration jobs without calling the AI provider:
+
+```powershell
+npm run m5:prepare -- --limit=5
+```
+
+Then process one queued job at a time with `npm run ai:work`. Full workflow and review
+criteria are in [`docs/M5_CALIBRATION.md`](docs/M5_CALIBRATION.md).
+
 ## Public Draft Feedback
 
 Editors can open a sourced, non-blocked active AI Draft by setting its

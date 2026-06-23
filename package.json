@@ -13,6 +13,8 @@
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation eslint .",
+    "m5:prepare": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/prepareM5Calibration.ts",
+    "m5:validate": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/validateM5Calibration.ts",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "seed": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/seed.ts",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",

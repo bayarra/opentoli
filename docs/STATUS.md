@@ -2,8 +2,8 @@
 
 **Last updated:** 2026-06-23
 **Current milestone:** M5 - Calibration Batch
-**Milestone status:** `READY`
-**Delivery state:** M3 and M4 complete; M5 calibration batch ready to begin
+**Milestone status:** `IN_PROGRESS`
+**Delivery state:** M5 calibration manifest and first five queued jobs are ready for controlled processing
 
 ## Executive Summary
 
@@ -20,7 +20,8 @@ authenticated pending feedback, moderation, and a deliberately simple Editor exp
 one Draft Inbox, four editable fields, background save, one Publish action, and secondary
 Hide. Audit, source, and AI provenance remain automatic in the background. Keyboard-only
 critical flows and serious WCAG A/AA violations now have automated browser coverage. The
-next milestone is the controlled 50-term Technology and Software calibration batch.
+controlled 50-term Technology and Software calibration batch is now fixed in a tracked
+manifest, and the first five private preparation jobs are queued without provider calls.
 
 ## Milestone Status
 
@@ -31,7 +32,7 @@ next milestone is the controlled 50-term Technology and Software calibration bat
 | M2  | Editorial data core                          | `DONE`        | Attributed reviewer/moderator workflow and public vertical slice verified |
 | M3  | AI preparation pipeline                      | `DONE`        | Live OpenAI job 33 completed; draft 22 retained; idempotency verified     |
 | M4  | Public draft feedback and simple editor flow | `DONE`        | All exit criteria pass with 26 integration and 9 browser tests            |
-| M5  | Calibration batch                            | `READY`       | M3 and M4 gates are complete; target and sample terms are documented      |
+| M5  | Calibration batch                            | `IN_PROGRESS` | Fixed 50-term manifest validates; first five jobs are queued              |
 | M6  | Public dictionary                            | `PLANNED`     | Required pages are documented                                             |
 | M7  | Search and discovery                         | `PLANNED`     | Ranking and filters are documented                                        |
 | M8  | Community accounts and contributions         | `PLANNED`     | Rich contributor features extend the basic authenticated M4 feedback path |
@@ -41,6 +42,13 @@ next milestone is the controlled 50-term Technology and Software calibration bat
 
 ### 2026-06-23
 
+- Started M5 with a fixed 50-term Technology and Software calibration manifest at `data/calibration/m5-technology-software.json`.
+- Added `npm run m5:validate` and passed manifest validation: 50 terms, 8 source groups, 31 ambiguous terms, 9 domain-sensitive terms, and 10 straightforward terms.
+- Added `npm run m5:prepare`, which creates or reuses private draft Terms, Sources, an Import Batch, and Generation Jobs without calling the AI provider.
+- Prepared the first five M5 calibration terms with `npm run m5:prepare -- --limit=5`: 5 Terms, 7 Sources, and 5 Generation Jobs were created; no AI provider calls were made.
+- Re-ran `npm run m5:prepare -- --limit=5` and verified idempotency: 0 new Terms, 0 new Sources, and 0 new Generation Jobs.
+- Added `docs/M5_CALIBRATION.md` with run policy, review rubric, stop conditions, metrics, and go/no-go decision template.
+- Passed `npm run typecheck` and `npm run lint` after adding the M5 workflow.
 - Completed the live M3 OpenAI calibration for `authentication`: generation job 33 finished on attempt 2 with `openai:gpt-5-mini`, retained 3,365 input tokens, 3,025 output tokens, 35,002 ms latency, and no validation errors.
 - Retained private AI draft 22 as `needs_review/blocked` with one source, five alternatives, three examples, human review required, and critique evidence requiring language, domain, and source-validation review.
 - Verified idempotency with `npm run ai:prepare:authentication`: the command reused job 33 and draft 22 without changing the published Term or creating duplicate work.
@@ -154,6 +162,8 @@ next milestone is the controlled 50-term Technology and Software calibration bat
 | Simple Editor workflow    | Pass        | 3 scenarios verify background save, member denial, sourced one-action publication, Hide, and provenance                |
 | OpenAI adapter contract   | Pass        | 3 mocked tests verify strict Responses API requests, parsing, usage, and failures                                      |
 | OpenAI live calibration   | Pass        | Job 33 completed with `openai:gpt-5-mini`: 3,365 input tokens, 3,025 output tokens, 35,002 ms latency, no validation errors |
+| M5 manifest validation    | Pass        | `npm run m5:validate` passed for 50 terms and 8 source groups                                                          |
+| M5 first enqueue          | Pass        | First run created 5 Terms, 7 Sources, and 5 Generation Jobs; second run reused all records without provider calls      |
 | Migration reproducibility | Pass        | All 5 migrations apply from zero; both M4 down migrations pass in isolation                                            |
 | Local HTTP smoke          | Pass        | `/`, `/register`, and `/login` return `200`; an unknown draft returns `404`                                            |
 | M4 browser regression     | Pass        | 9 browser tests pass, including public/auth/feedback/Editor keyboard flows and serious WCAG A/AA scans                 |
@@ -161,14 +171,14 @@ next milestone is the controlled 50-term Technology and Software calibration bat
 
 ## Current Work
 
-M3 and M4 are complete. Current work moves to M5: a controlled 50-term Technology and
-Software calibration batch that measures quality, cost, latency, human edit rate, and
-review outcomes before larger corpus generation.
+M3 and M4 are complete. M5 is in progress: the fixed 50-term manifest is tracked and
+validated, and the first five jobs are queued for controlled one-at-a-time processing.
+No M5 AI provider call has been run yet.
 
 ## Next Actions
 
-1. Define and source the fixed 50-term M5 calibration input set, including ambiguous terms such as `agent`, `token`, `session`, and `repository`.
-2. Run the calibration jobs in small controlled batches and record cost, latency, acceptance, edit, rejection, disagreement, duplicate, and review-route metrics.
+1. Process one queued M5 job with `npm run ai:work`, then record token, latency, cost, validation, route, and reviewer-quality evidence before continuing.
+2. Review the first five drafts before preparing or processing terms 6-15.
 3. Repair and separately validate the historical M2 down migration ordering defect.
 
 ## Blockers

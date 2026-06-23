@@ -1,0 +1,544 @@
+{
+  "milestone": "M5",
+  "version": 1,
+  "name": "M5 Technology and Software Calibration Batch",
+  "categorySlug": "technology-software",
+  "categoryName": "Technology & Software",
+  "description": "Fixed 50-term calibration set for measuring source-grounded AI terminology quality before larger corpus generation.",
+  "runPolicy": {
+    "firstBatchSize": 5,
+    "subsequentBatchSize": 10,
+    "processOneJobCommand": "npm run ai:work",
+    "defaultPrepareCommand": "npm run m5:prepare -- --limit=5",
+    "stopConditions": [
+      "More than one generation job fails for the same validation reason.",
+      "A processed draft loses source provenance.",
+      "A processed draft implies verified or published status without editor action.",
+      "Average cost or latency is materially higher than the authentication reference run."
+    ]
+  },
+  "requiredAmbiguousTerms": ["agent", "token", "session", "repository"],
+  "sources": [
+    {
+      "id": "mdn-glossary",
+      "title": "MDN Web Docs Glossary",
+      "publisher": "Mozilla",
+      "url": "https://developer.mozilla.org/en-US/docs/Glossary",
+      "sourceType": "official_documentation",
+      "licenseNote": "Use as an English concept source only; do not copy definitions verbatim."
+    },
+    {
+      "id": "github-glossary",
+      "title": "GitHub Glossary",
+      "publisher": "GitHub Docs",
+      "url": "https://docs.github.com/en/get-started/learning-about-github/github-glossary",
+      "sourceType": "official_documentation",
+      "licenseNote": "Use as an English concept source only; do not copy definitions verbatim."
+    },
+    {
+      "id": "kubernetes-glossary",
+      "title": "Kubernetes Glossary",
+      "publisher": "Kubernetes Documentation",
+      "url": "https://kubernetes.io/docs/reference/glossary/?all=true",
+      "sourceType": "official_documentation",
+      "licenseNote": "Use as an English concept source only; do not copy definitions verbatim."
+    },
+    {
+      "id": "postgresql-glossary",
+      "title": "PostgreSQL Glossary",
+      "publisher": "PostgreSQL Documentation",
+      "url": "https://www.postgresql.org/docs/current/glossary.html",
+      "sourceType": "official_documentation",
+      "licenseNote": "Use as an English concept source only; do not copy definitions verbatim."
+    },
+    {
+      "id": "nist-csrc-glossary",
+      "title": "NIST CSRC Glossary",
+      "publisher": "National Institute of Standards and Technology",
+      "url": "https://csrc.nist.gov/glossary",
+      "sourceType": "government",
+      "licenseNote": "Use as an English concept source only; do not copy definitions verbatim."
+    },
+    {
+      "id": "microsoft-dotnet-glossary",
+      "title": ".NET Glossary",
+      "publisher": "Microsoft Learn",
+      "url": "https://learn.microsoft.com/en-us/dotnet/standard/glossary",
+      "sourceType": "official_documentation",
+      "licenseNote": "Use as an English concept source only; do not copy definitions verbatim."
+    },
+    {
+      "id": "aspnet-middleware-docs",
+      "title": "ASP.NET Core Middleware",
+      "publisher": "Microsoft Learn",
+      "url": "https://learn.microsoft.com/en-us/aspnet/core/fundamentals/middleware/",
+      "sourceType": "official_documentation",
+      "licenseNote": "Use as an English concept source only; do not copy definitions verbatim."
+    },
+    {
+      "id": "twelve-factor-config",
+      "title": "The Twelve-Factor App: Config",
+      "publisher": "The Twelve-Factor App",
+      "url": "https://12factor.net/config",
+      "sourceType": "professional_usage",
+      "licenseNote": "Use as an English concept source only; do not copy definitions verbatim."
+    }
+  ],
+  "terms": [
+    {
+      "id": "m5-ts-001",
+      "priority": 1,
+      "headwordEn": "agent",
+      "subcategory": "Software architecture",
+      "context": "software system, AI system, or automated process acting on behalf of a user or service",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["nist-csrc-glossary", "microsoft-dotnet-glossary"],
+      "notes": "Ambiguous across software agents, AI agents, user agents, and human representatives."
+    },
+    {
+      "id": "m5-ts-002",
+      "priority": 2,
+      "headwordEn": "API",
+      "subcategory": "Web development",
+      "context": "software interface used by applications to communicate",
+      "difficulty": "straightforward",
+      "sourceRefs": ["mdn-glossary"]
+    },
+    {
+      "id": "m5-ts-003",
+      "priority": 3,
+      "headwordEn": "application",
+      "subcategory": "Software development",
+      "context": "software program or service used to perform a task",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["mdn-glossary", "microsoft-dotnet-glossary"],
+      "notes": "May mean software app, submitted form, or practical use in general English."
+    },
+    {
+      "id": "m5-ts-004",
+      "priority": 4,
+      "headwordEn": "authorization",
+      "subcategory": "Cybersecurity",
+      "context": "permission decision after identity is known",
+      "difficulty": "domain_sensitive",
+      "sourceRefs": ["nist-csrc-glossary"]
+    },
+    {
+      "id": "m5-ts-005",
+      "priority": 5,
+      "headwordEn": "access control",
+      "subcategory": "Cybersecurity",
+      "context": "policy and mechanism for permitting or denying access",
+      "difficulty": "domain_sensitive",
+      "sourceRefs": ["nist-csrc-glossary"]
+    },
+    {
+      "id": "m5-ts-006",
+      "priority": 6,
+      "headwordEn": "branch",
+      "subcategory": "Version control",
+      "context": "parallel line of development in a repository",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["github-glossary"]
+    },
+    {
+      "id": "m5-ts-007",
+      "priority": 7,
+      "headwordEn": "build",
+      "subcategory": "Software delivery",
+      "context": "compiled or packaged software artifact and the process that creates it",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["github-glossary", "microsoft-dotnet-glossary"]
+    },
+    {
+      "id": "m5-ts-008",
+      "priority": 8,
+      "headwordEn": "cache",
+      "subcategory": "Web development",
+      "context": "stored copy used to serve future requests faster",
+      "difficulty": "straightforward",
+      "sourceRefs": ["mdn-glossary"]
+    },
+    {
+      "id": "m5-ts-009",
+      "priority": 9,
+      "headwordEn": "callback",
+      "subcategory": "Programming",
+      "context": "function passed to be called later",
+      "difficulty": "straightforward",
+      "sourceRefs": ["mdn-glossary"]
+    },
+    {
+      "id": "m5-ts-010",
+      "priority": 10,
+      "headwordEn": "certificate",
+      "subcategory": "Cybersecurity",
+      "context": "digital certificate used for identity and trust",
+      "difficulty": "domain_sensitive",
+      "sourceRefs": ["nist-csrc-glossary", "mdn-glossary"]
+    },
+    {
+      "id": "m5-ts-011",
+      "priority": 11,
+      "headwordEn": "client",
+      "subcategory": "Networking",
+      "context": "software or device that requests a service from a server",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["mdn-glossary"]
+    },
+    {
+      "id": "m5-ts-012",
+      "priority": 12,
+      "headwordEn": "cluster",
+      "subcategory": "Cloud and infrastructure",
+      "context": "group of machines or nodes managed as a unit",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["kubernetes-glossary"]
+    },
+    {
+      "id": "m5-ts-013",
+      "priority": 13,
+      "headwordEn": "commit",
+      "subcategory": "Version control",
+      "context": "recorded change in a version-control repository",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["github-glossary"]
+    },
+    {
+      "id": "m5-ts-014",
+      "priority": 14,
+      "headwordEn": "component",
+      "subcategory": "Software architecture",
+      "context": "modular part of a software system or user interface",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["mdn-glossary", "microsoft-dotnet-glossary"]
+    },
+    {
+      "id": "m5-ts-015",
+      "priority": 15,
+      "headwordEn": "configuration",
+      "subcategory": "Operations",
+      "context": "runtime or deployment settings separate from source code",
+      "difficulty": "straightforward",
+      "sourceRefs": ["twelve-factor-config"]
+    },
+    {
+      "id": "m5-ts-016",
+      "priority": 16,
+      "headwordEn": "container",
+      "subcategory": "Cloud and infrastructure",
+      "context": "isolated packaged runtime environment for software",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["kubernetes-glossary"]
+    },
+    {
+      "id": "m5-ts-017",
+      "priority": 17,
+      "headwordEn": "cookie",
+      "subcategory": "Web development",
+      "context": "small piece of browser-stored state sent with web requests",
+      "difficulty": "straightforward",
+      "sourceRefs": ["mdn-glossary"]
+    },
+    {
+      "id": "m5-ts-018",
+      "priority": 18,
+      "headwordEn": "database",
+      "subcategory": "Databases",
+      "context": "organized data store managed by database software",
+      "difficulty": "straightforward",
+      "sourceRefs": ["postgresql-glossary"]
+    },
+    {
+      "id": "m5-ts-019",
+      "priority": 19,
+      "headwordEn": "dependency",
+      "subcategory": "Software development",
+      "context": "external package, library, or service required by software",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["github-glossary", "microsoft-dotnet-glossary"]
+    },
+    {
+      "id": "m5-ts-020",
+      "priority": 20,
+      "headwordEn": "deployment",
+      "subcategory": "DevOps",
+      "context": "process or resource for releasing software into an environment",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["kubernetes-glossary", "github-glossary"]
+    },
+    {
+      "id": "m5-ts-021",
+      "priority": 21,
+      "headwordEn": "encryption",
+      "subcategory": "Cybersecurity",
+      "context": "protecting data by transforming it with cryptographic keys",
+      "difficulty": "domain_sensitive",
+      "sourceRefs": ["nist-csrc-glossary"]
+    },
+    {
+      "id": "m5-ts-022",
+      "priority": 22,
+      "headwordEn": "endpoint",
+      "subcategory": "Web APIs",
+      "context": "network-accessible URL or interface where a service can be reached",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["mdn-glossary", "kubernetes-glossary"]
+    },
+    {
+      "id": "m5-ts-023",
+      "priority": 23,
+      "headwordEn": "environment variable",
+      "subcategory": "Operations",
+      "context": "named runtime setting supplied outside the application code",
+      "difficulty": "straightforward",
+      "sourceRefs": ["twelve-factor-config"]
+    },
+    {
+      "id": "m5-ts-024",
+      "priority": 24,
+      "headwordEn": "framework",
+      "subcategory": "Software development",
+      "context": "structured reusable software foundation for building applications",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["microsoft-dotnet-glossary", "mdn-glossary"]
+    },
+    {
+      "id": "m5-ts-025",
+      "priority": 25,
+      "headwordEn": "header",
+      "subcategory": "Web protocols",
+      "context": "metadata field sent with HTTP messages",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["mdn-glossary"]
+    },
+    {
+      "id": "m5-ts-026",
+      "priority": 26,
+      "headwordEn": "image",
+      "subcategory": "Cloud and infrastructure",
+      "context": "packaged filesystem and metadata used to run a container",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["kubernetes-glossary"]
+    },
+    {
+      "id": "m5-ts-027",
+      "priority": 27,
+      "headwordEn": "index",
+      "subcategory": "Databases",
+      "context": "database structure that helps locate rows efficiently",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["postgresql-glossary"]
+    },
+    {
+      "id": "m5-ts-028",
+      "priority": 28,
+      "headwordEn": "ingress",
+      "subcategory": "Cloud and infrastructure",
+      "context": "rules for external access into services in a cluster",
+      "difficulty": "domain_sensitive",
+      "sourceRefs": ["kubernetes-glossary"]
+    },
+    {
+      "id": "m5-ts-029",
+      "priority": 29,
+      "headwordEn": "library",
+      "subcategory": "Software development",
+      "context": "reusable code called by an application",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["microsoft-dotnet-glossary", "mdn-glossary"]
+    },
+    {
+      "id": "m5-ts-030",
+      "priority": 30,
+      "headwordEn": "merge",
+      "subcategory": "Version control",
+      "context": "combining changes from one branch into another",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["github-glossary"]
+    },
+    {
+      "id": "m5-ts-031",
+      "priority": 31,
+      "headwordEn": "middleware",
+      "subcategory": "Web development",
+      "context": "software in a request pipeline that handles cross-cutting behavior",
+      "difficulty": "domain_sensitive",
+      "sourceRefs": ["aspnet-middleware-docs"]
+    },
+    {
+      "id": "m5-ts-032",
+      "priority": 32,
+      "headwordEn": "migration",
+      "subcategory": "Databases",
+      "context": "managed change to a database schema or application state",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["postgresql-glossary", "microsoft-dotnet-glossary"]
+    },
+    {
+      "id": "m5-ts-033",
+      "priority": 33,
+      "headwordEn": "module",
+      "subcategory": "Programming",
+      "context": "self-contained code unit that exports or groups functionality",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["mdn-glossary", "microsoft-dotnet-glossary"]
+    },
+    {
+      "id": "m5-ts-034",
+      "priority": 34,
+      "headwordEn": "namespace",
+      "subcategory": "Cloud and infrastructure",
+      "context": "scope or grouping used to separate names and resources",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["kubernetes-glossary", "microsoft-dotnet-glossary"]
+    },
+    {
+      "id": "m5-ts-035",
+      "priority": 35,
+      "headwordEn": "package",
+      "subcategory": "Software development",
+      "context": "distributed unit of reusable software or dependency",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["github-glossary", "microsoft-dotnet-glossary"]
+    },
+    {
+      "id": "m5-ts-036",
+      "priority": 36,
+      "headwordEn": "payload",
+      "subcategory": "Web APIs",
+      "context": "application data carried inside a message or request",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["mdn-glossary"]
+    },
+    {
+      "id": "m5-ts-037",
+      "priority": 37,
+      "headwordEn": "permission",
+      "subcategory": "Cybersecurity",
+      "context": "allowed action or access right granted to an identity",
+      "difficulty": "domain_sensitive",
+      "sourceRefs": ["nist-csrc-glossary"]
+    },
+    {
+      "id": "m5-ts-038",
+      "priority": 38,
+      "headwordEn": "pod",
+      "subcategory": "Cloud and infrastructure",
+      "context": "smallest deployable compute unit in Kubernetes",
+      "difficulty": "domain_sensitive",
+      "sourceRefs": ["kubernetes-glossary"]
+    },
+    {
+      "id": "m5-ts-039",
+      "priority": 39,
+      "headwordEn": "query",
+      "subcategory": "Databases",
+      "context": "request for data or an operation against a database",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["postgresql-glossary"]
+    },
+    {
+      "id": "m5-ts-040",
+      "priority": 40,
+      "headwordEn": "repository",
+      "subcategory": "Version control",
+      "context": "version-controlled project storage containing code and history",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["github-glossary"],
+      "notes": "Also means general storage or institutional archive outside software."
+    },
+    {
+      "id": "m5-ts-041",
+      "priority": 41,
+      "headwordEn": "request",
+      "subcategory": "Web protocols",
+      "context": "message sent by a client asking a server to perform an action",
+      "difficulty": "straightforward",
+      "sourceRefs": ["mdn-glossary"]
+    },
+    {
+      "id": "m5-ts-042",
+      "priority": 42,
+      "headwordEn": "response",
+      "subcategory": "Web protocols",
+      "context": "message returned by a server after receiving a request",
+      "difficulty": "straightforward",
+      "sourceRefs": ["mdn-glossary"]
+    },
+    {
+      "id": "m5-ts-043",
+      "priority": 43,
+      "headwordEn": "runtime",
+      "subcategory": "Software development",
+      "context": "environment and services available while code executes",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["microsoft-dotnet-glossary", "mdn-glossary"]
+    },
+    {
+      "id": "m5-ts-044",
+      "priority": 44,
+      "headwordEn": "schema",
+      "subcategory": "Databases",
+      "context": "structured definition or namespace for database objects or data shape",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["postgresql-glossary", "mdn-glossary"]
+    },
+    {
+      "id": "m5-ts-045",
+      "priority": 45,
+      "headwordEn": "server",
+      "subcategory": "Networking",
+      "context": "software or machine that provides services to clients",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["mdn-glossary"]
+    },
+    {
+      "id": "m5-ts-046",
+      "priority": 46,
+      "headwordEn": "service",
+      "subcategory": "Cloud and infrastructure",
+      "context": "networked software capability or Kubernetes resource exposing pods",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["kubernetes-glossary", "mdn-glossary"]
+    },
+    {
+      "id": "m5-ts-047",
+      "priority": 47,
+      "headwordEn": "session",
+      "subcategory": "Web development",
+      "context": "stateful interaction period between a user/client and a system",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["mdn-glossary"],
+      "notes": "Often confused with authentication, login state, cookies, or database sessions."
+    },
+    {
+      "id": "m5-ts-048",
+      "priority": 48,
+      "headwordEn": "token",
+      "subcategory": "Cybersecurity",
+      "context": "credential or symbolic value used in authentication, authorization, parsing, or APIs",
+      "difficulty": "ambiguous",
+      "sourceRefs": ["nist-csrc-glossary", "mdn-glossary"],
+      "notes": "Ambiguous across access tokens, CSRF tokens, lexical tokens, and AI tokens."
+    },
+    {
+      "id": "m5-ts-049",
+      "priority": 49,
+      "headwordEn": "transaction",
+      "subcategory": "Databases",
+      "context": "unit of database work with consistency and commit/rollback behavior",
+      "difficulty": "domain_sensitive",
+      "sourceRefs": ["postgresql-glossary"]
+    },
+    {
+      "id": "m5-ts-050",
+      "priority": 50,
+      "headwordEn": "webhook",
+      "subcategory": "Web APIs",
+      "context": "HTTP callback sent by one system to notify another of an event",
+      "difficulty": "straightforward",
+      "sourceRefs": ["github-glossary", "mdn-glossary"]
+    }
+  ]
+}
