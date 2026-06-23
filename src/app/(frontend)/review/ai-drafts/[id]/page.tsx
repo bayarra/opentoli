@@ -33,6 +33,10 @@ export default async function AIDraftEditorPage({ params }: EditorPageProps) {
           <p className="eyebrow">Edit AI Draft</p>
           <h1>{draft.inputHeadword}</h1>
           <p>{[data.category, data.context].filter(Boolean).join(' / ')}</p>
+          <p>
+            Edit the public wording here. Sources and community suggestions are shown below; raw
+            AI evidence stays in the background.
+          </p>
         </div>
         <div className="review-queue-badges">
           <span>

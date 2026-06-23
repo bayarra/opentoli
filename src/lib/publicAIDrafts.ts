@@ -98,3 +98,41 @@ export const getPublicAIDraftById = async (id: number) => {
     updatedAt: draft.updatedAt,
   }
 }
+
+export const getPublicAIDrafts = async () => {
+  const payload = await getPayloadClient()
+  const result = await payload.find({
+    collection: 'ai-drafts',
+    depth: 1,
+    limit: 50,
+    overrideAccess: true,
+    sort: '-updatedAt',
+    where: {
+      and: [
+        { publicVisibility: { equals: 'public' } },
+        { status: { in: ['editing', 'needs_review'] } },
+      ],
+    },
+  })
+
+  return (result.docs as AiDraft[]).flatMap((draft) => {
+    if (draft.reviewRoute === 'blocked') return []
+
+    let generated
+    try {
+      generated = validateGenerationOutputV1(draft.generatedPayload)
+    } catch {
+      return []
+    }
+
+    return [
+      {
+        category: relationName(draft.inputCategory),
+        headwordEn: draft.inputHeadword,
+        id: draft.id,
+        recommendedTranslationMn: generated.recommendedTranslationMn,
+        updatedAt: draft.updatedAt,
+      },
+    ]
+  })
+}

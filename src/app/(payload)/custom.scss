@@ -1,0 +1,19 @@
+.payload-open-toli-link {
+  background: #143f73;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 12px;
+  position: fixed;
+  right: 18px;
+  text-decoration: none;
+  top: 18px;
+  z-index: 1000;
+}
+
+.payload-open-toli-link:focus,
+.payload-open-toli-link:hover {
+  background: #10233f;
+  color: #fff;
+}

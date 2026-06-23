@@ -4,6 +4,7 @@ import config from '@payload-config'
 import '@payloadcms/next/css'
 import type { ServerFunctionClient } from 'payload'
 import { handleServerFunctions, RootLayout } from '@payloadcms/next/layouts'
+import Link from 'next/link'
 import React from 'react'
 
 import { importMap } from './admin/importMap.js'
@@ -24,6 +25,9 @@ const serverFunction: ServerFunctionClient = async function (args) {
 
 const Layout = ({ children }: Args) => (
   <RootLayout config={config} importMap={importMap} serverFunction={serverFunction}>
+    <Link className="payload-open-toli-link" href="/">
+      Back to OpenToli
+    </Link>
     {children}
   </RootLayout>
 )

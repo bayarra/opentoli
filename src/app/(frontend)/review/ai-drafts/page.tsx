@@ -24,13 +24,17 @@ export default async function DraftInboxPage() {
 
   return (
     <main className="content-page reviewer-page">
-      <Link className="back-link" href="/admin">
-        Back to Admin
+      <Link className="back-link" href="/">
+        Back to OpenToli
       </Link>
       <header className="reviewer-heading">
         <div>
           <p className="eyebrow">Simple editor workflow</p>
           <h1>Draft Inbox</h1>
+          <p>
+            Work here, not in Payload admin, for normal terminology decisions. Open a draft, edit
+            the four public fields, then Publish or Hide.
+          </p>
         </div>
         <p>{drafts.length} active drafts</p>
       </header>

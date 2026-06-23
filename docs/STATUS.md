@@ -42,6 +42,12 @@ manifest, and the first five private preparation jobs are queued without provide
 
 ### 2026-06-23
 
+- Added a global OpenToli web header with explicit Home, Search, Workflow, Public drafts, Draft Inbox, and Contribute navigation.
+- Added `/workflow` to explain Visitor, Member, and Editor responsibilities and to state that normal terminology work should happen in OpenToli web, not Payload admin.
+- Added `/drafts` as the contributor-facing list of public unverified AI drafts, including an empty state that explains what to do when no drafts are open.
+- Added a persistent `Back to OpenToli` link to the Payload admin shell for users who enter admin maintenance screens.
+- Reworked homepage, Contribute, Draft Inbox, and draft editor copy so contributors use public draft feedback and Editors use the web Draft Inbox for publish/hide decisions.
+- Passed `npm run typecheck`, `npm run lint`, `npm run test:int`, `npm run test:e2e`, and `npm run build` after the web workflow navigation changes.
 - Started M5 with a fixed 50-term Technology and Software calibration manifest at `data/calibration/m5-technology-software.json`.
 - Added `npm run m5:validate` and passed manifest validation: 50 terms, 8 source groups, 31 ambiguous terms, 9 domain-sensitive terms, and 10 straightforward terms.
 - Added `npm run m5:prepare`, which creates or reuses private draft Terms, Sources, an Import Batch, and Generation Jobs without calling the AI provider.
@@ -167,6 +173,7 @@ manifest, and the first five private preparation jobs are queued without provide
 | Migration reproducibility | Pass        | All 5 migrations apply from zero; both M4 down migrations pass in isolation                                            |
 | Local HTTP smoke          | Pass        | `/`, `/register`, and `/login` return `200`; an unknown draft returns `404`                                            |
 | M4 browser regression     | Pass        | 9 browser tests pass, including public/auth/feedback/Editor keyboard flows and serious WCAG A/AA scans                 |
+| Web workflow navigation   | Pass        | Global web navigation, `/workflow`, `/drafts`, and admin Back link build successfully; 9 browser tests pass             |
 | Historical full rollback  | Known issue | M2 `editorial_core` down migration has an existing lock-relation drop-order defect                                     |
 
 ## Current Work
