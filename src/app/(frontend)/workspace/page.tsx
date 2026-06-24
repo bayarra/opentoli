@@ -1,3 +1,4 @@
+import { WorkspaceShell } from '@/app/(frontend)/components/WorkspaceShell'
 import { getEditorWorkspace } from '@/editor/workspace'
 import { getCurrentUser } from '@/lib/currentUser'
 import type { Metadata } from 'next'
@@ -40,7 +41,8 @@ export default async function WorkspacePage() {
   }
 
   return (
-    <main className="content-page workspace-page">
+    <WorkspaceShell>
+      <main className="content-page workspace-page">
       <div className="page-heading">
         <p className="eyebrow">Editor workspace</p>
         <h1>Terminology and agent work, without opening admin.</h1>
@@ -52,11 +54,11 @@ export default async function WorkspacePage() {
       </div>
 
       <section className="workspace-actions" aria-label="Workspace actions">
-        <Link href="/review/ai-drafts">Open Draft Inbox</Link>
+        <Link href="/workspace/drafts">Open Draft Inbox</Link>
         <Link href="/workspace/feedback">Moderate feedback</Link>
+        <Link href="/workspace/jobs">Agent jobs</Link>
+        <Link href="/workspace/calibration">Calibration</Link>
         <Link href="/drafts">Public drafts</Link>
-        <Link href="/search">Search terms</Link>
-        <Link href="/workflow">Workflow guide</Link>
       </section>
 
       <section className="metric-grid" aria-label="Workspace summary">
@@ -168,6 +170,7 @@ export default async function WorkspacePage() {
           {workspace.terms.length === 0 ? <p>No published terms yet.</p> : null}
         </div>
       </section>
-    </main>
+      </main>
+    </WorkspaceShell>
   )
 }

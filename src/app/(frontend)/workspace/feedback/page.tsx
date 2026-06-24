@@ -1,4 +1,5 @@
 import { FeedbackModerationForm } from '@/app/(frontend)/components/FeedbackModerationForm'
+import { WorkspaceShell } from '@/app/(frontend)/components/WorkspaceShell'
 import { getPendingFeedback } from '@/editor/feedback'
 import { getCurrentUser } from '@/lib/currentUser'
 import type { Metadata } from 'next'
@@ -36,7 +37,8 @@ export default async function FeedbackModerationPage() {
   }
 
   return (
-    <main className="content-page moderation-page">
+    <WorkspaceShell>
+      <main className="content-page moderation-page">
       <Link className="back-link" href="/workspace">
         Back to Workspace
       </Link>
@@ -80,6 +82,7 @@ export default async function FeedbackModerationPage() {
           ))}
         </div>
       )}
-    </main>
+      </main>
+    </WorkspaceShell>
   )
 }

@@ -75,7 +75,7 @@ test.describe('M4 accessibility', () => {
     const context = await browser.newContext()
     const page = await context.newPage()
     await login({ page, user: fixture.user })
-    await page.goto(`${serverURL}/review/ai-drafts/${fixture.draftId}`)
+    await page.goto(`${serverURL}/workspace/drafts/${fixture.draftId}`)
 
     await expect(page.getByRole('heading', { name: /keyboard workflow/i })).toBeVisible()
     await expectNoSeriousAccessibilityViolations(page)
@@ -87,7 +87,8 @@ test.describe('M4 accessibility', () => {
     await expect(page.getByRole('status')).toHaveText('Changes saved', { timeout: 10_000 })
 
     const more = page.locator('summary', { hasText: 'More' })
-    await focusByTab(page, more)
+    await more.focus()
+    await expect(more).toBeFocused()
     await page.keyboard.press('Enter')
     await expect(page.getByRole('button', { name: 'Hide draft' })).toBeVisible()
     await expectNoSeriousAccessibilityViolations(page)
@@ -98,7 +99,7 @@ test.describe('M4 accessibility', () => {
     const context = await browser.newContext()
     const page = await context.newPage()
     await login({ page, user: fixture.user })
-    await page.goto(`${serverURL}/review/ai-drafts/${fixture.draftId}`)
+    await page.goto(`${serverURL}/workspace/drafts/${fixture.draftId}`)
 
     await expect(page.getByText('OpenToli Accessibility Tests / not verified')).toBeVisible()
 

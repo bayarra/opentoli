@@ -17,7 +17,7 @@ contracts, provider-neutral staged execution, idempotent enqueueing, retry resum
 risk routing, retained provenance, deterministic end-to-end evidence, and a completed live
 OpenAI reference run for `authentication`. M4 now has an explicit safe public projection, registration,
 authenticated pending feedback, moderation, and a deliberately simple Editor experience:
-one Draft Inbox, four editable fields, web source verification, background save, one
+one Workspace menu, one Draft Inbox, four editable fields, web source verification, background save, one
 Publish action, and secondary Hide. Audit and AI provenance remain automatic in the
 background, while unsafe source URLs cannot be verified for public citation. Keyboard-only
 critical flows and serious WCAG A/AA violations now have automated browser coverage. The
@@ -32,7 +32,7 @@ manifest, and the first five private preparation jobs are queued without provide
 | M1  | Application foundation                       | `DONE`        | Clean migration, seed, tests, build, HTTP, and browser evidence recorded  |
 | M2  | Editorial data core                          | `DONE`        | Attributed reviewer/moderator workflow and public vertical slice verified |
 | M3  | AI preparation pipeline                      | `DONE`        | Live OpenAI job 33 completed; draft 22 retained; idempotency verified     |
-| M4  | Public draft feedback and simple editor flow | `DONE`        | All exit criteria pass with 27 integration and 13 browser tests           |
+| M4  | Public draft feedback and simple editor flow | `DONE`        | All exit criteria pass with 27 integration and 15 browser tests           |
 | M5  | Calibration batch                            | `IN_PROGRESS` | Fixed 50-term manifest validates; first five jobs are queued              |
 | M6  | Public dictionary                            | `PLANNED`     | Required pages are documented                                             |
 | M7  | Search and discovery                         | `PLANNED`     | Ranking and filters are documented                                        |
@@ -43,6 +43,11 @@ manifest, and the first five private preparation jobs are queued without provide
 
 ### 2026-06-24
 
+- Added a shared Workspace shell and menu so Editor tools are organized under Overview, Draft Inbox, Feedback, Agent Jobs, Calibration, public references, and admin maintenance.
+- Moved the canonical Draft Inbox and draft editor routes to `/workspace/drafts` and `/workspace/drafts/[id]`, while keeping `/review/ai-drafts` and `/review/ai-drafts/[id]` as compatibility redirects.
+- Added read-only `/workspace/jobs` and `/workspace/calibration` pages so Editors can inspect safe agent-job and M5 calibration status without opening Payload admin.
+- Updated browser coverage for Workspace navigation, legacy Draft Inbox redirects, Agent Jobs, Calibration, and the new draft editor route.
+- Passed `npm run typecheck`, `npm run lint`, `npm run test:int`, `npm run test:e2e`, `npm run build`, and a final `npm run typecheck` after the Workspace menu restructure.
 - Added Draft Inbox source verification so Editors can mark draft sources verified from OpenToli web instead of opening Payload admin.
 - Added `/api/editor/sources/[id]` and `verifySource`, which require Editor access and reject non-HTTP(S) source URLs before a source can become verified public evidence.
 - Added integration coverage proving members cannot verify sources, Editors can verify safe sources idempotently, and unsafe URLs are rejected.
@@ -197,20 +202,21 @@ manifest, and the first five private preparation jobs are queued without provide
 | M5 first enqueue          | Pass        | First run created 5 Terms, 7 Sources, and 5 Generation Jobs; second run reused all records without provider calls      |
 | Migration reproducibility | Pass        | All 5 migrations apply from zero; both M4 down migrations pass in isolation                                            |
 | Local HTTP smoke          | Pass        | `/`, `/register`, and `/login` return `200`; an unknown draft returns `404`                                            |
-| M4 browser regression     | Pass        | 13 browser tests pass, including public/auth/feedback/Editor keyboard flows, source verification, and serious WCAG A/AA scans |
-| Web workflow navigation   | Pass        | Global web navigation, `/workflow`, `/drafts`, `/workspace`, `/workspace/feedback`, and admin Back link build successfully; 13 browser tests pass |
-| Web account workflow      | Pass        | `/profile`, header account links, editor Workspace visibility, and Profile-only Payload-backed logout pass in 13 browser tests |
-| Editor web Workspace      | Pass        | `/workspace` shows safe draft, feedback, generation job, batch, and published-term summaries without raw AI outputs     |
+| M4 browser regression     | Pass        | 15 browser tests pass, including public/auth/feedback/Editor keyboard flows, source verification, and serious WCAG A/AA scans |
+| Web workflow navigation   | Pass        | Global web navigation, `/workflow`, `/drafts`, `/workspace`, `/workspace/drafts`, `/workspace/feedback`, `/workspace/jobs`, `/workspace/calibration`, and admin Back link build successfully; 15 browser tests pass |
+| Web account workflow      | Pass        | `/profile`, header account links, editor Workspace visibility, and Profile-only Payload-backed logout pass in 15 browser tests |
+| Editor web Workspace      | Pass        | `/workspace` and Workspace menu organize draft, feedback, generation job, calibration, batch, and published-term summaries without raw AI outputs |
 | Feedback Moderation       | Pass        | `/workspace/feedback` and `/api/editor/feedback/[id]` let Editors approve, reject, or hide pending feedback without canonical mutations |
-| Source Verification       | Pass        | Draft source verification works from `/review/ai-drafts/[id]`; member access and unsafe source URLs are rejected       |
+| Source Verification       | Pass        | Draft source verification works from `/workspace/drafts/[id]`; member access and unsafe source URLs are rejected       |
 | Historical full rollback  | Known issue | M2 `editorial_core` down migration has an existing lock-relation drop-order defect                                     |
 
 ## Current Work
 
-M3 and M4 are complete. Normal Editor work for drafts, feedback moderation, and source
-verification now happens in OpenToli web. M5 is in progress: the fixed 50-term manifest
-is tracked and validated, and the first five jobs are queued for controlled one-at-a-time
-processing. No M5 AI provider call has been run yet.
+M3 and M4 are complete. Normal Editor work for drafts, feedback moderation, source
+verification, agent-job status, and calibration status now lives under the Workspace menu
+in OpenToli web. M5 is in progress: the fixed 50-term manifest is tracked and validated,
+and the first five jobs are queued for controlled one-at-a-time processing. No M5 AI
+provider call has been run yet.
 
 ## Next Actions
 

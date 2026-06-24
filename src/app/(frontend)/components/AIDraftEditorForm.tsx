@@ -100,7 +100,7 @@ export function AIDraftEditorForm({ draftId, initial }: EditorFormProps) {
       setPublishing(false)
       return
     }
-    window.location.assign('/review/ai-drafts')
+    window.location.assign('/workspace/drafts')
   }
 
   return (

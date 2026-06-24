@@ -60,17 +60,32 @@ test.describe('Admin Panel', () => {
   })
 
   test('opens the private Draft Inbox', async () => {
+    await page.goto('http://localhost:3000/workspace/drafts')
+
+    await expect(page.getByRole('navigation', { name: 'Workspace navigation' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Draft Inbox' })).toBeVisible()
+  })
+
+  test('redirects the old Draft Inbox route into Workspace', async () => {
     await page.goto('http://localhost:3000/review/ai-drafts')
 
+    await expect(page).toHaveURL('http://localhost:3000/workspace/drafts')
     await expect(page.getByRole('heading', { name: 'Draft Inbox' })).toBeVisible()
   })
 
   test('opens the web Workspace for terminology and agent work', async () => {
     await page.goto('http://localhost:3000/workspace')
 
+    const workspaceNav = page.getByRole('navigation', { name: 'Workspace navigation' })
+    const workspaceActions = page.getByRole('region', { name: 'Workspace actions' })
     await expect(page.getByRole('heading', { name: /Terminology and agent work/ })).toBeVisible()
-    await expect(page.getByRole('link', { name: 'Open Draft Inbox' })).toBeVisible()
-    await expect(page.getByRole('link', { name: 'Moderate feedback' })).toBeVisible()
+    await expect(workspaceNav.getByRole('link', { name: 'Draft Inbox' })).toBeVisible()
+    await expect(workspaceNav.getByRole('link', { name: 'Agent Jobs' })).toBeVisible()
+    await expect(workspaceNav.getByRole('link', { name: 'Calibration' })).toBeVisible()
+    await expect(workspaceActions.getByRole('link', { name: 'Open Draft Inbox' })).toBeVisible()
+    await expect(workspaceActions.getByRole('link', { name: 'Moderate feedback' })).toBeVisible()
+    await expect(workspaceActions.getByRole('link', { name: 'Agent jobs' })).toBeVisible()
+    await expect(workspaceActions.getByRole('link', { name: 'Calibration' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Recent generation jobs' })).toBeVisible()
   })
 
@@ -82,6 +97,21 @@ test.describe('Admin Panel', () => {
     await expect(
       page.getByRole('heading', { name: /Review comments and translation suggestions/ }),
     ).toBeVisible()
+  })
+
+  test('opens Agent Jobs and Calibration from the Workspace menu', async () => {
+    await page.goto('http://localhost:3000/workspace')
+
+    const workspaceNav = page.getByRole('navigation', { name: 'Workspace navigation' })
+    await workspaceNav.getByRole('link', { name: 'Agent Jobs' }).click()
+    await expect(page).toHaveURL('http://localhost:3000/workspace/jobs', { timeout: 20_000 })
+    await expect(page.getByRole('heading', { name: /Track AI preparation/ })).toBeVisible()
+
+    await workspaceNav.getByRole('link', { name: 'Calibration' }).click()
+    await expect(page).toHaveURL('http://localhost:3000/workspace/calibration', {
+      timeout: 20_000,
+    })
+    await expect(page.getByRole('heading', { name: /Track the fixed 50-term/ })).toBeVisible()
   })
 
   test('can navigate to list view', async () => {

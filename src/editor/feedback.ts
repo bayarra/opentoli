@@ -42,7 +42,7 @@ const targetFor = (comment: Comment) => {
   if (comment.aiDraft) {
     const id = relationshipId(comment.aiDraft)
     return {
-      href: id ? `/review/ai-drafts/${id}` : null,
+      href: id ? `/workspace/drafts/${id}` : null,
       label: relationshipLabel(comment.aiDraft, 'inputHeadword') || 'AI draft',
       type: 'AI Draft',
     }
