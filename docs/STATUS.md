@@ -3,7 +3,7 @@
 **Last updated:** 2026-06-24
 **Current milestone:** M5 - Calibration Batch
 **Milestone status:** `IN_PROGRESS`
-**Delivery state:** M5 calibration manifest and first five queued jobs are ready for controlled processing
+**Delivery state:** M5 calibration manifest and first five queued jobs are ready; `/api/v1` read contracts are implemented for public and Editor views
 
 ## Executive Summary
 
@@ -20,7 +20,9 @@ authenticated pending feedback, moderation, and a deliberately simple Editor exp
 one Workspace menu, one Draft Inbox, four editable fields, web source verification, background save, one
 Publish action, and secondary Hide. Audit and AI provenance remain automatic in the
 background, while unsafe source URLs cannot be verified for public citation. Keyboard-only
-critical flows and serious WCAG A/AA violations now have automated browser coverage. The
+critical flows and serious WCAG A/AA violations now have automated browser coverage. Stable
+`/api/v1` read contracts now expose public search, terms, categories, public AI drafts, and
+Editor Workspace summaries without leaking raw Payload records or private AI evidence. The
 controlled 50-term Technology and Software calibration batch is now fixed in a tracked
 manifest, and the first five private preparation jobs are queued without provider calls.
 
@@ -48,6 +50,10 @@ manifest, and the first five private preparation jobs are queued without provide
 - Added read-only `/workspace/jobs` and `/workspace/calibration` pages so Editors can inspect safe agent-job and M5 calibration status without opening Payload admin.
 - Updated browser coverage for Workspace navigation, legacy Draft Inbox redirects, Agent Jobs, Calibration, and the new draft editor route.
 - Passed `npm run typecheck`, `npm run lint`, `npm run test:int`, `npm run test:e2e`, `npm run build`, and a final `npm run typecheck` after the Workspace menu restructure.
+- Added stable public read endpoints: `GET /api/v1/search`, `GET /api/v1/terms/[slug]`, `GET /api/v1/categories`, `GET /api/v1/categories/[slug]`, `GET /api/v1/drafts`, and `GET /api/v1/drafts/[id]`.
+- Added stable Editor read endpoints: `GET /api/v1/editor/workspace`, `GET /api/v1/editor/drafts`, `GET /api/v1/editor/drafts/[id]`, `GET /api/v1/editor/feedback`, `GET /api/v1/editor/jobs`, and `GET /api/v1/editor/calibration`.
+- Added API v1 contract coverage proving public term/category shapes, public AI draft redaction, and unauthenticated Editor API denial.
+- Passed `npm run typecheck`, `npm run lint`, `npm run test:int` with 30 integration tests in 9 files, and `npm run build` after adding `/api/v1` read contracts.
 - Added Draft Inbox source verification so Editors can mark draft sources verified from OpenToli web instead of opening Payload admin.
 - Added `/api/editor/sources/[id]` and `verifySource`, which require Editor access and reject non-HTTP(S) source URLs before a source can become verified public evidence.
 - Added integration coverage proving members cannot verify sources, Editors can verify safe sources idempotently, and unsafe URLs are rejected.
@@ -193,7 +199,8 @@ manifest, and the first five private preparation jobs are queued without provide
 | Production build          | Pass        | Next.js generated all current public and Payload routes                                                                |
 | HTTP smoke test           | Pass        | `/` and `/search?q=authentication` returned `200`                                                                      |
 | Hydration smoke test      | Pass        | Clean Chrome profile produced no hydration warning                                                                     |
-| Database integration      | Pass        | 27 self-contained integration tests in 8 files pass against PostgreSQL without requiring seed data                     |
+| Database integration      | Pass        | 30 self-contained integration tests in 9 files pass against PostgreSQL without requiring seed data                     |
+| API v1 read contracts     | Pass        | Public search, term, category, public draft redaction, and Editor auth-denial contract tests pass                     |
 | Public draft feedback     | Pass        | 4 scenarios verify projection redaction, registration roles, pending moderation, throttling, and resolved-draft hiding |
 | Simple Editor workflow    | Pass        | 4 scenarios verify background save, member denial, source verification, sourced one-action publication, Hide, and provenance |
 | OpenAI adapter contract   | Pass        | 3 mocked tests verify strict Responses API requests, parsing, usage, and failures                                      |
@@ -214,15 +221,20 @@ manifest, and the first five private preparation jobs are queued without provide
 
 M3 and M4 are complete. Normal Editor work for drafts, feedback moderation, source
 verification, agent-job status, and calibration status now lives under the Workspace menu
-in OpenToli web. M5 is in progress: the fixed 50-term manifest is tracked and validated,
-and the first five jobs are queued for controlled one-at-a-time processing. No M5 AI
-provider call has been run yet.
+in OpenToli web. Stable `/api/v1` read contracts now cover the public dictionary/draft
+surfaces and Editor Workspace summaries for future mobile use. M5 is in progress: the fixed
+50-term manifest is tracked and validated, and the first five jobs are queued for controlled
+one-at-a-time processing. No M5 AI provider call has been run yet. See
+[`NEXT_TASKS.md`](NEXT_TASKS.md) for the brief next-agent handoff covering admin/web
+separation, remaining admin-to-web moves, and remaining milestones.
 
 ## Next Actions
 
-1. Process one queued M5 job with `npm run ai:work`, then record token, latency, cost, validation, route, and reviewer-quality evidence before continuing.
-2. Review the first five drafts before preparing or processing terms 6-15.
-3. Repair and separately validate the historical M2 down migration ordering defect.
+1. Add Agent Job detail and a safe retry-now action in `/workspace/jobs`, without exposing raw provider output.
+2. Process one queued M5 job with `npm run ai:work`, then record token, latency, cost, validation, route, and reviewer-quality evidence before continuing.
+3. Review the first five drafts before preparing or processing terms 6-15.
+4. Expand `/workspace/calibration` to record human outcomes, edit-rate notes, and go/no-go evidence.
+5. Repair and separately validate the historical M2 down migration ordering defect.
 
 ## Blockers
 
