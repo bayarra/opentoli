@@ -1,6 +1,7 @@
 import { processGenerationJob, enqueueGenerationJob } from '@/ai/pipeline/jobs'
 import { DeterministicAIProvider } from '@/ai/providers/deterministic'
 import { POST as register } from '@/app/(frontend)/api/register/route'
+import { moderateFeedback } from '@/editor/feedback'
 import { getPublicAIDraftById } from '@/lib/publicAIDrafts'
 import config from '@/payload.config'
 import type { User } from '@/payload-types'
@@ -298,12 +299,11 @@ describe('public AI draft feedback', () => {
       }),
     ).rejects.toThrow('requires Mongolian wording')
 
-    const approved = await payload.update({
-      collection: 'comments',
-      data: { status: 'approved' },
-      id: comment.id,
-      overrideAccess: false,
-      user: moderator,
+    const approved = await moderateFeedback({
+      actor: moderator,
+      commentId: comment.id,
+      payload,
+      status: 'approved',
     })
     expect(approved.moderatedBy).toBeTruthy()
     expect(approved.moderatedAt).toBeTruthy()

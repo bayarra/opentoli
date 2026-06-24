@@ -70,7 +70,18 @@ test.describe('Admin Panel', () => {
 
     await expect(page.getByRole('heading', { name: /Terminology and agent work/ })).toBeVisible()
     await expect(page.getByRole('link', { name: 'Open Draft Inbox' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Moderate feedback' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Recent generation jobs' })).toBeVisible()
+  })
+
+  test('opens Feedback Moderation from the web Workspace', async () => {
+    await page.goto('http://localhost:3000/workspace')
+    await page.getByRole('link', { name: 'Moderate feedback' }).click()
+
+    await expect(page).toHaveURL('http://localhost:3000/workspace/feedback', { timeout: 20_000 })
+    await expect(
+      page.getByRole('heading', { name: /Review comments and translation suggestions/ }),
+    ).toBeVisible()
   })
 
   test('can navigate to list view', async () => {

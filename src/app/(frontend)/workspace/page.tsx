@@ -53,6 +53,7 @@ export default async function WorkspacePage() {
 
       <section className="workspace-actions" aria-label="Workspace actions">
         <Link href="/review/ai-drafts">Open Draft Inbox</Link>
+        <Link href="/workspace/feedback">Moderate feedback</Link>
         <Link href="/drafts">Public drafts</Link>
         <Link href="/search">Search terms</Link>
         <Link href="/workflow">Workflow guide</Link>

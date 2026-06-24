@@ -1456,6 +1456,123 @@ blockquote p {
   padding-top: 0;
 }
 
+.moderation-page .back-link {
+  margin-bottom: 36px;
+}
+
+.moderation-list {
+  display: grid;
+  gap: 22px;
+}
+
+.moderation-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  display: grid;
+  gap: 18px;
+  padding: 30px;
+}
+
+.moderation-card h2 {
+  font-size: clamp(1.35rem, 3vw, 2rem);
+  margin: 6px 0 10px;
+}
+
+.moderation-card > div:first-child {
+  align-items: start;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.moderation-card > div:first-child p {
+  color: var(--muted);
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+
+.moderation-card > div:first-child a {
+  background: #eef3f9;
+  border-radius: 999px;
+  color: var(--navy);
+  font-size: 0.84rem;
+  font-weight: 800;
+  padding: 9px 12px;
+  text-decoration: none;
+}
+
+.moderation-card > p {
+  line-height: 1.65;
+  margin-bottom: 0;
+}
+
+.feedback-moderation-form {
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 14px;
+  padding-top: 18px;
+}
+
+.feedback-moderation-form label {
+  color: var(--ink);
+  display: grid;
+  font-size: 0.9rem;
+  font-weight: 750;
+  gap: 8px;
+}
+
+.feedback-moderation-form label span {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.feedback-moderation-form textarea {
+  background: #fff;
+  border: 1px solid #b8c2d4;
+  border-radius: 10px;
+  color: var(--navy);
+  font: inherit;
+  padding: 11px 12px;
+}
+
+.feedback-moderation-form textarea:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(48, 124, 216, 0.2);
+  outline: 0;
+}
+
+.feedback-moderation-form > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.feedback-moderation-form button {
+  background: var(--navy);
+  border: 0;
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 750;
+  padding: 11px 14px;
+}
+
+.feedback-moderation-form button:nth-child(2) {
+  background: #6d3434;
+}
+
+.feedback-moderation-form button:nth-child(3) {
+  background: #eef3f9;
+  color: var(--navy);
+}
+
+.feedback-moderation-form button:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
 @media (max-width: 760px) {
   .site-shell {
     padding: 0 20px;
@@ -1597,5 +1714,9 @@ blockquote p {
 
   .published-term-list a {
     flex-direction: column;
+  }
+
+  .moderation-card > div:first-child {
+    grid-template-columns: 1fr;
   }
 }
