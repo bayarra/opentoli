@@ -10,6 +10,7 @@ evidence in [`STATUS.md`](STATUS.md).
 - M5 is active: calibration manifest exists and the first five jobs are queued.
 - Normal Editor work now starts in `/workspace`.
 - Stable `/api/v1` read contracts now exist for public dictionary/draft data and Editor Workspace summaries.
+- Editors can open safe Agent Job detail pages and queue eligible failed/retry-scheduled jobs for retry without running the worker from the browser.
 - Public AI drafts remain unverified and redacted.
 - Contributors can comment or suggest translations only after sign-in.
 - No AI output may publish without an explicit Editor `Publish` action.
@@ -56,8 +57,8 @@ Remaining API tasks:
 
 ## Remaining Admin-To-Web Moves
 
-- Agent Jobs: add job detail, retry-now action for retryable jobs, and clearer failed-job
-  diagnostics without exposing raw provider output.
+- Agent Jobs: safe job detail and retry-now are done. Remaining work is richer filtering,
+  batch grouping, and any future operational diagnostics that still avoid raw provider output.
 - Calibration: record human outcomes, edit-rate notes, cost/latency evidence, and go/no-go
   decision inside `/workspace/calibration`.
 - Sources: add/edit/remove draft sources from `/workspace/drafts/[id]`.
@@ -82,11 +83,11 @@ Remaining API tasks:
 
 ## Suggested Next Sequence
 
-1. Add Agent Job detail and safe retry action in `/workspace/jobs`.
-2. Continue M5 by processing exactly one queued job with `npm run ai:work` and recording evidence.
-3. Expand `/workspace/calibration` to track human outcomes and go/no-go evidence.
-4. Add draft source add/edit/remove and public draft visibility controls to `/workspace/drafts/[id]`.
-5. Add logged-in Editor success coverage for `/api/v1/editor/*` before mobile work begins.
+1. Continue M5 by processing exactly one queued job with `npm run ai:work` and recording evidence.
+2. Expand `/workspace/calibration` to track human outcomes and go/no-go evidence.
+3. Add draft source add/edit/remove and public draft visibility controls to `/workspace/drafts/[id]`.
+4. Add logged-in Editor success coverage for `/api/v1/editor/*` before mobile work begins.
+5. Add published-term web editing for wording, examples, alternatives, and sources.
 
 ## Guardrails
 

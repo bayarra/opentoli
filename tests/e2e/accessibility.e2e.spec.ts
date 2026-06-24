@@ -115,4 +115,19 @@ test.describe('M4 accessibility', () => {
     await expect(page.getByRole('button', { name: 'Verify source' })).toHaveCount(0)
     await context.close()
   })
+
+  test('opens safe generation job detail from OpenToli web', async ({ browser }) => {
+    const context = await browser.newContext()
+    const page = await context.newPage()
+    await login({ page, user: fixture.user })
+    await page.goto(`${serverURL}/workspace/jobs/${fixture.jobId}`)
+
+    await expect(page.getByRole('heading', { name: /keyboard workflow/i })).toBeVisible()
+    await expect(page.getByText('Safe operational detail only.')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Retry now' })).toBeDisabled()
+    await expect(page.getByText('Completed jobs are not retried.')).toBeVisible()
+    await expect(page.getByText('researchRawOutput')).toHaveCount(0)
+    await expectNoSeriousAccessibilityViolations(page)
+    await context.close()
+  })
 })

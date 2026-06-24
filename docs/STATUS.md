@@ -3,7 +3,7 @@
 **Last updated:** 2026-06-24
 **Current milestone:** M5 - Calibration Batch
 **Milestone status:** `IN_PROGRESS`
-**Delivery state:** M5 calibration manifest and first five queued jobs are ready; `/api/v1` read contracts are implemented for public and Editor views
+**Delivery state:** M5 calibration manifest and first five queued jobs are ready; `/api/v1` reads and safe web job detail/retry controls are implemented
 
 ## Executive Summary
 
@@ -22,9 +22,11 @@ Publish action, and secondary Hide. Audit and AI provenance remain automatic in 
 background, while unsafe source URLs cannot be verified for public citation. Keyboard-only
 critical flows and serious WCAG A/AA violations now have automated browser coverage. Stable
 `/api/v1` read contracts now expose public search, terms, categories, public AI drafts, and
-Editor Workspace summaries without leaking raw Payload records or private AI evidence. The
-controlled 50-term Technology and Software calibration batch is now fixed in a tracked
-manifest, and the first five private preparation jobs are queued without provider calls.
+Editor Workspace summaries without leaking raw Payload records or private AI evidence. Editors
+can inspect safe Agent Job detail and queue eligible failed/retry-scheduled jobs for retry
+without exposing raw provider output or running the worker from the browser. The controlled
+50-term Technology and Software calibration batch is now fixed in a tracked manifest, and the
+first five private preparation jobs are queued without provider calls.
 
 ## Milestone Status
 
@@ -54,6 +56,12 @@ manifest, and the first five private preparation jobs are queued without provide
 - Added stable Editor read endpoints: `GET /api/v1/editor/workspace`, `GET /api/v1/editor/drafts`, `GET /api/v1/editor/drafts/[id]`, `GET /api/v1/editor/feedback`, `GET /api/v1/editor/jobs`, and `GET /api/v1/editor/calibration`.
 - Added API v1 contract coverage proving public term/category shapes, public AI draft redaction, and unauthenticated Editor API denial.
 - Passed `npm run typecheck`, `npm run lint`, `npm run test:int` with 30 integration tests in 9 files, and `npm run build` after adding `/api/v1` read contracts.
+- Added `/workspace/jobs/[id]` so Editors can inspect safe generation-job detail: state, attempts, timing, usage, cost, model/prompt versions, retained private evidence flags, and redacted diagnostics.
+- Added `POST /api/editor/jobs/[id]` for the `retry-now` action and `GET /api/v1/editor/jobs/[id]` for stable job-detail reads.
+- Restricted web retry to Editor users and only failed or retry-scheduled jobs with attempts remaining; retry-now only updates scheduling and does not run the worker or call the AI provider.
+- Added integration coverage proving safe detail redaction, Editor-only retry, non-retryable state rejection, exhausted-attempt rejection, and unauthenticated route denial.
+- Added browser coverage proving an Editor can open safe generation-job detail from OpenToli web and completed jobs cannot be retried.
+- Passed `npm run typecheck`, `npm run lint`, `npm run test:int` with 34 integration tests in 10 files, `npm run build`, and `npm run test:e2e` with 16 browser tests after adding Agent Job detail and retry-now.
 - Added Draft Inbox source verification so Editors can mark draft sources verified from OpenToli web instead of opening Payload admin.
 - Added `/api/editor/sources/[id]` and `verifySource`, which require Editor access and reject non-HTTP(S) source URLs before a source can become verified public evidence.
 - Added integration coverage proving members cannot verify sources, Editors can verify safe sources idempotently, and unsafe URLs are rejected.
@@ -199,8 +207,9 @@ manifest, and the first five private preparation jobs are queued without provide
 | Production build          | Pass        | Next.js generated all current public and Payload routes                                                                |
 | HTTP smoke test           | Pass        | `/` and `/search?q=authentication` returned `200`                                                                      |
 | Hydration smoke test      | Pass        | Clean Chrome profile produced no hydration warning                                                                     |
-| Database integration      | Pass        | 30 self-contained integration tests in 9 files pass against PostgreSQL without requiring seed data                     |
+| Database integration      | Pass        | 34 self-contained integration tests in 10 files pass against PostgreSQL without requiring seed data                    |
 | API v1 read contracts     | Pass        | Public search, term, category, public draft redaction, and Editor auth-denial contract tests pass                     |
+| Agent Job Detail          | Pass        | Safe job detail and retry-now tests cover redaction, Editor authorization, retryable states, and route auth denial     |
 | Public draft feedback     | Pass        | 4 scenarios verify projection redaction, registration roles, pending moderation, throttling, and resolved-draft hiding |
 | Simple Editor workflow    | Pass        | 4 scenarios verify background save, member denial, source verification, sourced one-action publication, Hide, and provenance |
 | OpenAI adapter contract   | Pass        | 3 mocked tests verify strict Responses API requests, parsing, usage, and failures                                      |
@@ -209,7 +218,7 @@ manifest, and the first five private preparation jobs are queued without provide
 | M5 first enqueue          | Pass        | First run created 5 Terms, 7 Sources, and 5 Generation Jobs; second run reused all records without provider calls      |
 | Migration reproducibility | Pass        | All 5 migrations apply from zero; both M4 down migrations pass in isolation                                            |
 | Local HTTP smoke          | Pass        | `/`, `/register`, and `/login` return `200`; an unknown draft returns `404`                                            |
-| M4 browser regression     | Pass        | 15 browser tests pass, including public/auth/feedback/Editor keyboard flows, source verification, and serious WCAG A/AA scans |
+| M4 browser regression     | Pass        | 16 browser tests pass, including public/auth/feedback/Editor keyboard flows, source verification, job detail, and serious WCAG A/AA scans |
 | Web workflow navigation   | Pass        | Global web navigation, `/workflow`, `/drafts`, `/workspace`, `/workspace/drafts`, `/workspace/feedback`, `/workspace/jobs`, `/workspace/calibration`, and admin Back link build successfully; 15 browser tests pass |
 | Web account workflow      | Pass        | `/profile`, header account links, editor Workspace visibility, and Profile-only Payload-backed logout pass in 15 browser tests |
 | Editor web Workspace      | Pass        | `/workspace` and Workspace menu organize draft, feedback, generation job, calibration, batch, and published-term summaries without raw AI outputs |
@@ -222,18 +231,20 @@ manifest, and the first five private preparation jobs are queued without provide
 M3 and M4 are complete. Normal Editor work for drafts, feedback moderation, source
 verification, agent-job status, and calibration status now lives under the Workspace menu
 in OpenToli web. Stable `/api/v1` read contracts now cover the public dictionary/draft
-surfaces and Editor Workspace summaries for future mobile use. M5 is in progress: the fixed
-50-term manifest is tracked and validated, and the first five jobs are queued for controlled
-one-at-a-time processing. No M5 AI provider call has been run yet. See
+surfaces and Editor Workspace summaries for future mobile use. Editors can inspect safe job
+detail and queue eligible failed/retry-scheduled jobs for retry without starting provider work
+from the browser. M5 is in progress: the fixed 50-term manifest is tracked and validated, and
+the first five jobs are queued for controlled one-at-a-time processing. No M5 AI provider call
+has been run yet. See
 [`NEXT_TASKS.md`](NEXT_TASKS.md) for the brief next-agent handoff covering admin/web
 separation, remaining admin-to-web moves, and remaining milestones.
 
 ## Next Actions
 
-1. Add Agent Job detail and a safe retry-now action in `/workspace/jobs`, without exposing raw provider output.
-2. Process one queued M5 job with `npm run ai:work`, then record token, latency, cost, validation, route, and reviewer-quality evidence before continuing.
-3. Review the first five drafts before preparing or processing terms 6-15.
-4. Expand `/workspace/calibration` to record human outcomes, edit-rate notes, and go/no-go evidence.
+1. Process one queued M5 job with `npm run ai:work`, then record token, latency, cost, validation, route, and reviewer-quality evidence before continuing.
+2. Review the first five drafts before preparing or processing terms 6-15.
+3. Expand `/workspace/calibration` to record human outcomes, edit-rate notes, and go/no-go evidence.
+4. Add draft source add/edit/remove and public draft visibility controls to `/workspace/drafts/[id]`.
 5. Repair and separately validate the historical M2 down migration ordering defect.
 
 ## Blockers

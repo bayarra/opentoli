@@ -87,7 +87,9 @@ export default async function AgentJobsPage() {
           {workspace.jobs.map((job) => (
             <div role="row" key={job.id}>
               <span role="cell">
-                <strong>{job.inputHeadword}</strong>
+                <strong>
+                  <Link href={`/workspace/jobs/${job.id}`}>{job.inputHeadword}</Link>
+                </strong>
                 <small>{job.category || 'Uncategorized'}</small>
               </span>
               <span role="cell">
@@ -101,6 +103,7 @@ export default async function AgentJobsPage() {
                     .filter(Boolean)
                     .join(' / ')}
                 </small>
+                <Link href={`/workspace/jobs/${job.id}`}>Open details</Link>
               </span>
             </div>
           ))}

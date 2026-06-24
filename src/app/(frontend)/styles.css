@@ -1574,6 +1574,89 @@ blockquote p {
   text-transform: uppercase;
 }
 
+.job-retry-form {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+  margin-top: 18px;
+}
+
+.job-retry-form button {
+  background: var(--navy);
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+  padding: 11px 16px;
+}
+
+.job-retry-form button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.job-retry-form p,
+.job-diagnostic p {
+  color: var(--muted);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.job-diagnostic {
+  display: grid;
+  gap: 12px;
+}
+
+.job-diagnostic strong {
+  color: var(--navy);
+}
+
+.job-diagnostic ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.job-detail-list {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+}
+
+.job-detail-list div {
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 4px;
+  padding-top: 14px;
+}
+
+.job-detail-list div:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.job-detail-list dt {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.job-detail-list dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.job-detail-list-wide {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.job-detail-list-wide div {
+  border-top: 0;
+  padding-top: 0;
+}
+
 .calibration-policy dd {
   margin: 0;
 }
@@ -1858,6 +1941,7 @@ blockquote p {
   .metric-grid,
   .workspace-shell,
   .workspace-grid,
+  .job-detail-list-wide,
   .workspace-table > div {
     grid-template-columns: 1fr;
   }
