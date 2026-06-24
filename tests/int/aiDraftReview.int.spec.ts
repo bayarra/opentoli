@@ -7,6 +7,7 @@ import {
   saveEditorDraft,
 } from '@/editor/drafts'
 import { getDraftInbox } from '@/editor/data'
+import { verifySource } from '@/editor/sources'
 import { getPublicAIDraftById } from '@/lib/publicAIDrafts'
 import config from '@/payload.config'
 import type { User } from '@/payload-types'
@@ -32,11 +33,13 @@ const createPreparedDraft = async ({
   categoryName,
   categorySlug,
   headword,
+  sourceVerified = true,
 }: {
   categoryId: number
   categoryName: string
   categorySlug: string
   headword: string
+  sourceVerified?: boolean
 }) => {
   const term = await payload.create({
     collection: 'terms',
@@ -56,7 +59,7 @@ const createPreparedDraft = async ({
   const source = await payload.create({
     collection: 'sources',
     data: {
-      isVerified: true,
+      isVerified: sourceVerified,
       publisher: 'OpenToli Editor Tests',
       sourceType: 'official_documentation',
       term: term.id,
@@ -287,6 +290,45 @@ describe('simple AI draft editor workflow', () => {
       where: { id: { equals: result.term.id } },
     })
     expect(publicTerms.docs).toHaveLength(1)
+  })
+
+  it('lets Editors verify draft sources while blocking members and unsafe URLs', async () => {
+    await createPreparedDraft({
+      categoryId: technologyCategoryId,
+      categoryName: `Editor Technology ${suffix}`,
+      categorySlug: `editor-technology-${suffix}`,
+      headword: `source verification ${suffix}`,
+      sourceVerified: false,
+    })
+    const sourceId = sourceIds[sourceIds.length - 1]!
+
+    await expect(verifySource({ actor: contributor, payload, sourceId })).rejects.toThrow(
+      'Editor access',
+    )
+
+    const verified = await verifySource({ actor: editor, payload, sourceId })
+    expect(verified.isVerified).toBe(true)
+
+    const repeated = await verifySource({ actor: editor, payload, sourceId })
+    expect(repeated.isVerified).toBe(true)
+
+    const unsafe = await payload.create({
+      collection: 'sources',
+      data: {
+        isVerified: false,
+        publisher: 'OpenToli Editor Tests',
+        sourceType: 'other',
+        term: termIds[termIds.length - 1]!,
+        title: `Unsafe source for ${suffix}`,
+        url: 'javascript:alert(1)',
+      },
+      overrideAccess: true,
+    })
+    sourceIds.push(unsafe.id)
+
+    await expect(verifySource({ actor: editor, payload, sourceId: unsafe.id })).rejects.toThrow(
+      'Only http and https',
+    )
   })
 
   it('hides an unusable draft without deleting its provenance', async () => {

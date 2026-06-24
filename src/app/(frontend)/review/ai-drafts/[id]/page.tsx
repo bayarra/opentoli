@@ -1,4 +1,5 @@
 import { AIDraftEditorForm } from '@/app/(frontend)/components/AIDraftEditorForm'
+import { SourceVerificationButton } from '@/app/(frontend)/components/SourceVerificationButton'
 import { getEditorDraft } from '@/editor/data'
 import { getCurrentUser } from '@/lib/currentUser'
 import type { Metadata } from 'next'
@@ -67,16 +68,19 @@ export default async function AIDraftEditorPage({ params }: EditorPageProps) {
           <p className="eyebrow">Sources</p>
           {sources.map((source) => (
             <article className="review-source" key={source.id}>
-              {source.url ? (
-                <a href={source.url} rel="noreferrer" target="_blank">
-                  {source.title}
-                </a>
-              ) : (
-                <strong>{source.title}</strong>
-              )}
-              <span>
-                {source.publisher} / {source.isVerified ? 'verified' : 'not verified'}
-              </span>
+              <div>
+                {source.url ? (
+                  <a href={source.url} rel="noreferrer" target="_blank">
+                    {source.title}
+                  </a>
+                ) : (
+                  <strong>{source.title}</strong>
+                )}
+                <span>
+                  {source.publisher} / {source.isVerified ? 'verified' : 'not verified'}
+                </span>
+              </div>
+              {source.isVerified ? null : <SourceVerificationButton sourceId={source.id} />}
             </article>
           ))}
           {sources.length === 0 ? <p>No sources attached.</p> : null}

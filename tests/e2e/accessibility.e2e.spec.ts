@@ -14,7 +14,7 @@ test.describe('M4 accessibility', () => {
   let fixture: AccessibilityDraftFixture
 
   test.beforeAll(async () => {
-    fixture = await seedAccessibilityDraft()
+    fixture = await seedAccessibilityDraft({ sourceVerified: false })
   })
 
   test.afterAll(async () => {
@@ -91,6 +91,27 @@ test.describe('M4 accessibility', () => {
     await page.keyboard.press('Enter')
     await expect(page.getByRole('button', { name: 'Hide draft' })).toBeVisible()
     await expectNoSeriousAccessibilityViolations(page)
+    await context.close()
+  })
+
+  test('lets Editors verify a draft source from OpenToli web', async ({ browser }) => {
+    const context = await browser.newContext()
+    const page = await context.newPage()
+    await login({ page, user: fixture.user })
+    await page.goto(`${serverURL}/review/ai-drafts/${fixture.draftId}`)
+
+    await expect(page.getByText('OpenToli Accessibility Tests / not verified')).toBeVisible()
+
+    const verified = page.waitForResponse(
+      (response) =>
+        response.url().includes(`/api/editor/sources/${fixture.sourceId}`) &&
+        response.request().method() === 'POST',
+    )
+    await page.getByRole('button', { name: 'Verify source' }).click()
+    expect((await verified).ok()).toBe(true)
+
+    await expect(page.getByText('OpenToli Accessibility Tests / verified')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Verify source' })).toHaveCount(0)
     await context.close()
   })
 })

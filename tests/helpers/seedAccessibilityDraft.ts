@@ -17,7 +17,11 @@ export type AccessibilityDraftFixture = {
   }
 }
 
-export async function seedAccessibilityDraft(): Promise<AccessibilityDraftFixture> {
+export async function seedAccessibilityDraft({
+  sourceVerified = true,
+}: {
+  sourceVerified?: boolean
+} = {}): Promise<AccessibilityDraftFixture> {
   const payload = await getPayload({ config })
   const suffix = `${process.pid}-${Date.now()}`
   const password = `accessible-editor-${suffix}`
@@ -59,7 +63,7 @@ export async function seedAccessibilityDraft(): Promise<AccessibilityDraftFixtur
   const source = await payload.create({
     collection: 'sources',
     data: {
-      isVerified: true,
+      isVerified: sourceVerified,
       publisher: 'OpenToli Accessibility Tests',
       sourceType: 'official_documentation',
       term: term.id,

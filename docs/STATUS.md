@@ -1,6 +1,6 @@
 # OpenToli Project Status
 
-**Last updated:** 2026-06-23
+**Last updated:** 2026-06-24
 **Current milestone:** M5 - Calibration Batch
 **Milestone status:** `IN_PROGRESS`
 **Delivery state:** M5 calibration manifest and first five queued jobs are ready for controlled processing
@@ -17,8 +17,9 @@ contracts, provider-neutral staged execution, idempotent enqueueing, retry resum
 risk routing, retained provenance, deterministic end-to-end evidence, and a completed live
 OpenAI reference run for `authentication`. M4 now has an explicit safe public projection, registration,
 authenticated pending feedback, moderation, and a deliberately simple Editor experience:
-one Draft Inbox, four editable fields, background save, one Publish action, and secondary
-Hide. Audit, source, and AI provenance remain automatic in the background. Keyboard-only
+one Draft Inbox, four editable fields, web source verification, background save, one
+Publish action, and secondary Hide. Audit and AI provenance remain automatic in the
+background, while unsafe source URLs cannot be verified for public citation. Keyboard-only
 critical flows and serious WCAG A/AA violations now have automated browser coverage. The
 controlled 50-term Technology and Software calibration batch is now fixed in a tracked
 manifest, and the first five private preparation jobs are queued without provider calls.
@@ -31,7 +32,7 @@ manifest, and the first five private preparation jobs are queued without provide
 | M1  | Application foundation                       | `DONE`        | Clean migration, seed, tests, build, HTTP, and browser evidence recorded  |
 | M2  | Editorial data core                          | `DONE`        | Attributed reviewer/moderator workflow and public vertical slice verified |
 | M3  | AI preparation pipeline                      | `DONE`        | Live OpenAI job 33 completed; draft 22 retained; idempotency verified     |
-| M4  | Public draft feedback and simple editor flow | `DONE`        | All exit criteria pass with 26 integration and 12 browser tests           |
+| M4  | Public draft feedback and simple editor flow | `DONE`        | All exit criteria pass with 27 integration and 13 browser tests           |
 | M5  | Calibration batch                            | `IN_PROGRESS` | Fixed 50-term manifest validates; first five jobs are queued              |
 | M6  | Public dictionary                            | `PLANNED`     | Required pages are documented                                             |
 | M7  | Search and discovery                         | `PLANNED`     | Ranking and filters are documented                                        |
@@ -39,6 +40,14 @@ manifest, and the first five private preparation jobs are queued without provide
 | M9  | Launch readiness                             | `PLANNED`     | Launch content and quality gates are documented                           |
 
 ## Achievements
+
+### 2026-06-24
+
+- Added Draft Inbox source verification so Editors can mark draft sources verified from OpenToli web instead of opening Payload admin.
+- Added `/api/editor/sources/[id]` and `verifySource`, which require Editor access and reject non-HTTP(S) source URLs before a source can become verified public evidence.
+- Added integration coverage proving members cannot verify sources, Editors can verify safe sources idempotently, and unsafe URLs are rejected.
+- Added browser coverage proving an Editor can verify a draft source from the web draft page.
+- Passed `npm run typecheck`, `npm run lint`, `npm run test:int`, `npm run test:e2e`, and `npm run build` after adding web source verification.
 
 ### 2026-06-23
 
@@ -179,27 +188,29 @@ manifest, and the first five private preparation jobs are queued without provide
 | Production build          | Pass        | Next.js generated all current public and Payload routes                                                                |
 | HTTP smoke test           | Pass        | `/` and `/search?q=authentication` returned `200`                                                                      |
 | Hydration smoke test      | Pass        | Clean Chrome profile produced no hydration warning                                                                     |
-| Database integration      | Pass        | 26 self-contained integration tests in 8 files pass against PostgreSQL without requiring seed data                     |
+| Database integration      | Pass        | 27 self-contained integration tests in 8 files pass against PostgreSQL without requiring seed data                     |
 | Public draft feedback     | Pass        | 4 scenarios verify projection redaction, registration roles, pending moderation, throttling, and resolved-draft hiding |
-| Simple Editor workflow    | Pass        | 3 scenarios verify background save, member denial, sourced one-action publication, Hide, and provenance                |
+| Simple Editor workflow    | Pass        | 4 scenarios verify background save, member denial, source verification, sourced one-action publication, Hide, and provenance |
 | OpenAI adapter contract   | Pass        | 3 mocked tests verify strict Responses API requests, parsing, usage, and failures                                      |
 | OpenAI live calibration   | Pass        | Job 33 completed with `openai:gpt-5-mini`: 3,365 input tokens, 3,025 output tokens, 35,002 ms latency, no validation errors |
 | M5 manifest validation    | Pass        | `npm run m5:validate` passed for 50 terms and 8 source groups                                                          |
 | M5 first enqueue          | Pass        | First run created 5 Terms, 7 Sources, and 5 Generation Jobs; second run reused all records without provider calls      |
 | Migration reproducibility | Pass        | All 5 migrations apply from zero; both M4 down migrations pass in isolation                                            |
 | Local HTTP smoke          | Pass        | `/`, `/register`, and `/login` return `200`; an unknown draft returns `404`                                            |
-| M4 browser regression     | Pass        | 12 browser tests pass, including public/auth/feedback/Editor keyboard flows and serious WCAG A/AA scans                |
-| Web workflow navigation   | Pass        | Global web navigation, `/workflow`, `/drafts`, `/workspace`, `/workspace/feedback`, and admin Back link build successfully; 12 browser tests pass |
-| Web account workflow      | Pass        | `/profile`, header account links, editor Workspace visibility, and Profile-only Payload-backed logout pass in 12 browser tests |
+| M4 browser regression     | Pass        | 13 browser tests pass, including public/auth/feedback/Editor keyboard flows, source verification, and serious WCAG A/AA scans |
+| Web workflow navigation   | Pass        | Global web navigation, `/workflow`, `/drafts`, `/workspace`, `/workspace/feedback`, and admin Back link build successfully; 13 browser tests pass |
+| Web account workflow      | Pass        | `/profile`, header account links, editor Workspace visibility, and Profile-only Payload-backed logout pass in 13 browser tests |
 | Editor web Workspace      | Pass        | `/workspace` shows safe draft, feedback, generation job, batch, and published-term summaries without raw AI outputs     |
 | Feedback Moderation       | Pass        | `/workspace/feedback` and `/api/editor/feedback/[id]` let Editors approve, reject, or hide pending feedback without canonical mutations |
+| Source Verification       | Pass        | Draft source verification works from `/review/ai-drafts/[id]`; member access and unsafe source URLs are rejected       |
 | Historical full rollback  | Known issue | M2 `editorial_core` down migration has an existing lock-relation drop-order defect                                     |
 
 ## Current Work
 
-M3 and M4 are complete. M5 is in progress: the fixed 50-term manifest is tracked and
-validated, and the first five jobs are queued for controlled one-at-a-time processing.
-No M5 AI provider call has been run yet.
+M3 and M4 are complete. Normal Editor work for drafts, feedback moderation, and source
+verification now happens in OpenToli web. M5 is in progress: the fixed 50-term manifest
+is tracked and validated, and the first five jobs are queued for controlled one-at-a-time
+processing. No M5 AI provider call has been run yet.
 
 ## Next Actions
 
