@@ -7,7 +7,8 @@ evidence in [`STATUS.md`](STATUS.md).
 ## Current Baseline
 
 - M0-M4 are complete.
-- M5 is active: calibration manifest exists and the first five jobs are queued.
+- M5 is active: calibration manifest exists, first-five jobs were queued, and job 131 for
+  `application` completed as private draft 189.
 - Normal Editor work now starts in `/workspace`.
 - Stable `/api/v1` read contracts now exist for public dictionary/draft data and Editor Workspace summaries.
 - Editors can open safe Agent Job detail pages and queue eligible failed/retry-scheduled jobs for retry without running the worker from the browser.
@@ -83,11 +84,11 @@ Remaining API tasks:
 
 ## Suggested Next Sequence
 
-1. Continue M5 by processing exactly one queued job with `npm run ai:work` and recording evidence.
-2. Expand `/workspace/calibration` to track human outcomes and go/no-go evidence.
-3. Add draft source add/edit/remove and public draft visibility controls to `/workspace/drafts/[id]`.
-4. Add logged-in Editor success coverage for `/api/v1/editor/*` before mobile work begins.
-5. Add published-term web editing for wording, examples, alternatives, and sources.
+1. Review draft 189 for `application` and decide whether blocked/high-risk routing is acceptable.
+2. Expand `/workspace/calibration` to track human outcomes, job evidence, edit notes, and go/no-go evidence.
+3. Process the remaining queued first-five M5 jobs one at a time only after draft 189 is inspected.
+4. Add draft source add/edit/remove and public draft visibility controls to `/workspace/drafts/[id]`.
+5. Add logged-in Editor success coverage for `/api/v1/editor/*` before mobile work begins.
 
 ## Guardrails
 

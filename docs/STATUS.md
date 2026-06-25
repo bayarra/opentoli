@@ -3,7 +3,7 @@
 **Last updated:** 2026-06-24
 **Current milestone:** M5 - Calibration Batch
 **Milestone status:** `IN_PROGRESS`
-**Delivery state:** M5 calibration manifest and first five queued jobs are ready; `/api/v1` reads and safe web job detail/retry controls are implemented
+**Delivery state:** First M5 live worker job completed; draft 189 is private, blocked, and ready for human calibration review
 
 ## Executive Summary
 
@@ -25,8 +25,10 @@ critical flows and serious WCAG A/AA violations now have automated browser cover
 Editor Workspace summaries without leaking raw Payload records or private AI evidence. Editors
 can inspect safe Agent Job detail and queue eligible failed/retry-scheduled jobs for retry
 without exposing raw provider output or running the worker from the browser. The controlled
-50-term Technology and Software calibration batch is now fixed in a tracked manifest, and the
-first five private preparation jobs are queued without provider calls.
+50-term Technology and Software calibration batch is now fixed in a tracked manifest. The first
+M5 live worker job completed for `application`, creating private AI draft 189 with retained
+provenance and no validation errors; the draft is blocked/high-risk pending language, domain,
+and source-validation review.
 
 ## Milestone Status
 
@@ -62,6 +64,9 @@ first five private preparation jobs are queued without provider calls.
 - Added integration coverage proving safe detail redaction, Editor-only retry, non-retryable state rejection, exhausted-attempt rejection, and unauthenticated route denial.
 - Added browser coverage proving an Editor can open safe generation-job detail from OpenToli web and completed jobs cannot be retried.
 - Passed `npm run typecheck`, `npm run lint`, `npm run test:int` with 34 integration tests in 10 files, `npm run build`, and `npm run test:e2e` with 16 browser tests after adding Agent Job detail and retry-now.
+- Processed the first live M5 calibration worker job with `npm run ai:work`: generation job 131 for `application` completed on attempt 1 with `openai:gpt-5-mini`.
+- Retained private AI draft 189 as `needs_review/blocked` with high risk, recommendation `хэрэглээний програм (апп)`, six alternatives, two examples, and reviewer questions about register, dual-form policy, and separate web/mobile/desktop application entries.
+- Recorded M5 job 131 evidence: 3,209 input tokens, 2,948 output tokens, 32,017 ms latency, estimated cost `$0.0000` as reported by the adapter, no validation errors, and required expertise `language`, `domain`, and `source_validation`.
 - Added Draft Inbox source verification so Editors can mark draft sources verified from OpenToli web instead of opening Payload admin.
 - Added `/api/editor/sources/[id]` and `verifySource`, which require Editor access and reject non-HTTP(S) source URLs before a source can become verified public evidence.
 - Added integration coverage proving members cannot verify sources, Editors can verify safe sources idempotently, and unsafe URLs are rejected.
@@ -216,6 +221,7 @@ first five private preparation jobs are queued without provider calls.
 | OpenAI live calibration   | Pass        | Job 33 completed with `openai:gpt-5-mini`: 3,365 input tokens, 3,025 output tokens, 35,002 ms latency, no validation errors |
 | M5 manifest validation    | Pass        | `npm run m5:validate` passed for 50 terms and 8 source groups                                                          |
 | M5 first enqueue          | Pass        | First run created 5 Terms, 7 Sources, and 5 Generation Jobs; second run reused all records without provider calls      |
+| M5 first worker job       | Pass        | Job 131 for `application` completed; draft 189 retained as private blocked/high-risk review evidence                  |
 | Migration reproducibility | Pass        | All 5 migrations apply from zero; both M4 down migrations pass in isolation                                            |
 | Local HTTP smoke          | Pass        | `/`, `/register`, and `/login` return `200`; an unknown draft returns `404`                                            |
 | M4 browser regression     | Pass        | 16 browser tests pass, including public/auth/feedback/Editor keyboard flows, source verification, job detail, and serious WCAG A/AA scans |
@@ -234,16 +240,17 @@ in OpenToli web. Stable `/api/v1` read contracts now cover the public dictionary
 surfaces and Editor Workspace summaries for future mobile use. Editors can inspect safe job
 detail and queue eligible failed/retry-scheduled jobs for retry without starting provider work
 from the browser. M5 is in progress: the fixed 50-term manifest is tracked and validated, and
-the first five jobs are queued for controlled one-at-a-time processing. No M5 AI provider call
-has been run yet. See
+the first live worker job has completed. Job 131 produced private draft 189 for `application`;
+it is blocked/high-risk and needs human review before continuing the first-five calibration run.
+See
 [`NEXT_TASKS.md`](NEXT_TASKS.md) for the brief next-agent handoff covering admin/web
 separation, remaining admin-to-web moves, and remaining milestones.
 
 ## Next Actions
 
-1. Process one queued M5 job with `npm run ai:work`, then record token, latency, cost, validation, route, and reviewer-quality evidence before continuing.
-2. Review the first five drafts before preparing or processing terms 6-15.
-3. Expand `/workspace/calibration` to record human outcomes, edit-rate notes, and go/no-go evidence.
+1. Review draft 189 for `application` in `/workspace/drafts/189`, especially source support, register choice, dual-form wording, and whether blocked routing is expected.
+2. Decide whether the prompt/routing should be tuned before processing the remaining queued first-five M5 jobs.
+3. Expand `/workspace/calibration` to record human outcomes, edit-rate notes, job evidence, and go/no-go evidence.
 4. Add draft source add/edit/remove and public draft visibility controls to `/workspace/drafts/[id]`.
 5. Repair and separately validate the historical M2 down migration ordering defect.
 

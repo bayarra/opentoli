@@ -99,6 +99,38 @@ Repeat only when the previous job has been inspected. The worker records provide
 model, prompt versions, token usage, latency, raw outputs, validation result, and retry
 state in `Generation Jobs`.
 
+## Run Log
+
+### 2026-06-24 - First Live M5 Worker Job
+
+| Field | Evidence |
+| --- | --- |
+| Command | `npm run ai:work` |
+| Term | `application` |
+| Job | 131 |
+| Draft | 189 |
+| Provider/model | `openai:gpt-5-mini` |
+| Status | Job `completed`; draft `needs_review` |
+| Route/risk | `blocked` / `high` |
+| Tokens | 3,209 input / 2,948 output |
+| Latency | 32,017 ms |
+| Cost | `$0.0000` as reported by the adapter |
+| Validation | No validation errors |
+| Draft visibility | `private` |
+| Recommendation | `хэрэглээний програм (апп)` |
+| Output shape | 6 alternatives, 2 examples |
+| Required expertise | `language`, `domain`, `source_validation` |
+
+Reviewer notes to resolve before continuing:
+
+- Confirm whether `хэрэглээний програм (апп)` should be the recommended dual form or whether
+  OpenToli should prefer one formal canonical wording and list the other as an alternative.
+- Validate Mongolian usage evidence for `апп` versus `програм`.
+- Decide whether web application, mobile application, and desktop application need separate
+  context-specific entries or translations.
+- Decide whether the blocked route is expected for this source-validation gap or indicates a
+  prompt/routing issue before processing the remaining queued first-five jobs.
+
 ## Review Rubric
 
 For each generated draft, an editor should record:
