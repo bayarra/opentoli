@@ -12,6 +12,7 @@ evidence in [`STATUS.md`](STATUS.md).
 - Normal Editor work now starts in `/workspace`.
 - Stable `/api/v1` read contracts now exist for public dictionary/draft data and Editor Workspace summaries.
 - Editors can open safe Agent Job detail pages and queue eligible failed/retry-scheduled jobs for retry without running the worker from the browser.
+- Editors can open/close public feedback and add/edit/remove draft sources from `/workspace/drafts/[id]`.
 - Public AI drafts remain unverified and redacted.
 - Contributors can comment or suggest translations only after sign-in.
 - No AI output may publish without an explicit Editor `Publish` action.
@@ -62,8 +63,9 @@ Remaining API tasks:
   batch grouping, and any future operational diagnostics that still avoid raw provider output.
 - Calibration: record human outcomes, edit-rate notes, cost/latency evidence, and go/no-go
   decision inside `/workspace/calibration`.
-- Sources: add/edit/remove draft sources from `/workspace/drafts/[id]`.
-- Public draft visibility: let Editors open or close safe sourced drafts for public feedback.
+- Sources: basic draft source add/edit/remove is done. Remaining work is richer source notes,
+  duplicate detection, and source proposal moderation.
+- Public draft visibility: done for active, non-blocked, safely sourced drafts.
 - Published terms: add web editing for term wording, examples, alternatives, and sources.
 - Contributions: add contributor dashboard for own comments, suggestions, and outcomes.
 - Moderation: expand from comment moderation to contributor proposals, examples, and source notes.
@@ -87,8 +89,8 @@ Remaining API tasks:
 1. Review draft 189 for `application` and decide whether blocked/high-risk routing is acceptable.
 2. Expand `/workspace/calibration` to track human outcomes, job evidence, edit notes, and go/no-go evidence.
 3. Process the remaining queued first-five M5 jobs one at a time only after draft 189 is inspected.
-4. Add draft source add/edit/remove and public draft visibility controls to `/workspace/drafts/[id]`.
-5. Add logged-in Editor success coverage for `/api/v1/editor/*` before mobile work begins.
+4. Add logged-in Editor success coverage for `/api/v1/editor/*` before mobile work begins.
+5. Add published-term web editing for wording, examples, alternatives, and sources.
 
 ## Guardrails
 

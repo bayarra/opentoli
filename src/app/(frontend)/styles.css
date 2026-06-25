@@ -1224,6 +1224,89 @@ blockquote p {
   margin: 0;
 }
 
+.draft-source-manager {
+  display: grid;
+  gap: 18px;
+}
+
+.draft-source-form,
+.draft-source-edit form {
+  background: #f8fbff;
+  border: 1px solid #d7dfec;
+  border-radius: 16px;
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+}
+
+.draft-source-form h3 {
+  margin: 0;
+}
+
+.draft-source-form label,
+.draft-source-edit label {
+  display: grid;
+  font-size: 0.86rem;
+  font-weight: 750;
+  gap: 6px;
+}
+
+.draft-source-form input,
+.draft-source-form select,
+.draft-source-edit input,
+.draft-source-edit select {
+  background: #fff;
+  border: 1px solid #b8c2d4;
+  border-radius: 10px;
+  color: var(--navy);
+  font: inherit;
+  padding: 11px 12px;
+}
+
+.draft-source-form button,
+.draft-source-edit button {
+  background: var(--navy);
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 800;
+  padding: 10px 14px;
+}
+
+.draft-source-form button:disabled,
+.draft-source-edit button:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+.draft-source-edit {
+  color: var(--muted);
+  margin-top: 8px;
+}
+
+.draft-source-edit summary {
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.draft-source-edit form {
+  margin-top: 12px;
+}
+
+.draft-source-edit form > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.draft-source-edit form > div button + button {
+  background: #eef3f9;
+  color: var(--navy);
+}
+
 .review-comment > div {
   display: flex;
   gap: 18px;

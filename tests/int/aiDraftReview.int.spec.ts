@@ -8,7 +8,12 @@ import {
   updateEditorDraftVisibility,
 } from '@/editor/drafts'
 import { getDraftInbox } from '@/editor/data'
-import { verifySource } from '@/editor/sources'
+import {
+  addDraftSource,
+  removeDraftSource,
+  updateDraftSource,
+  verifySource,
+} from '@/editor/sources'
 import { getPublicAIDraftById } from '@/lib/publicAIDrafts'
 import config from '@/payload.config'
 import type { User } from '@/payload-types'
@@ -184,7 +189,7 @@ describe('simple AI draft editor workflow', () => {
       await payload.delete({ collection: 'generation-jobs', id, overrideAccess: true })
     }
     for (const id of sourceIds.reverse()) {
-      await payload.delete({ collection: 'sources', id, overrideAccess: true })
+      await payload.delete({ collection: 'sources', id, overrideAccess: true }).catch(() => null)
     }
     for (const id of translationIds.reverse()) {
       await payload.delete({ collection: 'translations', id, overrideAccess: true })
@@ -427,6 +432,105 @@ describe('simple AI draft editor workflow', () => {
     await expect(verifySource({ actor: editor, payload, sourceId: unsafe.id })).rejects.toThrow(
       'Only http and https',
     )
+  })
+
+  it('lets Editors add, edit, and remove draft sources', async () => {
+    const draft = await createPreparedDraft({
+      categoryId: technologyCategoryId,
+      categoryName: `Editor Technology ${suffix}`,
+      categorySlug: `editor-technology-${suffix}`,
+      headword: `source management ${suffix}`,
+      sourceVerified: false,
+    })
+
+    const fields = {
+      publisher: 'OpenToli Managed Sources',
+      sourceType: 'official_documentation' as const,
+      title: `Managed source ${suffix}`,
+      url: `https://example.com/managed-source-${suffix}`,
+    }
+
+    await expect(
+      addDraftSource({
+        actor: contributor,
+        draftId: draft.id,
+        fields,
+        payload,
+      }),
+    ).rejects.toThrow('Editor access')
+
+    const added = await addDraftSource({
+      actor: editor,
+      draftId: draft.id,
+      fields,
+      payload,
+    })
+    sourceIds.push(added.source.id)
+    expect(added.source).toMatchObject({
+      isVerified: false,
+      publisher: fields.publisher,
+      title: fields.title,
+    })
+
+    const updated = await updateDraftSource({
+      actor: editor,
+      draftId: draft.id,
+      fields: {
+        ...fields,
+        publisher: 'OpenToli Updated Sources',
+        title: `Updated managed source ${suffix}`,
+      },
+      payload,
+      sourceId: added.source.id,
+    })
+    expect(updated).toMatchObject({
+      isVerified: false,
+      publisher: 'OpenToli Updated Sources',
+      title: `Updated managed source ${suffix}`,
+    })
+
+    const removed = await removeDraftSource({
+      actor: editor,
+      draftId: draft.id,
+      payload,
+      sourceId: added.source.id,
+    })
+    expect(removed.sourceId).toBe(added.source.id)
+    await expect(
+      payload.findByID({
+        collection: 'sources',
+        id: added.source.id,
+        overrideAccess: true,
+      }),
+    ).rejects.toThrow()
+  })
+
+  it('closes public feedback when the last safe source is removed', async () => {
+    const draft = await createPreparedDraft({
+      categoryId: technologyCategoryId,
+      categoryName: `Editor Technology ${suffix}`,
+      categorySlug: `editor-technology-${suffix}`,
+      headword: `source removal closes public ${suffix}`,
+    })
+    const sourceId = sourceIds[sourceIds.length - 1]!
+
+    const opened = await updateEditorDraftVisibility({
+      actorId: editor.id,
+      draftId: draft.id,
+      payload,
+      visibility: 'public',
+    })
+    expect(opened.publicVisibility).toBe('public')
+    expect(await getPublicAIDraftById(draft.id)).not.toBeNull()
+
+    const removed = await removeDraftSource({
+      actor: editor,
+      draftId: draft.id,
+      payload,
+      sourceId,
+    })
+    expect(removed.draft.publicVisibility).toBe('private')
+    expect(await getPublicAIDraftById(draft.id)).toBeNull()
   })
 
   it('hides an unusable draft without deleting its provenance', async () => {

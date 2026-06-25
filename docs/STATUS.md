@@ -28,7 +28,8 @@ without exposing raw provider output or running the worker from the browser. The
 50-term Technology and Software calibration batch is now fixed in a tracked manifest. The first
 M5 live worker job completed for `application`, creating private AI draft 189 with retained
 provenance and no validation errors; the draft is blocked/high-risk pending language, domain,
-and source-validation review.
+and source-validation review. Editors can now open or close public draft feedback and add, edit,
+verify, or remove draft sources from OpenToli web instead of Payload admin.
 
 ## Milestone Status
 
@@ -67,6 +68,11 @@ and source-validation review.
 - Processed the first live M5 calibration worker job with `npm run ai:work`: generation job 131 for `application` completed on attempt 1 with `openai:gpt-5-mini`.
 - Retained private AI draft 189 as `needs_review/blocked` with high risk, recommendation `хэрэглээний програм (апп)`, six alternatives, two examples, and reviewer questions about register, dual-form policy, and separate web/mobile/desktop application entries.
 - Recorded M5 job 131 evidence: 3,209 input tokens, 2,948 output tokens, 32,017 ms latency, estimated cost `$0.0000` as reported by the adapter, no validation errors, and required expertise `language`, `domain`, and `source_validation`.
+- Added Editor-controlled public feedback visibility on `/workspace/drafts/[id]`, with server guards that only open active, non-blocked drafts that have at least one safe HTTP(S) source.
+- Added draft source add/edit/remove controls on `/workspace/drafts/[id]`; source edits reset verification, and removing the last safe source automatically closes public feedback.
+- Added `/api/editor/ai-drafts/[id]/sources` and `/api/editor/ai-drafts/[id]/sources/[sourceId]` for Editor-only source management backed by shared server helpers.
+- Added integration coverage proving public visibility open/close, blocked and unsafe-source denial, Editor-only source CRUD, source deletion, and automatic public-feedback closure when source evidence is removed.
+- Passed `npm run typecheck`, `npm run lint`, `npm run test:int` with 38 integration tests in 10 files, `npm run build`, and `npm run test:e2e` with 16 browser tests after moving draft visibility and source management into OpenToli web.
 - Added Draft Inbox source verification so Editors can mark draft sources verified from OpenToli web instead of opening Payload admin.
 - Added `/api/editor/sources/[id]` and `verifySource`, which require Editor access and reject non-HTTP(S) source URLs before a source can become verified public evidence.
 - Added integration coverage proving members cannot verify sources, Editors can verify safe sources idempotently, and unsafe URLs are rejected.
@@ -212,9 +218,10 @@ and source-validation review.
 | Production build          | Pass        | Next.js generated all current public and Payload routes                                                                |
 | HTTP smoke test           | Pass        | `/` and `/search?q=authentication` returned `200`                                                                      |
 | Hydration smoke test      | Pass        | Clean Chrome profile produced no hydration warning                                                                     |
-| Database integration      | Pass        | 34 self-contained integration tests in 10 files pass against PostgreSQL without requiring seed data                    |
+| Database integration      | Pass        | 38 self-contained integration tests in 10 files pass against PostgreSQL without requiring seed data                    |
 | API v1 read contracts     | Pass        | Public search, term, category, public draft redaction, and Editor auth-denial contract tests pass                     |
 | Agent Job Detail          | Pass        | Safe job detail and retry-now tests cover redaction, Editor authorization, retryable states, and route auth denial     |
+| Draft Source Management   | Pass        | Editor source add/edit/remove, verification reset, public visibility closure, and unsafe-source guards pass           |
 | Public draft feedback     | Pass        | 4 scenarios verify projection redaction, registration roles, pending moderation, throttling, and resolved-draft hiding |
 | Simple Editor workflow    | Pass        | 4 scenarios verify background save, member denial, source verification, sourced one-action publication, Hide, and provenance |
 | OpenAI adapter contract   | Pass        | 3 mocked tests verify strict Responses API requests, parsing, usage, and failures                                      |
@@ -239,10 +246,11 @@ verification, agent-job status, and calibration status now lives under the Works
 in OpenToli web. Stable `/api/v1` read contracts now cover the public dictionary/draft
 surfaces and Editor Workspace summaries for future mobile use. Editors can inspect safe job
 detail and queue eligible failed/retry-scheduled jobs for retry without starting provider work
-from the browser. M5 is in progress: the fixed 50-term manifest is tracked and validated, and
-the first live worker job has completed. Job 131 produced private draft 189 for `application`;
-it is blocked/high-risk and needs human review before continuing the first-five calibration run.
-See
+from the browser. Editors can also manage draft public feedback visibility and draft sources
+from the web draft page. M5 is in progress: the fixed 50-term manifest is tracked and validated,
+and the first live worker job has completed. Job 131 produced private draft 189 for
+`application`; it is blocked/high-risk and needs human review before continuing the first-five
+calibration run. See
 [`NEXT_TASKS.md`](NEXT_TASKS.md) for the brief next-agent handoff covering admin/web
 separation, remaining admin-to-web moves, and remaining milestones.
 
@@ -251,7 +259,7 @@ separation, remaining admin-to-web moves, and remaining milestones.
 1. Review draft 189 for `application` in `/workspace/drafts/189`, especially source support, register choice, dual-form wording, and whether blocked routing is expected.
 2. Decide whether the prompt/routing should be tuned before processing the remaining queued first-five M5 jobs.
 3. Expand `/workspace/calibration` to record human outcomes, edit-rate notes, job evidence, and go/no-go evidence.
-4. Add draft source add/edit/remove and public draft visibility controls to `/workspace/drafts/[id]`.
+4. Add logged-in Editor success coverage for `/api/v1/editor/*` before mobile work begins.
 5. Repair and separately validate the historical M2 down migration ordering defect.
 
 ## Blockers

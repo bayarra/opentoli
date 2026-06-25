@@ -1,6 +1,6 @@
 import { AIDraftEditorForm } from '@/app/(frontend)/components/AIDraftEditorForm'
 import { DraftVisibilityForm } from '@/app/(frontend)/components/DraftVisibilityForm'
-import { SourceVerificationButton } from '@/app/(frontend)/components/SourceVerificationButton'
+import { DraftSourceManager } from '@/app/(frontend)/components/DraftSourceManager'
 import { WorkspaceShell } from '@/app/(frontend)/components/WorkspaceShell'
 import { getEditorDraft } from '@/editor/data'
 import { getCurrentUser } from '@/lib/currentUser'
@@ -92,24 +92,7 @@ export default async function AIDraftEditorPage({ params }: EditorPageProps) {
       <div className="reviewer-grid">
         <section className="review-panel">
           <p className="eyebrow">Sources</p>
-          {sources.map((source) => (
-            <article className="review-source" key={source.id}>
-              <div>
-                {source.url ? (
-                  <a href={source.url} rel="noreferrer" target="_blank">
-                    {source.title}
-                  </a>
-                ) : (
-                  <strong>{source.title}</strong>
-                )}
-                <span>
-                  {source.publisher} / {source.isVerified ? 'verified' : 'not verified'}
-                </span>
-              </div>
-              {source.isVerified ? null : <SourceVerificationButton sourceId={source.id} />}
-            </article>
-          ))}
-          {sources.length === 0 ? <p>No sources attached.</p> : null}
+          <DraftSourceManager draftId={draft.id} sources={sources} />
         </section>
 
         <section className="review-panel">

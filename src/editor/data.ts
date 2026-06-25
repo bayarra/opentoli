@@ -86,8 +86,10 @@ export const getEditorDraft = async (id: number, user: User) => {
           id: source.id,
           isVerified: source.isVerified,
           publisher: source.publisher,
+          safeUrl: safeUrl(source.url),
+          sourceType: source.sourceType,
           title: source.title,
-          url: safeUrl(source.url),
+          url: source.url,
         },
       ]
     }),

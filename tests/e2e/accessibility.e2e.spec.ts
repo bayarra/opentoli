@@ -83,8 +83,14 @@ test.describe('M4 accessibility', () => {
     const headword = page.getByLabel('English headword')
     await focusByTab(page, headword)
     await page.keyboard.press('End')
+    const saved = page.waitForResponse(
+      (response) =>
+        response.url().includes(`/api/editor/ai-drafts/${fixture.draftId}`) &&
+        response.request().method() === 'PATCH',
+    )
     await page.keyboard.type(' revised')
-    await expect(page.getByRole('status')).toHaveText('Changes saved', { timeout: 10_000 })
+    expect((await saved).ok()).toBe(true)
+    await expect(page.getByRole('status')).toHaveText('Changes saved')
 
     const more = page.locator('summary', { hasText: 'More' })
     await more.focus()
@@ -101,7 +107,9 @@ test.describe('M4 accessibility', () => {
     await login({ page, user: fixture.user })
     await page.goto(`${serverURL}/workspace/drafts/${fixture.draftId}`)
 
-    await expect(page.getByText('OpenToli Accessibility Tests / not verified')).toBeVisible()
+    await expect(
+      page.getByText('OpenToli Accessibility Tests / official documentation / not verified'),
+    ).toBeVisible()
 
     const verified = page.waitForResponse(
       (response) =>
@@ -111,7 +119,9 @@ test.describe('M4 accessibility', () => {
     await page.getByRole('button', { name: 'Verify source' }).click()
     expect((await verified).ok()).toBe(true)
 
-    await expect(page.getByText('OpenToli Accessibility Tests / verified')).toBeVisible()
+    await expect(
+      page.getByText('OpenToli Accessibility Tests / official documentation / verified'),
+    ).toBeVisible()
     await expect(page.getByRole('button', { name: 'Verify source' })).toHaveCount(0)
     await context.close()
   })
