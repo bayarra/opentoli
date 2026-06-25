@@ -27,8 +27,8 @@ export default async function ContributePage() {
               suggestions stay attributed, moderated, and separate from canonical terms.
             </p>
             <p className="muted-copy">
-              Use the main menu for Public drafts, Search, Workflow, Profile, and the Editor Draft
-              Inbox when your role has access.
+              Use the main menu for Public drafts, Search, Workflow, Contributions, Profile, and
+              the Editor Draft Inbox when your role has access.
             </p>
           </>
         ) : (

@@ -58,6 +58,7 @@ export default async function ProfilePage() {
           </dl>
           <div className="account-actions">
             <Link href="/drafts">Public drafts</Link>
+            <Link href="/contributions">My contributions</Link>
             {isEditorUser(user) ? <Link href="/workspace">Workspace</Link> : null}
           </div>
         </section>

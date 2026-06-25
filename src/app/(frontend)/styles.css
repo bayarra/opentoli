@@ -1790,12 +1790,14 @@ blockquote p {
   margin-bottom: 36px;
 }
 
-.moderation-list {
+.moderation-list,
+.contribution-list {
   display: grid;
   gap: 22px;
 }
 
-.moderation-card {
+.moderation-card,
+.contribution-card {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 22px;
@@ -1804,25 +1806,29 @@ blockquote p {
   padding: 30px;
 }
 
-.moderation-card h2 {
+.moderation-card h2,
+.contribution-card h2 {
   font-size: clamp(1.35rem, 3vw, 2rem);
   margin: 6px 0 10px;
 }
 
-.moderation-card > div:first-child {
+.moderation-card > div:first-child,
+.contribution-card > div:first-child {
   align-items: start;
   display: grid;
   gap: 8px;
   grid-template-columns: minmax(0, 1fr) auto;
 }
 
-.moderation-card > div:first-child p {
+.moderation-card > div:first-child p,
+.contribution-card > div:first-child p {
   color: var(--muted);
   line-height: 1.5;
   margin-bottom: 0;
 }
 
-.moderation-card > div:first-child a {
+.moderation-card > div:first-child a,
+.contribution-card > div:first-child a {
   background: #eef3f9;
   border-radius: 999px;
   color: var(--navy);
@@ -1832,9 +1838,28 @@ blockquote p {
   text-decoration: none;
 }
 
-.moderation-card > p {
+.moderation-card > p,
+.contribution-card > p {
   line-height: 1.65;
   margin-bottom: 0;
+}
+
+.contribution-note {
+  background: #f8fbff;
+  border: 1px solid #d7dfec;
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.contribution-note strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.contribution-note p {
+  color: var(--muted);
+  line-height: 1.55;
+  margin: 0;
 }
 
 .feedback-moderation-form {

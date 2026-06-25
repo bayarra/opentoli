@@ -15,6 +15,7 @@ evidence in [`STATUS.md`](STATUS.md).
 - Editors can open/close public feedback and add/edit/remove draft sources from `/workspace/drafts/[id]`.
 - Public AI drafts remain unverified and redacted.
 - Contributors can comment or suggest translations only after sign-in.
+- Contributors can track their own comments, translation suggestions, moderation status, and outcomes at `/contributions`.
 - No AI output may publish without an explicit Editor `Publish` action.
 
 ## API, Web, and Admin Separation
@@ -67,7 +68,7 @@ Remaining API tasks:
   duplicate detection, and source proposal moderation.
 - Public draft visibility: done for active, non-blocked, safely sourced drafts.
 - Published terms: add web editing for term wording, examples, alternatives, and sources.
-- Contributions: add contributor dashboard for own comments, suggestions, and outcomes.
+- Contributions: basic own-comments/suggestions dashboard is done. Remaining work is richer submissions, votes, ownership controls, saved terms, and profile history when M8 starts.
 - Moderation: expand from comment moderation to contributor proposals, examples, and source notes.
 - Imports: add web preparation review for CSV/manual batches, but keep provider execution controlled.
 

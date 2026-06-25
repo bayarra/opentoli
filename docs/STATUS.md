@@ -29,7 +29,9 @@ without exposing raw provider output or running the worker from the browser. The
 M5 live worker job completed for `application`, creating private AI draft 189 with retained
 provenance and no validation errors; the draft is blocked/high-risk pending language, domain,
 and source-validation review. Editors can now open or close public draft feedback and add, edit,
-verify, or remove draft sources from OpenToli web instead of Payload admin.
+verify, or remove draft sources from OpenToli web instead of Payload admin. Signed-in
+contributors can now track their own comments, translation suggestions, moderation status, and
+outcomes from an OpenToli web dashboard.
 
 ## Milestone Status
 
@@ -78,6 +80,11 @@ verify, or remove draft sources from OpenToli web instead of Payload admin.
 - Added integration coverage proving members cannot verify sources, Editors can verify safe sources idempotently, and unsafe URLs are rejected.
 - Added browser coverage proving an Editor can verify a draft source from the web draft page.
 - Passed `npm run typecheck`, `npm run lint`, `npm run test:int`, `npm run test:e2e`, and `npm run build` after adding web source verification.
+- Added `/contributions` so signed-in users can see their own comments, translation suggestions, moderation status, moderator notes, and safe links back to public targets from OpenToli web.
+- Added account and Profile navigation to the contributor dashboard while keeping submissions as moderated proposals that never mutate canonical Terms, Translations, Examples, or AI Drafts directly.
+- Added integration coverage proving the contribution dashboard returns only the signed-in contributor's own records with safe target links.
+- Added browser coverage proving an authenticated user can open Contributions from Profile.
+- Passed `npm run typecheck`, `npm run lint`, `npm run test:int` with 39 integration tests in 11 files, `npm run build`, and `npm run test:e2e` with 16 browser tests after adding the contributor dashboard.
 
 ### 2026-06-23
 
@@ -218,7 +225,7 @@ verify, or remove draft sources from OpenToli web instead of Payload admin.
 | Production build          | Pass        | Next.js generated all current public and Payload routes                                                                |
 | HTTP smoke test           | Pass        | `/` and `/search?q=authentication` returned `200`                                                                      |
 | Hydration smoke test      | Pass        | Clean Chrome profile produced no hydration warning                                                                     |
-| Database integration      | Pass        | 38 self-contained integration tests in 10 files pass against PostgreSQL without requiring seed data                    |
+| Database integration      | Pass        | 39 self-contained integration tests in 11 files pass against PostgreSQL without requiring seed data                    |
 | API v1 read contracts     | Pass        | Public search, term, category, public draft redaction, and Editor auth-denial contract tests pass                     |
 | Agent Job Detail          | Pass        | Safe job detail and retry-now tests cover redaction, Editor authorization, retryable states, and route auth denial     |
 | Draft Source Management   | Pass        | Editor source add/edit/remove, verification reset, public visibility closure, and unsafe-source guards pass           |
@@ -237,6 +244,7 @@ verify, or remove draft sources from OpenToli web instead of Payload admin.
 | Editor web Workspace      | Pass        | `/workspace` and Workspace menu organize draft, feedback, generation job, calibration, batch, and published-term summaries without raw AI outputs |
 | Feedback Moderation       | Pass        | `/workspace/feedback` and `/api/editor/feedback/[id]` let Editors approve, reject, or hide pending feedback without canonical mutations |
 | Source Verification       | Pass        | Draft source verification works from `/workspace/drafts/[id]`; member access and unsafe source URLs are rejected       |
+| Contributor Dashboard     | Pass        | `/contributions` shows signed-in users only their own comments, suggestions, statuses, moderator notes, and safe target links |
 | Historical full rollback  | Known issue | M2 `editorial_core` down migration has an existing lock-relation drop-order defect                                     |
 
 ## Current Work
@@ -247,10 +255,11 @@ in OpenToli web. Stable `/api/v1` read contracts now cover the public dictionary
 surfaces and Editor Workspace summaries for future mobile use. Editors can inspect safe job
 detail and queue eligible failed/retry-scheduled jobs for retry without starting provider work
 from the browser. Editors can also manage draft public feedback visibility and draft sources
-from the web draft page. M5 is in progress: the fixed 50-term manifest is tracked and validated,
-and the first live worker job has completed. Job 131 produced private draft 189 for
-`application`; it is blocked/high-risk and needs human review before continuing the first-five
-calibration run. See
+from the web draft page. Contributors can track their own moderated comments and translation
+suggestions from `/contributions` without opening Payload admin. M5 is in progress: the fixed
+50-term manifest is tracked and validated, and the first live worker job has completed. Job 131
+produced private draft 189 for `application`; it is blocked/high-risk and needs human review
+before continuing the first-five calibration run. See
 [`NEXT_TASKS.md`](NEXT_TASKS.md) for the brief next-agent handoff covering admin/web
 separation, remaining admin-to-web moves, and remaining milestones.
 

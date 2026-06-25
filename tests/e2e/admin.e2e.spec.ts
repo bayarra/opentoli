@@ -47,7 +47,17 @@ test.describe('Admin Panel', () => {
       await expect(profilePage.getByText(testUser.email)).toBeVisible()
       await expect(profilePage.getByText('Admin', { exact: true })).toBeVisible()
       await expect(profileSummary.getByRole('link', { name: 'Workspace' })).toBeVisible()
+      await expect(profileSummary.getByRole('link', { name: 'My contributions' })).toBeVisible()
       await expect(primaryNav.getByRole('button', { name: 'Log out' })).toHaveCount(0)
+
+      await profileSummary.getByRole('link', { name: 'My contributions' }).click()
+      await expect(profilePage).toHaveURL('http://localhost:3000/contributions')
+      await expect(
+        profilePage.getByRole('heading', {
+          name: /Track your comments and translation suggestions/,
+        }),
+      ).toBeVisible()
+      await profilePage.goto('http://localhost:3000/profile')
 
       await profileNext.getByRole('button', { name: 'Log out' }).click()
 
