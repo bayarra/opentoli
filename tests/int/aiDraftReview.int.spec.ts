@@ -5,6 +5,7 @@ import {
   parseEditorDraftFields,
   publishEditorDraft,
   saveEditorDraft,
+  updateEditorDraftVisibility,
 } from '@/editor/drafts'
 import { getDraftInbox } from '@/editor/data'
 import { verifySource } from '@/editor/sources'
@@ -290,6 +291,103 @@ describe('simple AI draft editor workflow', () => {
       where: { id: { equals: result.term.id } },
     })
     expect(publicTerms.docs).toHaveLength(1)
+  })
+
+  it('lets Editors open and close safe drafts for public feedback', async () => {
+    const draft = await createPreparedDraft({
+      categoryId: technologyCategoryId,
+      categoryName: `Editor Technology ${suffix}`,
+      categorySlug: `editor-technology-${suffix}`,
+      headword: `public feedback visibility ${suffix}`,
+    })
+
+    expect(await getPublicAIDraftById(draft.id)).toBeNull()
+    await expect(
+      updateEditorDraftVisibility({
+        actorId: contributor.id,
+        draftId: draft.id,
+        payload,
+        visibility: 'public',
+      }),
+    ).rejects.toThrow('Editor access')
+
+    const opened = await updateEditorDraftVisibility({
+      actorId: editor.id,
+      draftId: draft.id,
+      payload,
+      visibility: 'public',
+    })
+    expect(opened.publicVisibility).toBe('public')
+    expect((await getPublicAIDraftById(draft.id))?.id).toBe(draft.id)
+
+    const closed = await updateEditorDraftVisibility({
+      actorId: editor.id,
+      draftId: draft.id,
+      payload,
+      visibility: 'private',
+    })
+    expect(closed.publicVisibility).toBe('private')
+    expect(await getPublicAIDraftById(draft.id)).toBeNull()
+  })
+
+  it('blocks public feedback for blocked drafts or unsafe sources', async () => {
+    const blocked = await createPreparedDraft({
+      categoryId: technologyCategoryId,
+      categoryName: `Editor Technology ${suffix}`,
+      categorySlug: `editor-technology-${suffix}`,
+      headword: `blocked public feedback ${suffix}`,
+    })
+    await payload.update({
+      collection: 'ai-drafts',
+      context: { aiDraftDecision: true },
+      data: { reviewRoute: 'blocked' },
+      id: blocked.id,
+      overrideAccess: true,
+    })
+
+    await expect(
+      updateEditorDraftVisibility({
+        actorId: editor.id,
+        draftId: blocked.id,
+        payload,
+        visibility: 'public',
+      }),
+    ).rejects.toThrow('Blocked drafts')
+
+    const unsafe = await createPreparedDraft({
+      categoryId: technologyCategoryId,
+      categoryName: `Editor Technology ${suffix}`,
+      categorySlug: `editor-technology-${suffix}`,
+      headword: `unsafe public feedback ${suffix}`,
+    })
+    const unsafeSource = await payload.create({
+      collection: 'sources',
+      data: {
+        isVerified: false,
+        publisher: 'OpenToli Editor Tests',
+        sourceType: 'other',
+        term: termIds[termIds.length - 1]!,
+        title: `Unsafe public feedback source for ${suffix}`,
+        url: 'javascript:alert(1)',
+      },
+      overrideAccess: true,
+    })
+    sourceIds.push(unsafeSource.id)
+    await payload.update({
+      collection: 'ai-drafts',
+      data: { sources: [unsafeSource.id] },
+      id: unsafe.id,
+      overrideAccess: true,
+    })
+
+    await expect(
+      updateEditorDraftVisibility({
+        actorId: editor.id,
+        draftId: unsafe.id,
+        payload,
+        visibility: 'public',
+      }),
+    ).rejects.toThrow('safe http or https source')
   })
 
   it('lets Editors verify draft sources while blocking members and unsafe URLs', async () => {

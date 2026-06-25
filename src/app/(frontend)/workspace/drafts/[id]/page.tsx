@@ -1,4 +1,5 @@
 import { AIDraftEditorForm } from '@/app/(frontend)/components/AIDraftEditorForm'
+import { DraftVisibilityForm } from '@/app/(frontend)/components/DraftVisibilityForm'
 import { SourceVerificationButton } from '@/app/(frontend)/components/SourceVerificationButton'
 import { WorkspaceShell } from '@/app/(frontend)/components/WorkspaceShell'
 import { getEditorDraft } from '@/editor/data'
@@ -26,6 +27,12 @@ export default async function AIDraftEditorPage({ params }: EditorPageProps) {
 
   const { comments, draft, generated, sources } = data
   const active = ['editing', 'needs_review'].includes(draft.status)
+  const canOpenPublicFeedback = active && draft.reviewRoute !== 'blocked' && sources.some((source) => source.url)
+  const publicFeedbackDisabledReason = !active
+    ? 'Only active drafts can be opened for public feedback.'
+    : draft.reviewRoute === 'blocked'
+      ? 'Blocked drafts need source or editorial review before public feedback.'
+      : 'Add at least one safe http or https source before opening public feedback.'
 
   return (
     <WorkspaceShell>
@@ -65,6 +72,21 @@ export default async function AIDraftEditorPage({ params }: EditorPageProps) {
         ) : (
           <p>This draft is no longer active.</p>
         )}
+      </section>
+
+      <section className="review-panel">
+        <p className="eyebrow">Public feedback</p>
+        <h2>Open or close community review.</h2>
+        <p>
+          Public feedback shows only the safe redacted draft projection. It does not verify,
+          approve, or publish this term.
+        </p>
+        <DraftVisibilityForm
+          canOpen={canOpenPublicFeedback}
+          disabledReason={publicFeedbackDisabledReason}
+          draftId={draft.id}
+          isPublic={draft.publicVisibility === 'public'}
+        />
       </section>
 
       <div className="reviewer-grid">

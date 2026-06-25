@@ -1193,7 +1193,8 @@ blockquote p {
   justify-items: start;
 }
 
-.source-verification-form button {
+.source-verification-form button,
+.draft-visibility-form button {
   background: #f8fbff;
   border: 1px solid #aebbd0;
   border-radius: 999px;
@@ -1204,9 +1205,23 @@ blockquote p {
   padding: 8px 12px;
 }
 
-.source-verification-form button:disabled {
+.source-verification-form button:disabled,
+.draft-visibility-form button:disabled {
   cursor: progress;
   opacity: 0.65;
+}
+
+.draft-visibility-form {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+  margin-top: 18px;
+}
+
+.draft-visibility-form p {
+  color: var(--muted);
+  line-height: 1.55;
+  margin: 0;
 }
 
 .review-comment > div {

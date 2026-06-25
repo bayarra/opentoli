@@ -4,6 +4,7 @@ import {
   parseEditorDraftFields,
   publishEditorDraft,
   saveEditorDraft,
+  updateEditorDraftVisibility,
 } from '@/editor/drafts'
 import config from '@/payload.config'
 import type { User } from '@/payload-types'
@@ -58,6 +59,19 @@ export async function POST(request: Request, { params }: RouteProps) {
         payload,
       })
       return Response.json({ draftId: result.draft.id, hidden: true })
+    }
+    if (input.action === 'open-public-feedback' || input.action === 'close-public-feedback') {
+      const visibility = input.action === 'open-public-feedback' ? 'public' : 'private'
+      const draft = await updateEditorDraftVisibility({
+        actorId: (user as User).id,
+        draftId,
+        payload,
+        visibility,
+      })
+      return Response.json({
+        draftId: draft.id,
+        publicVisibility: draft.publicVisibility,
+      })
     }
     if (input.action !== 'publish') throw new EditorWorkflowError('Choose Publish or Hide.')
 

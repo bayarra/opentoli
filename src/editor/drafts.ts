@@ -371,6 +371,68 @@ export const publishEditorDraft = async ({
   }
 }
 
+const safePublicUrl = (value: string): boolean => {
+  try {
+    const url = new URL(value)
+    return url.protocol === 'http:' || url.protocol === 'https:'
+  } catch {
+    return false
+  }
+}
+
+const draftSourceIds = (draft: AiDraft): number[] => relationIds(draft.sources)
+
+const countSafePublicSources = async (payload: Payload, draft: AiDraft): Promise<number> => {
+  const sourceIds = draftSourceIds(draft)
+  if (sourceIds.length === 0) return 0
+
+  const sources = await payload.find({
+    collection: 'sources',
+    depth: 0,
+    limit: sourceIds.length,
+    overrideAccess: true,
+    where: { id: { in: sourceIds } },
+  })
+
+  return sources.docs.filter((source) => safePublicUrl(source.url)).length
+}
+
+export const updateEditorDraftVisibility = async ({
+  actorId,
+  draftId,
+  payload,
+  visibility,
+}: {
+  actorId: number
+  draftId: number
+  payload: Payload
+  visibility: 'private' | 'public'
+}) => {
+  const { actor, draft } = await loadEditorAndDraft(payload, actorId, draftId)
+
+  if (visibility === 'public') {
+    if (draft.reviewRoute === 'blocked') {
+      throw new EditorWorkflowError('Blocked drafts cannot be opened for public feedback.', 409)
+    }
+    const safeSourceCount = await countSafePublicSources(payload, draft)
+    if (safeSourceCount < 1) {
+      throw new EditorWorkflowError(
+        'At least one safe http or https source is required before opening public feedback.',
+        400,
+      )
+    }
+  }
+
+  const req = await createLocalReq({ user: actor }, payload)
+  return payload.update({
+    collection: 'ai-drafts',
+    data: { publicVisibility: visibility },
+    id: draft.id,
+    overrideAccess: false,
+    req,
+  })
+}
+
 export const hideEditorDraft = async ({
   actorId,
   draftId,
