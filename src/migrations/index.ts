@@ -3,6 +3,7 @@ import * as migration_20260621_012620_editorial_core from './20260621_012620_edi
 import * as migration_20260621_021151_m3_ai_foundation from './20260621_021151_m3_ai_foundation'
 import * as migration_20260621_185717_m4_public_draft_feedback from './20260621_185717_m4_public_draft_feedback'
 import * as migration_20260621_193929_m4_reviewer_workspace from './20260621_193929_m4_reviewer_workspace'
+import * as migration_20260625_044141_m5_calibration_outcomes from './20260625_044141_m5_calibration_outcomes'
 
 export const migrations = [
   {
@@ -29,5 +30,10 @@ export const migrations = [
     up: migration_20260621_193929_m4_reviewer_workspace.up,
     down: migration_20260621_193929_m4_reviewer_workspace.down,
     name: '20260621_193929_m4_reviewer_workspace',
+  },
+  {
+    up: migration_20260625_044141_m5_calibration_outcomes.up,
+    down: migration_20260625_044141_m5_calibration_outcomes.down,
+    name: '20260625_044141_m5_calibration_outcomes',
   },
 ]

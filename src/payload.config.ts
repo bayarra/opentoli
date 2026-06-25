@@ -12,6 +12,7 @@ import { Comments } from './collections/Comments'
 import { Contexts } from './collections/Contexts'
 import { AIDrafts } from './collections/AIDrafts'
 import { AIDraftDecisions } from './collections/AIDraftDecisions'
+import { CalibrationOutcomes } from './collections/CalibrationOutcomes'
 import { Examples } from './collections/Examples'
 import { GenerationJobs } from './collections/GenerationJobs'
 import { ImportBatches } from './collections/ImportBatches'
@@ -44,6 +45,7 @@ export default buildConfig({
     GenerationJobs,
     AIDrafts,
     AIDraftDecisions,
+    CalibrationOutcomes,
     Comments,
   ],
   editor: lexicalEditor(),

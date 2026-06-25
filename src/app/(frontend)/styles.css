@@ -1768,6 +1768,136 @@ blockquote p {
   padding: 4px 7px;
 }
 
+.calibration-item-list {
+  display: grid;
+  gap: 20px;
+}
+
+.calibration-item {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  display: grid;
+  gap: 18px;
+  padding: 22px;
+}
+
+.calibration-item-heading {
+  align-items: start;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.calibration-item-heading h3 {
+  font-size: clamp(1.25rem, 3vw, 1.8rem);
+  margin: 4px 0 8px;
+}
+
+.calibration-item-heading p,
+.calibration-outcome-summary p {
+  color: var(--muted);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.calibration-item-heading a {
+  background: #eef3f9;
+  border-radius: 999px;
+  color: var(--navy);
+  font-size: 0.85rem;
+  font-weight: 800;
+  padding: 8px 12px;
+  text-decoration: none;
+}
+
+.calibration-evidence {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.calibration-evidence span {
+  background: #f8fbff;
+  border: 1px solid #d7dfec;
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 0.84rem;
+  font-weight: 700;
+  padding: 8px 11px;
+}
+
+.calibration-outcome-summary {
+  background: #f8fbff;
+  border: 1px solid #d7dfec;
+  border-radius: 14px;
+  display: grid;
+  gap: 6px;
+  padding: 16px;
+}
+
+.calibration-outcome-summary span {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.calibration-outcome-details {
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+}
+
+.calibration-outcome-details summary {
+  color: var(--navy);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.calibration-outcome-form {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.calibration-form-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.calibration-outcome-form label {
+  color: var(--ink);
+  display: grid;
+  font-size: 0.9rem;
+  font-weight: 800;
+  gap: 7px;
+}
+
+.calibration-outcome-form select,
+.calibration-outcome-form textarea {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 500;
+  padding: 11px 12px;
+}
+
+.calibration-outcome-form button {
+  background: var(--navy);
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+  justify-self: start;
+  padding: 11px 16px;
+}
+
+.calibration-outcome-form button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
 .published-term-list {
   display: grid;
 }
@@ -2064,6 +2194,8 @@ blockquote p {
   .metric-grid,
   .workspace-shell,
   .workspace-grid,
+  .calibration-form-grid,
+  .calibration-item-heading,
   .job-detail-list-wide,
   .workspace-table > div {
     grid-template-columns: 1fr;

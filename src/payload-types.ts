@@ -80,6 +80,7 @@ export interface Config {
     'generation-jobs': GenerationJob;
     'ai-drafts': AiDraft;
     'ai-draft-decisions': AiDraftDecision;
+    'calibration-outcomes': CalibrationOutcome;
     comments: Comment;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -101,6 +102,7 @@ export interface Config {
     'generation-jobs': GenerationJobsSelect<false> | GenerationJobsSelect<true>;
     'ai-drafts': AiDraftsSelect<false> | AiDraftsSelect<true>;
     'ai-draft-decisions': AiDraftDecisionsSelect<false> | AiDraftDecisionsSelect<true>;
+    'calibration-outcomes': CalibrationOutcomesSelect<false> | CalibrationOutcomesSelect<true>;
     comments: CommentsSelect<false> | CommentsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -627,6 +629,44 @@ export interface AiDraftDecision {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "calibration-outcomes".
+ */
+export interface CalibrationOutcome {
+  id: number;
+  milestone: string;
+  aiDraft: number | AiDraft;
+  generationJob: number | GenerationJob;
+  term?: (number | null) | Term;
+  headwordEn: string;
+  outcome:
+    | 'accepted_as_is'
+    | 'accepted_with_edits'
+    | 'needs_regeneration'
+    | 'blocked_for_sources'
+    | 'duplicate'
+    | 'rejected';
+  editLevel: 'none' | 'minor' | 'major' | 'rewrite' | 'not_checked';
+  sourceAssessment: 'supported' | 'needs_more_sources' | 'unsupported' | 'not_checked';
+  languageAssessment: 'natural' | 'minor_edits' | 'major_edits' | 'not_checked';
+  domainAssessment: 'accurate' | 'needs_expert_review' | 'incorrect' | 'not_checked';
+  goNoGoRecommendation?: ('continue' | 'tune_prompt' | 'pause_batch' | 'not_ready') | null;
+  notes: string;
+  reviewedBy: number | User;
+  reviewedAt: string;
+  modelProvider?: string | null;
+  modelName?: string | null;
+  promptVersion?: string | null;
+  schemaVersion?: string | null;
+  inputTokens?: number | null;
+  outputTokens?: number | null;
+  estimatedCostUsd?: number | null;
+  latencyMs?: number | null;
+  jobCompletedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "comments".
  */
 export interface Comment {
@@ -721,6 +761,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'ai-draft-decisions';
         value: number | AiDraftDecision;
+      } | null)
+    | ({
+        relationTo: 'calibration-outcomes';
+        value: number | CalibrationOutcome;
       } | null)
     | ({
         relationTo: 'comments';
@@ -1072,6 +1116,37 @@ export interface AiDraftDecisionsSelect<T extends boolean = true> {
   resultingTranslation?: T;
   mergeTargetTerm?: T;
   decisionAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "calibration-outcomes_select".
+ */
+export interface CalibrationOutcomesSelect<T extends boolean = true> {
+  milestone?: T;
+  aiDraft?: T;
+  generationJob?: T;
+  term?: T;
+  headwordEn?: T;
+  outcome?: T;
+  editLevel?: T;
+  sourceAssessment?: T;
+  languageAssessment?: T;
+  domainAssessment?: T;
+  goNoGoRecommendation?: T;
+  notes?: T;
+  reviewedBy?: T;
+  reviewedAt?: T;
+  modelProvider?: T;
+  modelName?: T;
+  promptVersion?: T;
+  schemaVersion?: T;
+  inputTokens?: T;
+  outputTokens?: T;
+  estimatedCostUsd?: T;
+  latencyMs?: T;
+  jobCompletedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }

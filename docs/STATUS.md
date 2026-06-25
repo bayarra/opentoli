@@ -3,7 +3,7 @@
 **Last updated:** 2026-06-24
 **Current milestone:** M5 - Calibration Batch
 **Milestone status:** `IN_PROGRESS`
-**Delivery state:** First M5 live worker job completed; draft 189 is private, blocked, and ready for human calibration review
+**Delivery state:** First M5 live worker job completed; draft 189 is private and blocked; web calibration outcome recording is ready for human review evidence
 
 ## Executive Summary
 
@@ -31,7 +31,9 @@ provenance and no validation errors; the draft is blocked/high-risk pending lang
 and source-validation review. Editors can now open or close public draft feedback and add, edit,
 verify, or remove draft sources from OpenToli web instead of Payload admin. Signed-in
 contributors can now track their own comments, translation suggestions, moderation status, and
-outcomes from an OpenToli web dashboard.
+outcomes from an OpenToli web dashboard. Editors can record M5 human calibration outcomes,
+edit-level notes, source/language/domain assessments, go/no-go hints, and safe job evidence from
+`/workspace/calibration`.
 
 ## Milestone Status
 
@@ -85,6 +87,13 @@ outcomes from an OpenToli web dashboard.
 - Added integration coverage proving the contribution dashboard returns only the signed-in contributor's own records with safe target links.
 - Added browser coverage proving an authenticated user can open Contributions from Profile.
 - Passed `npm run typecheck`, `npm run lint`, `npm run test:int` with 39 integration tests in 11 files, `npm run build`, and `npm run test:e2e` with 16 browser tests after adding the contributor dashboard.
+- Added the `calibration-outcomes` collection and migration `20260625_044141_m5_calibration_outcomes` for editor-only M5 review evidence.
+- Expanded `/workspace/calibration` from read-only status into a 50-item manifest dashboard with safe job/draft evidence and inline human outcome recording.
+- Added `/api/editor/calibration/outcomes` for Editor-only outcome saves and expanded `GET /api/v1/editor/calibration` with safe calibration item/outcome summaries.
+- Added integration coverage proving members cannot record calibration outcomes, Editors can save and update one outcome per draft, and safe model/job evidence is retained.
+- Added browser coverage proving the Calibration page exposes the Human calibration evidence section.
+- Applied `20260625_044141_m5_calibration_outcomes`; `npx payload migrate:status` reports all six migrations ran.
+- Passed `npm run typecheck`, `npm run lint`, `npm run test:int` with 40 integration tests in 12 files, `npm run build`, and `npm run test:e2e` with 16 browser tests after adding calibration outcome recording.
 
 ### 2026-06-23
 
@@ -225,7 +234,7 @@ outcomes from an OpenToli web dashboard.
 | Production build          | Pass        | Next.js generated all current public and Payload routes                                                                |
 | HTTP smoke test           | Pass        | `/` and `/search?q=authentication` returned `200`                                                                      |
 | Hydration smoke test      | Pass        | Clean Chrome profile produced no hydration warning                                                                     |
-| Database integration      | Pass        | 39 self-contained integration tests in 11 files pass against PostgreSQL without requiring seed data                    |
+| Database integration      | Pass        | 40 self-contained integration tests in 12 files pass against PostgreSQL without requiring seed data                    |
 | API v1 read contracts     | Pass        | Public search, term, category, public draft redaction, and Editor auth-denial contract tests pass                     |
 | Agent Job Detail          | Pass        | Safe job detail and retry-now tests cover redaction, Editor authorization, retryable states, and route auth denial     |
 | Draft Source Management   | Pass        | Editor source add/edit/remove, verification reset, public visibility closure, and unsafe-source guards pass           |
@@ -236,7 +245,7 @@ outcomes from an OpenToli web dashboard.
 | M5 manifest validation    | Pass        | `npm run m5:validate` passed for 50 terms and 8 source groups                                                          |
 | M5 first enqueue          | Pass        | First run created 5 Terms, 7 Sources, and 5 Generation Jobs; second run reused all records without provider calls      |
 | M5 first worker job       | Pass        | Job 131 for `application` completed; draft 189 retained as private blocked/high-risk review evidence                  |
-| Migration reproducibility | Pass        | All 5 migrations apply from zero; both M4 down migrations pass in isolation                                            |
+| Migration status          | Pass        | `npx payload migrate` applied `20260625_044141_m5_calibration_outcomes`; `npx payload migrate:status` reports all 6 migrations ran locally |
 | Local HTTP smoke          | Pass        | `/`, `/register`, and `/login` return `200`; an unknown draft returns `404`                                            |
 | M4 browser regression     | Pass        | 16 browser tests pass, including public/auth/feedback/Editor keyboard flows, source verification, job detail, and serious WCAG A/AA scans |
 | Web workflow navigation   | Pass        | Global web navigation, `/workflow`, `/drafts`, `/workspace`, `/workspace/drafts`, `/workspace/feedback`, `/workspace/jobs`, `/workspace/calibration`, and admin Back link build successfully; 15 browser tests pass |
@@ -245,6 +254,7 @@ outcomes from an OpenToli web dashboard.
 | Feedback Moderation       | Pass        | `/workspace/feedback` and `/api/editor/feedback/[id]` let Editors approve, reject, or hide pending feedback without canonical mutations |
 | Source Verification       | Pass        | Draft source verification works from `/workspace/drafts/[id]`; member access and unsafe source URLs are rejected       |
 | Contributor Dashboard     | Pass        | `/contributions` shows signed-in users only their own comments, suggestions, statuses, moderator notes, and safe target links |
+| M5 Calibration Outcomes   | Pass        | `/workspace/calibration` records Editor-only human outcomes with safe job evidence; migration `20260625_044141_m5_calibration_outcomes` is applied |
 | Historical full rollback  | Known issue | M2 `editorial_core` down migration has an existing lock-relation drop-order defect                                     |
 
 ## Current Work
@@ -256,10 +266,11 @@ surfaces and Editor Workspace summaries for future mobile use. Editors can inspe
 detail and queue eligible failed/retry-scheduled jobs for retry without starting provider work
 from the browser. Editors can also manage draft public feedback visibility and draft sources
 from the web draft page. Contributors can track their own moderated comments and translation
-suggestions from `/contributions` without opening Payload admin. M5 is in progress: the fixed
+suggestions from `/contributions` without opening Payload admin. `/workspace/calibration` now
+records human outcome evidence for generated calibration drafts. M5 is in progress: the fixed
 50-term manifest is tracked and validated, and the first live worker job has completed. Job 131
-produced private draft 189 for `application`; it is blocked/high-risk and needs human review
-before continuing the first-five calibration run. See
+produced private draft 189 for `application`; it is blocked/high-risk and needs a recorded human
+calibration outcome before continuing the first-five calibration run. See
 [`NEXT_TASKS.md`](NEXT_TASKS.md) for the brief next-agent handoff covering admin/web
 separation, remaining admin-to-web moves, and remaining milestones.
 
@@ -267,7 +278,7 @@ separation, remaining admin-to-web moves, and remaining milestones.
 
 1. Review draft 189 for `application` in `/workspace/drafts/189`, especially source support, register choice, dual-form wording, and whether blocked routing is expected.
 2. Decide whether the prompt/routing should be tuned before processing the remaining queued first-five M5 jobs.
-3. Expand `/workspace/calibration` to record human outcomes, edit-rate notes, job evidence, and go/no-go evidence.
+3. Record the human calibration outcome for draft 189 in `/workspace/calibration`.
 4. Add logged-in Editor success coverage for `/api/v1/editor/*` before mobile work begins.
 5. Repair and separately validate the historical M2 down migration ordering defect.
 

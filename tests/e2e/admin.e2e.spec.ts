@@ -122,6 +122,7 @@ test.describe('Admin Panel', () => {
       timeout: 20_000,
     })
     await expect(page.getByRole('heading', { name: /Track the fixed 50-term/ })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Human calibration evidence' })).toBeVisible()
   })
 
   test('can navigate to list view', async () => {

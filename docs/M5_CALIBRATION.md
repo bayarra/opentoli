@@ -15,6 +15,8 @@ metrics, and review evidence.
 - Validator: [`../src/scripts/validateM5Calibration.ts`](../src/scripts/validateM5Calibration.ts)
 - Prepare script: [`../src/scripts/prepareM5Calibration.ts`](../src/scripts/prepareM5Calibration.ts)
 - Worker: [`../src/scripts/runAIWorker.ts`](../src/scripts/runAIWorker.ts)
+- Web outcome recorder: `/workspace/calibration`
+- Outcome migration: `20260625_044141_m5_calibration_outcomes`
 
 ## Fixed Input Set
 
@@ -133,7 +135,8 @@ Reviewer notes to resolve before continuing:
 
 ## Review Rubric
 
-For each generated draft, an editor should record:
+For each generated draft, an editor should record the human outcome in
+`/workspace/calibration`:
 
 | Field | Record |
 | --- | --- |
