@@ -61,12 +61,13 @@ Remaining API tasks:
    the read contracts settle.
 2. Add logged-in Editor success coverage for `/api/v1/editor/*` over HTTP/browser context before
    mobile work begins.
-3. Add pagination/filter contracts when M7 search and discovery work starts.
+3. Agent Jobs now support stable headword, status, batch, and page filters. Add public
+   dictionary pagination/filter contracts when M7 search and discovery work starts.
 
 ## Remaining Admin-To-Web Moves
 
-- Agent Jobs: safe job detail and retry-now are done. Remaining work is richer filtering,
-  batch grouping, and any future operational diagnostics that still avoid raw provider output.
+- Agent Jobs: safe detail, retry-now, headword/status/batch filtering, pagination, and import-batch
+  grouping are done. Add future diagnostics only when they can remain safely redacted.
 - Calibration: outcome recording, aggregate quality/cost metrics, first-five completion, and a
   generated go/no-go rollup are done inside `/workspace/calibration`. Remaining work is the
   actual human review of all 50 terms and the written final decision.

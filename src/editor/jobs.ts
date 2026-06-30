@@ -1,6 +1,6 @@
 import config from '@/payload.config'
-import type { GenerationJob, User } from '@/payload-types'
-import { getPayload, type Payload } from 'payload'
+import type { GenerationJob, ImportBatch, User } from '@/payload-types'
+import { getPayload, type Payload, type Where } from 'payload'
 
 import { isEditorUser } from './permissions'
 
@@ -14,6 +14,21 @@ export class EditorJobError extends Error {
 }
 
 const retryableStatuses = ['failed', 'retry_scheduled'] as const
+export const editorJobStatuses = [
+  'queued',
+  'running',
+  'retry_scheduled',
+  'completed',
+  'failed',
+  'cancelled',
+] as const
+
+export type EditorJobFilters = {
+  batchId?: number
+  page?: number
+  query?: string
+  status?: (typeof editorJobStatuses)[number]
+}
 
 const relationSummary = (
   value: unknown,
@@ -137,6 +152,106 @@ export const safeJobResource = (job: GenerationJob) => {
 }
 
 export type SafeJobResource = ReturnType<typeof safeJobResource>
+
+const formatCurrency = (value?: number | null) =>
+  typeof value === 'number' ? `$${value.toFixed(4)}` : null
+
+const formatDuration = (value?: number | null) =>
+  typeof value === 'number' ? `${Math.round(value / 1000)}s` : null
+
+const compactJobResource = (job: GenerationJob) => ({
+  attempts: `${job.attemptCount}/${job.maxAttempts}`,
+  batch: relationSummary(job.importBatch, { label: 'name' }),
+  category: relationSummary(job.category, { label: 'nameEn', slug: true }),
+  cost: formatCurrency(job.estimatedCostUsd),
+  duration: formatDuration(job.latencyMs),
+  id: job.id,
+  inputHeadword: job.inputHeadword,
+  modelName: job.modelName,
+  stage: job.stage,
+  status: job.status,
+  tokens:
+    typeof job.inputTokens === 'number' || typeof job.outputTokens === 'number'
+      ? `${job.inputTokens || 0} in / ${job.outputTokens || 0} out`
+      : null,
+  updatedAt: job.updatedAt,
+})
+
+export const getEditorJobsDashboard = async (
+  user: User,
+  filters: EditorJobFilters = {},
+  providedPayload?: Payload,
+) => {
+  if (!isEditorUser(user)) return null
+  const payload = providedPayload || (await getPayload({ config: await config }))
+  const page = Math.max(1, filters.page || 1)
+  const limit = 50
+  const conditions: Where[] = []
+  if (filters.status && editorJobStatuses.includes(filters.status)) {
+    conditions.push({ status: { equals: filters.status } })
+  }
+  if (filters.batchId) conditions.push({ importBatch: { equals: filters.batchId } })
+  if (filters.query?.trim()) conditions.push({ inputHeadword: { contains: filters.query.trim() } })
+  const where: Where = conditions.length > 0 ? { and: conditions } : {}
+
+  const [result, batches, statusCounts] = await Promise.all([
+    payload.find({
+      collection: 'generation-jobs',
+      depth: 2,
+      limit,
+      overrideAccess: true,
+      page,
+      sort: '-updatedAt',
+      where,
+    }),
+    payload.find({
+      collection: 'import-batches',
+      depth: 0,
+      limit: 200,
+      overrideAccess: true,
+      sort: '-updatedAt',
+    }),
+    Promise.all(
+      editorJobStatuses.map(async (status) => {
+        const count = await payload.count({
+          collection: 'generation-jobs',
+          overrideAccess: true,
+          where: { status: { equals: status } },
+        })
+        return [status, count.totalDocs] as const
+      }),
+    ),
+  ])
+  const jobs = (result.docs as GenerationJob[]).map(compactJobResource)
+  const groups = new Map<string, { batch: { id: number | null; label: string }; jobs: typeof jobs }>()
+  for (const job of jobs) {
+    const key = job.batch?.id ? String(job.batch.id) : 'unbatched'
+    const group = groups.get(key) || {
+      batch: { id: job.batch?.id || null, label: job.batch?.label || 'No import batch' },
+      jobs: [],
+    }
+    group.jobs.push(job)
+    groups.set(key, group)
+  }
+
+  return {
+    batches: (batches.docs as ImportBatch[]).map((batch) => ({ id: batch.id, name: batch.name, status: batch.status })),
+    counts: Object.fromEntries(statusCounts) as Record<(typeof editorJobStatuses)[number], number>,
+    filters: {
+      batchId: filters.batchId || null,
+      query: filters.query?.trim() || '',
+      status: filters.status || null,
+    },
+    groups: [...groups.values()],
+    pagination: {
+      hasNextPage: result.hasNextPage,
+      hasPrevPage: result.hasPrevPage,
+      page: result.page || page,
+      totalDocs: result.totalDocs,
+      totalPages: result.totalPages,
+    },
+  }
+}
 
 export const getEditorJob = async (id: number, user: User) => {
   if (!isEditorUser(user)) return null

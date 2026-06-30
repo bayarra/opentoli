@@ -132,6 +132,10 @@ test.describe('Admin Panel', () => {
     await workspaceNav.getByRole('link', { name: 'Agent Jobs' }).click()
     await expect(page).toHaveURL('http://localhost:3000/workspace/jobs', { timeout: 20_000 })
     await expect(page.getByRole('heading', { name: /Track AI preparation/ })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Grouped by import batch' })).toBeVisible()
+    await expect(page.getByLabel('Headword')).toBeVisible()
+    await expect(page.getByLabel('Status')).toBeVisible()
+    await expect(page.getByRole('combobox', { name: 'Import batch' })).toBeVisible()
 
     await workspaceNav.getByRole('link', { name: 'Calibration' }).click()
     await expect(page).toHaveURL('http://localhost:3000/workspace/calibration', {

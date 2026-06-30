@@ -2,7 +2,7 @@ import { DeterministicAIProvider } from '@/ai/providers/deterministic'
 import { AI_SCHEMA_VERSION } from '@/ai/schemas/v1'
 import { GET as apiJobDetail } from '@/app/(frontend)/api/v1/editor/jobs/[id]/route'
 import { POST as retryJobRoute } from '@/app/(frontend)/api/editor/jobs/[id]/route'
-import { getEditorJob, retryEditorJobNow } from '@/editor/jobs'
+import { getEditorJob, getEditorJobsDashboard, retryEditorJobNow } from '@/editor/jobs'
 import config from '@/payload.config'
 import type { GenerationJob, User } from '@/payload-types'
 import { getPayload, type Payload } from 'payload'
@@ -12,6 +12,7 @@ let payload: Payload
 let editor: User
 let contributor: User
 let categoryId: number
+let batchId: number
 const jobIds: number[] = []
 const suffix = `${process.pid}-${Date.now()}`
 
@@ -20,11 +21,15 @@ const provider = new DeterministicAIProvider()
 const createJob = async ({
   attemptCount = 1,
   errorMessage,
+  importBatchId,
+  inputHeadword,
   maxAttempts = 3,
   status,
 }: {
   attemptCount?: number
   errorMessage?: string
+  importBatchId?: number
+  inputHeadword?: string
   maxAttempts?: number
   status: GenerationJob['status']
 }) => {
@@ -38,10 +43,11 @@ const createJob = async ({
       errorMessage,
       generationPromptVersion: provider.metadata.generationPromptVersion,
       idempotencyKey: `editor-jobs-${status}-${attemptCount}-${maxAttempts}-${jobIds.length}-${suffix}`,
-      inputHeadword: `editor job ${status} ${suffix}`,
+      importBatch: importBatchId,
+      inputHeadword: inputHeadword || `editor job ${status} ${suffix}`,
       inputPayload: {
         category: { id: categoryId, nameEn: `Editor Jobs ${suffix}`, slug: `editor-jobs-${suffix}` },
-        headwordEn: `editor job ${status} ${suffix}`,
+        headwordEn: inputHeadword || `editor job ${status} ${suffix}`,
       },
       maxAttempts,
       modelName: provider.metadata.modelName,
@@ -77,6 +83,18 @@ describe('Editor generation job controls', () => {
     })
     categoryId = category.id
 
+    const batch = await payload.create({
+      collection: 'import-batches',
+      data: {
+        inputMode: 'manual',
+        name: `Editor job batch ${suffix}`,
+        sourceTitle: 'Editor job grouping test',
+        status: 'queued',
+      },
+      overrideAccess: true,
+    })
+    batchId = batch.id
+
     editor = await payload.create({
       collection: 'users',
       data: {
@@ -102,6 +120,9 @@ describe('Editor generation job controls', () => {
   afterAll(async () => {
     for (const id of jobIds.reverse()) {
       await payload.delete({ collection: 'generation-jobs', id, overrideAccess: true })
+    }
+    if (batchId) {
+      await payload.delete({ collection: 'import-batches', id: batchId, overrideAccess: true })
     }
     if (categoryId) {
       await payload.delete({ collection: 'categories', id: categoryId, overrideAccess: true })
@@ -203,5 +224,42 @@ describe('Editor generation job controls', () => {
       { params: Promise.resolve({ id: String(job.id) }) },
     )
     expect(retryResponse.status).toBe(401)
+  })
+
+  it('filters jobs and groups them by import batch', async () => {
+    const queued = await createJob({
+      attemptCount: 0,
+      importBatchId: batchId,
+      inputHeadword: `grouped alpha ${suffix}`,
+      status: 'queued',
+    })
+    const failed = await createJob({
+      errorMessage: 'SECRET_PROVIDER_DETAIL: grouped failure',
+      importBatchId: batchId,
+      inputHeadword: `grouped beta ${suffix}`,
+      status: 'failed',
+    })
+
+    await expect(getEditorJobsDashboard(contributor, { batchId }, payload)).resolves.toBeNull()
+    const grouped = await getEditorJobsDashboard(
+      editor,
+      { batchId, query: `grouped` },
+      payload,
+    )
+    expect(grouped?.groups).toHaveLength(1)
+    expect(grouped?.groups[0]).toMatchObject({
+      batch: { id: batchId, label: `Editor job batch ${suffix}` },
+    })
+    expect(grouped?.groups[0].jobs.map((job) => job.id)).toEqual(
+      expect.arrayContaining([queued.id, failed.id]),
+    )
+
+    const failedOnly = await getEditorJobsDashboard(
+      editor,
+      { batchId, query: 'grouped', status: 'failed' },
+      payload,
+    )
+    expect(failedOnly?.pagination.totalDocs).toBe(1)
+    expect(failedOnly?.groups[0].jobs[0]).toMatchObject({ id: failed.id, status: 'failed' })
   })
 })

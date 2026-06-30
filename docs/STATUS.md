@@ -41,6 +41,8 @@ Calibration reporting now derives first-five completion, quality rates, disagree
 latency, cost, and decision-readiness evidence without automating the final M5 decision.
 Editors can prepare manual or CSV imports, review each parsed row, resolve duplicates, and
 explicitly queue accepted terms from `/workspace/imports` without executing the AI provider.
+Agent Jobs can be searched and filtered by status or import batch, with paginated results
+grouped by batch in both Workspace and the stable Editor API.
 
 ## Milestone Status
 
@@ -61,6 +63,9 @@ explicitly queue accepted terms from `/workspace/imports` without executing the 
 
 ### 2026-06-29
 
+- Replaced the fixed Agent Jobs list with paginated headword, status, and Import Batch filtering plus visible grouping by batch.
+- Expanded `GET /api/v1/editor/jobs` with the same stable filter and grouping contract while preserving safe summaries and private-output redaction.
+- Added grouping/filter integration and browser coverage; all 46 integration tests, the production build, and all 18 browser tests pass.
 - Added `/workspace/imports` with manual/CSV parsing, row-level validation, duplicate detection, Editor accept/reject review, and explicit queueing of accepted rows.
 - Added the `import-batch-items` collection, stable Editor import read APIs, and migration `20260630_023959_web_import_preparation`, applied locally.
 - Preserved controlled execution: browser queueing creates private Terms and Generation Jobs with batch/requester attribution but never calls the AI provider.
@@ -276,7 +281,7 @@ explicitly queue accepted terms from `/workspace/imports` without executing the 
 | Production build          | Pass        | Next.js generated all current public and Payload routes                                                                |
 | HTTP smoke test           | Pass        | `/` and `/search?q=authentication` returned `200`                                                                      |
 | Hydration smoke test      | Pass        | Clean Chrome profile produced no hydration warning                                                                     |
-| Database integration      | Pass        | 43 self-contained integration tests in 14 files pass against PostgreSQL without requiring seed data                    |
+| Database integration      | Pass        | 46 self-contained integration tests in 15 files pass against PostgreSQL without requiring seed data                    |
 | API v1 read contracts     | Pass        | Public search, term, category, public draft redaction, and Editor auth-denial contract tests pass                     |
 | Agent Job Detail          | Pass        | Safe job detail and retry-now tests cover redaction, Editor authorization, retryable states, and route auth denial     |
 | Optional References       | Pass        | Editor reference add/edit/remove and verification work without gating publication; unsafe URLs stay redacted          |
@@ -290,8 +295,8 @@ explicitly queue accepted terms from `/workspace/imports` without executing the 
 | Migration status          | Pass        | `npm run payload -- migrate:status` reports all ten tracked migrations ran locally                                |
 | Local HTTP smoke          | Pass        | `/`, `/register`, and `/login` return `200`; an unknown draft returns `404`                                            |
 | M4 browser regression     | Pass        | Browser tests cover public/auth/feedback/Editor keyboard flows, optional references, job detail, and serious WCAG A/AA scans              |
-| Web workflow navigation   | Pass        | Global navigation plus Workspace drafts, published terms, feedback, jobs, calibration, and admin maintenance build successfully; 17 browser tests pass |
-| Web account workflow      | Pass        | `/profile`, header account links, Editor Workspace visibility, contributions, and Profile-only logout pass in 17 browser tests |
+| Web workflow navigation   | Pass        | Global navigation plus Workspace drafts, terms, feedback, imports, filtered jobs, calibration, and admin maintenance build successfully; 18 browser tests pass |
+| Web account workflow      | Pass        | `/profile`, header account links, Editor Workspace visibility, contributions, and Profile-only logout pass in 18 browser tests |
 | Editor web Workspace      | Pass        | `/workspace` and Workspace menu organize draft, feedback, generation job, calibration, batch, and published-term summaries without raw AI outputs |
 | Feedback Moderation       | Pass        | `/workspace/feedback` and `/api/editor/feedback/[id]` let Editors approve, reject, or hide pending feedback without canonical mutations |
 | Contributor Dashboard     | Pass        | `/contributions` shows signed-in users only their own comments, suggestions, statuses, moderator notes, and safe target links |
@@ -299,6 +304,8 @@ explicitly queue accepted terms from `/workspace/imports` without executing the 
 | Published term editing    | Pass        | `/workspace/terms` updates canonical wording and related records transactionally with Editor-only integration coverage |
 | Proposal moderation       | Pass        | Translation, example, and reference proposals stay pending and advisory; migration `20260630_021449_expanded_proposal_moderation` is applied |
 | Calibration reporting     | Pass        | First-five progress, aggregate quality/cost metrics, and non-automatic go/no-go readiness are derived and browser-tested |
+| Import preparation        | Pass        | Manual/CSV rows are validated, reviewed, and explicitly queued without provider execution; migration is applied locally |
+| Agent Job organization    | Pass        | Headword/status/batch filters, pagination, and safe Import Batch grouping pass integration and browser coverage |
 | Historical full rollback  | Known issue | M2 `editorial_core` down migration has an existing lock-relation drop-order defect                                     |
 
 ## Current Work

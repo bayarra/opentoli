@@ -1860,6 +1860,109 @@ blockquote p {
   margin-top: 18px;
 }
 
+.job-filter-form {
+  align-items: end;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(180px, 1fr) minmax(150px, 0.65fr) minmax(220px, 1fr) auto auto;
+  margin-bottom: 24px;
+  padding: 18px;
+}
+
+.job-filter-form label {
+  display: grid;
+  font-size: 0.86rem;
+  font-weight: 800;
+  gap: 7px;
+}
+
+.job-filter-form input,
+.job-filter-form select {
+  background: #fff;
+  border: 1px solid #b8c2d4;
+  border-radius: 10px;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 500;
+  padding: 10px 11px;
+  width: 100%;
+}
+
+.job-filter-form button,
+.job-filter-form > a,
+.job-pagination a,
+.job-pagination span {
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 800;
+  padding: 10px 14px;
+  text-align: center;
+  text-decoration: none;
+}
+
+.job-filter-form button {
+  background: var(--navy);
+  border: 0;
+  color: #fff;
+  cursor: pointer;
+}
+
+.job-filter-form > a,
+.job-pagination a {
+  background: #eef3f9;
+  color: var(--navy);
+}
+
+.job-group-list {
+  display: grid;
+  gap: 28px;
+}
+
+.job-group {
+  border-top: 1px solid var(--line);
+  padding-top: 24px;
+}
+
+.job-group:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.job-group-heading {
+  align-items: center;
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.job-group-heading h3 {
+  font-size: 1.25rem;
+  margin: 3px 0 0;
+}
+
+.job-group-heading > span {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.job-pagination {
+  align-items: center;
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+  padding-top: 18px;
+}
+
+.job-pagination span {
+  color: var(--muted);
+}
+
 .job-retry-form button {
   background: var(--navy);
   border: 0;
@@ -2370,6 +2473,7 @@ blockquote p {
   .editor-term-list a,
   .feedback-proposal-fields,
   .import-item-list article,
+  .job-filter-form,
   .term-editor-grid {
     grid-template-columns: 1fr;
   }
