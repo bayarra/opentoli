@@ -77,19 +77,19 @@ API credit.
 Prepare the first five terms:
 
 ```powershell
-npm run m5:prepare -- --limit=5
+npm run m5:prepare:first
 ```
 
 Prepare the next ten after reviewing the first batch:
 
 ```powershell
-npm run m5:prepare -- --offset=5 --limit=10
+npm run m5:prepare:next
 ```
 
 Prepare all remaining terms only after the first batches look healthy:
 
 ```powershell
-npm run m5:prepare -- --offset=15 --all
+npm run m5:prepare:remaining
 ```
 
 ## Process Jobs
@@ -105,6 +105,28 @@ model, prompt versions, token usage, latency, raw outputs, validation result, an
 state in `Generation Jobs`.
 
 ## Run Log
+
+### 2026-06-29 - Second Batch Preparation and First Draft
+
+| Field | Evidence |
+| --- | --- |
+| Prepared terms | Priorities 6-15: `branch` through `configuration` |
+| Preparation result | 10 Terms, 13 References, and 10 Generation Jobs created; no provider call during preparation |
+| Processed term | `branch` |
+| Job / draft | Job 605 completed on attempt 2; draft 437 `needs_review` |
+| Provider/model | `openai:gpt-5-mini` |
+| Tokens | 2,953 input / 2,312 output |
+| Latency | 27,398 ms |
+| Visibility | `private` |
+| Recommendation | `салбар`; alternative `брэнч` |
+| Route/risk | Draft `fast_review` / `low`; critique recommends `language_review` |
+| Remaining queue | 9 jobs, `build` through `configuration`, untouched |
+
+The first attempt recorded a connection error and safely moved to `retry_scheduled`; the
+controlled retry completed without losing provenance. Before another worker run, an Editor must
+review whether `салбар` or `брэнч` should be preferred, check the Mongolian explanation and
+examples for naturalness, resolve the route discrepancy, and record the outcome in
+`/workspace/calibration`.
 
 ### 2026-06-29 - First-Five Checkpoint
 

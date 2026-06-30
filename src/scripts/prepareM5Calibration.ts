@@ -25,18 +25,21 @@ type CliOptions = {
 
 const parseIntegerArg = (name: string): number | undefined => {
   const prefix = `--${name}=`
-  const raw = process.argv.find((arg) => arg.startsWith(prefix))?.slice(prefix.length)
+  const environmentName = `M5_${name.toUpperCase()}`
+  const raw =
+    process.argv.find((arg) => arg.startsWith(prefix))?.slice(prefix.length) ||
+    process.env[environmentName]
   if (!raw) return undefined
 
   const value = Number(raw)
   if (!Number.isInteger(value) || value < 0) {
-    throw new Error(`--${name} must be a non-negative integer.`)
+    throw new Error(`--${name} or ${environmentName} must be a non-negative integer.`)
   }
   return value
 }
 
 const parseCliOptions = (manifest: M5Manifest): CliOptions => {
-  const all = process.argv.includes('--all')
+  const all = process.argv.includes('--all') || process.env.M5_ALL === 'true'
   const offset = parseIntegerArg('offset') ?? 0
   const limit = all ? undefined : (parseIntegerArg('limit') ?? manifest.runPolicy.firstBatchSize)
 
@@ -251,7 +254,7 @@ try {
   payload.logger.info(
     `Prepared ${slice.length} M5 calibration terms; ` +
       `terms created/reused ${createdTerms}/${reusedTerms}; ` +
-      `sources created/reused ${createdSources}/${reusedSources}; ` +
+      `references created/reused ${createdSources}/${reusedSources}; ` +
       `jobs created/reused ${createdJobs}/${reusedJobs}. ` +
       'No AI provider calls were made. Run npm run ai:work to process one queued job.',
   )

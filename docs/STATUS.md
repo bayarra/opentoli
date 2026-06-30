@@ -3,7 +3,7 @@
 **Last updated:** 2026-06-29
 **Current milestone:** M5 - Calibration Batch
 **Milestone status:** `IN_PROGRESS`
-**Delivery state:** First five M5 terms completed, explicitly accepted, and have calibration outcomes; current prompt continues to the next controlled batch
+**Delivery state:** Second M5 batch prepared; `branch` draft awaits human review before the next worker run
 
 ## Executive Summary
 
@@ -54,7 +54,7 @@ grouped by batch in both Workspace and the stable Editor API.
 | M2  | Editorial data core                          | `DONE`        | Attributed reviewer/moderator workflow and public vertical slice verified |
 | M3  | AI preparation pipeline                      | `DONE`        | Live OpenAI job 33 completed; draft 22 retained; idempotency verified     |
 | M4  | Public draft feedback and simple editor flow | `DONE`        | All exit criteria pass with 27 integration and 15 browser tests           |
-| M5  | Calibration batch                            | `IN_PROGRESS` | First five jobs and human outcomes complete; next controlled batch pending |
+| M5  | Calibration batch                            | `IN_PROGRESS` | First five outcomes complete; second batch prepared and first draft awaiting review |
 | M6  | Public dictionary                            | `PLANNED`     | Required pages are documented                                             |
 | M7  | Search and discovery                         | `PLANNED`     | Ranking and filters are documented                                        |
 | M8  | Community accounts and contributions         | `PLANNED`     | Rich contributor features extend the basic authenticated M4 feedback path |
@@ -64,6 +64,12 @@ grouped by batch in both Workspace and the stable Editor API.
 
 ### 2026-06-29
 
+- Added explicit `m5:prepare:first`, `m5:prepare:next`, and `m5:prepare:remaining` commands after verifying this machine's npm runner dropped forwarded CLI arguments.
+- Prepared M5 priorities 6-15: 10 Terms, 13 References, and 10 private Generation Jobs were created without provider calls.
+- Processed only `branch`: job 605 recovered from one recorded connection retry and completed on attempt 2; the other nine jobs remain queued and untouched.
+- Retained draft 437 as private `needs_review` evidence with recommendation `салбар`, alternative `брэнч`, draft route/risk `fast_review` / `low`, and critique recommendation `language_review`.
+- Recorded job 605 evidence: 2,953 input tokens, 2,312 output tokens, 27,398 ms latency, and no terminal validation error.
+- Passed `npm run typecheck`, `npm run lint`, and `npm run m5:validate` after making M5 batch selection deterministic.
 - Completed the first-five M5 checkpoint: `agent`, `API`, `application`, `authorization`, and `access control` all have completed OpenAI jobs and explicit Editor acceptance.
 - Backfilled five factual `accepted_as_is` calibration outcomes from attributed publication decisions with empty `modifiedFields`; language/domain assessments remain `not_checked` rather than inferred.
 - Recorded the checkpoint rollup: 100% acceptance, 0% recorded edits, 16,625 input tokens, 15,020 output tokens, and 34.3-second average latency.
@@ -177,9 +183,9 @@ grouped by batch in both Workspace and the stable Editor API.
 - Passed `npm run typecheck`, `npm run lint`, `npm run test:int`, `npm run test:e2e`, and `npm run build` after the web workflow navigation changes.
 - Started M5 with a fixed 50-term Technology and Software calibration manifest at `data/calibration/m5-technology-software.json`.
 - Added `npm run m5:validate` and passed manifest validation: 50 terms, 8 source groups, 31 ambiguous terms, 9 domain-sensitive terms, and 10 straightforward terms.
-- Added `npm run m5:prepare`, which creates or reuses private draft Terms, Sources, an Import Batch, and Generation Jobs without calling the AI provider.
-- Prepared the first five M5 calibration terms with `npm run m5:prepare -- --limit=5`: 5 Terms, 7 Sources, and 5 Generation Jobs were created; no AI provider calls were made.
-- Re-ran `npm run m5:prepare -- --limit=5` and verified idempotency: 0 new Terms, 0 new Sources, and 0 new Generation Jobs.
+- Added M5 preparation commands that create or reuse private draft Terms, References, an Import Batch, and Generation Jobs without calling the AI provider.
+- Prepared the first five M5 calibration terms with `npm run m5:prepare:first`: 5 Terms, 7 References, and 5 Generation Jobs were created; no AI provider calls were made.
+- Re-ran `npm run m5:prepare:first` and verified idempotency: 0 new Terms, 0 new References, and 0 new Generation Jobs.
 - Added `docs/M5_CALIBRATION.md` with run policy, review rubric, stop conditions, metrics, and go/no-go decision template.
 - Passed `npm run typecheck` and `npm run lint` after adding the M5 workflow.
 - Completed the live M3 OpenAI calibration for `authentication`: generation job 33 finished on attempt 2 with `openai:gpt-5-mini`, retained 3,365 input tokens, 3,025 output tokens, 35,002 ms latency, and no validation errors.
@@ -298,10 +304,11 @@ grouped by batch in both Workspace and the stable Editor API.
 | Simple Editor workflow    | Pass        | Tests cover background save, member denial, explicit Editor publication, optional references, Hide, and provenance |
 | OpenAI adapter contract   | Pass        | 3 mocked tests verify strict Responses API requests, parsing, usage, and failures                                      |
 | OpenAI live calibration   | Pass        | Job 33 completed with `openai:gpt-5-mini`: 3,365 input tokens, 3,025 output tokens, 35,002 ms latency, no validation errors |
-| M5 manifest validation    | Pass        | `npm run m5:validate` passed for 50 terms and 8 source groups                                                          |
-| M5 first enqueue          | Pass        | First run created 5 Terms, 7 Sources, and 5 Generation Jobs; second run reused all records without provider calls      |
+| M5 manifest validation    | Pass        | `npm run m5:validate` passed for 50 terms and 8 reference groups                                                       |
+| M5 first enqueue          | Pass        | First run created 5 Terms, 7 References, and 5 Generation Jobs; second run reused all records without provider calls   |
 | M5 first worker job       | Pass        | Job 131 for `application` completed; draft 189 retained as private blocked/high-risk review evidence                  |
 | M5 first-five checkpoint  | Pass        | Five completed jobs, five explicit Editor acceptances, and five factual calibration outcomes; preliminary signal `continue` |
+| M5 second batch checkpoint | Pending review | Priorities 6-15 prepared; job 605 completed and private draft 437 requires a human outcome before job 606 runs       |
 | Migration status          | Pass        | `npm run payload -- migrate:status` reports all ten tracked migrations ran locally                                |
 | Local HTTP smoke          | Pass        | `/`, `/register`, and `/login` return `200`; an unknown draft returns `404`                                            |
 | M4 browser regression     | Pass        | Browser tests cover public/auth/feedback/Editor keyboard flows, optional references, job detail, and serious WCAG A/AA scans              |
@@ -331,16 +338,16 @@ examples, and reference proposals from `/contributions` without opening Payload 
 `/workspace/calibration` records human outcomes and derives quality, cost, progress, and
 decision-readiness metrics. M5 is in progress: the fixed 50-term manifest is tracked and
 validated, and the first five jobs, Editor decisions, and calibration outcomes are complete.
-The checkpoint supports continuing the current prompt, but language and domain assessment
-fields remain `not_checked`. The next run should prepare ten terms and process them one at a
-time. See
+Priorities 6-15 are prepared, and `branch` is the only newly processed draft. It remains private
+and requires human review before the next queued job runs. The first-five checkpoint supports
+continuing the current prompt, but language and domain assessment fields remain `not_checked`. See
 [`NEXT_TASKS.md`](NEXT_TASKS.md) for the brief next-agent handoff covering admin/web
 separation, remaining admin-to-web moves, and remaining milestones.
 
 ## Next Actions
 
-1. Prepare the next ten terms with `npm run m5:prepare -- --offset=5 --limit=10`.
-2. Process one job with `npm run ai:work`, inspect its draft, and record the human outcome before running another.
+1. Review draft 437 (`branch`) in `/workspace/drafts/437` and record its factual human outcome in `/workspace/calibration`.
+2. Only after that review, process the next queued job (`build`) with `npm run ai:work`.
 3. Fill language/domain assessments when a human performs those checks; do not infer them from publication alone.
 4. Add logged-in Editor success coverage for `/api/v1/editor/*` before mobile work begins.
 5. Repair and separately validate the historical M2 down migration ordering defect.
