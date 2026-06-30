@@ -16,6 +16,7 @@ metrics, and review evidence.
 - Prepare script: [`../src/scripts/prepareM5Calibration.ts`](../src/scripts/prepareM5Calibration.ts)
 - Worker: [`../src/scripts/runAIWorker.ts`](../src/scripts/runAIWorker.ts)
 - Web outcome recorder: `/workspace/calibration`
+- Aggregate quality, cost, first-five progress, and go/no-go rollup: `/workspace/calibration`
 - Outcome migration: `20260625_044141_m5_calibration_outcomes`
 - Reference cleanup migrations: `20260630_012122_optional_references_cleanup` and `20260630_012522_reference_enums`
 
@@ -154,6 +155,10 @@ For each generated draft, an editor should record the human outcome in
 | Recommendation quality | Acceptable, needs edit, wrong, or unusable |
 | Human edits | Fields changed before publication |
 | Reviewer notes | Naturalness, domain accuracy, ambiguity, and edit patterns |
+
+The same page derives acceptance, edit, disagreement, cost, latency, and recommendation
+metrics from those records. Its preliminary signal is descriptive only. The page cannot
+make the final go/no-go decision, and reports `not ready` until all 50 outcomes exist.
 
 ## Stop Conditions
 

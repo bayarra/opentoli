@@ -1654,6 +1654,46 @@ blockquote p {
   margin: 0;
 }
 
+.calibration-rollup-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.calibration-outcome-breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 20px;
+}
+
+.calibration-outcome-breakdown span {
+  background: #eef3f9;
+  border-radius: 999px;
+  color: var(--navy);
+  font-size: 0.82rem;
+  padding: 8px 11px;
+  text-transform: capitalize;
+}
+
+.go-no-go-panel > p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.calibration-report-panel {
+  margin-bottom: 24px;
+}
+
+.calibration-report-panel pre {
+  background: #101b2b;
+  border-radius: 14px;
+  color: #edf5ff;
+  font: 500 0.85rem/1.65 ui-monospace, SFMono-Regular, Consolas, monospace;
+  margin: 18px 0 0;
+  overflow-x: auto;
+  padding: 18px;
+  white-space: pre-wrap;
+}
+
 .calibration-policy div {
   border-top: 1px solid var(--line);
   display: grid;

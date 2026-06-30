@@ -68,6 +68,107 @@ const formatCurrency = (value?: number | null) =>
 const formatDuration = (value?: number | null) =>
   typeof value === 'number' ? `${Math.round(value / 1000)}s` : null
 
+const percent = (value: number, total: number) =>
+  total > 0 ? Number(((value / total) * 100).toFixed(1)) : 0
+
+type RollupItem = {
+  job: null | {
+    estimatedCostUsd: number | null
+    inputTokens: number | null
+    latencyMs: number | null
+    modelName?: string | null
+    modelProvider?: string | null
+    outputTokens: number | null
+    promptVersion?: string | null
+    status: GenerationJob['status']
+  }
+  outcome: null | {
+    domainAssessment: CalibrationOutcome['domainAssessment']
+    editLevel: CalibrationOutcome['editLevel']
+    goNoGoRecommendation: CalibrationOutcome['goNoGoRecommendation'] | null
+    languageAssessment: CalibrationOutcome['languageAssessment']
+    outcome: CalibrationOutcome['outcome']
+  }
+  priority: number
+}
+
+export const buildCalibrationRollup = (
+  items: RollupItem[],
+  firstBatchSize: number,
+  totalTerms = items.length,
+) => {
+  const recorded = items.filter((item) => item.outcome)
+  const completedJobs = items.filter((item) => item.job?.status === 'completed')
+  const firstBatch = items.filter((item) => item.priority <= firstBatchSize)
+  const accepted = recorded.filter((item) =>
+    ['accepted_as_is', 'accepted_with_edits'].includes(item.outcome!.outcome),
+  ).length
+  const edited = recorded.filter((item) =>
+    ['minor', 'major', 'rewrite'].includes(item.outcome!.editLevel),
+  ).length
+  const regenerationOrRejected = recorded.filter((item) =>
+    ['needs_regeneration', 'rejected'].includes(item.outcome!.outcome),
+  ).length
+  const disagreements = recorded.filter(
+    (item) =>
+      ['needs_expert_review', 'incorrect'].includes(item.outcome!.domainAssessment) ||
+      item.outcome!.languageAssessment === 'major_edits',
+  ).length
+  const recommendationCounts = Object.fromEntries(
+    calibrationGoNoGoRecommendations.map((value) => [value, 0]),
+  ) as Record<(typeof calibrationGoNoGoRecommendations)[number], number>
+  for (const item of recorded) {
+    const recommendation = item.outcome?.goNoGoRecommendation
+    if (recommendation) recommendationCounts[recommendation] += 1
+  }
+
+  const preliminarySignal =
+    recorded.length === 0
+      ? 'not_ready'
+      : recommendationCounts.pause_batch > 0
+        ? 'pause_batch'
+        : recommendationCounts.not_ready > 0
+          ? 'not_ready'
+          : recommendationCounts.tune_prompt > recommendationCounts.continue
+            ? 'tune_prompt'
+            : 'continue'
+  const totalInputTokens = completedJobs.reduce((total, item) => total + (item.job?.inputTokens || 0), 0)
+  const totalOutputTokens = completedJobs.reduce((total, item) => total + (item.job?.outputTokens || 0), 0)
+  const totalLatencyMs = completedJobs.reduce((total, item) => total + (item.job?.latencyMs || 0), 0)
+  const totalCostUsd = completedJobs.reduce((total, item) => total + (item.job?.estimatedCostUsd || 0), 0)
+  const outcomesRecorded = recorded.length
+  const remainingOutcomes = Math.max(0, totalTerms - outcomesRecorded)
+
+  return {
+    acceptanceRate: percent(accepted, outcomesRecorded),
+    accepted,
+    averageInputTokens: completedJobs.length ? Math.round(totalInputTokens / completedJobs.length) : 0,
+    averageLatencyMs: completedJobs.length ? Math.round(totalLatencyMs / completedJobs.length) : 0,
+    averageOutputTokens: completedJobs.length ? Math.round(totalOutputTokens / completedJobs.length) : 0,
+    decisionReady: outcomesRecorded === totalTerms && totalTerms > 0,
+    disagreementRate: percent(disagreements, outcomesRecorded),
+    disagreements,
+    editRate: percent(edited, outcomesRecorded),
+    edited,
+    firstBatch: {
+      complete: firstBatch.length === firstBatchSize && firstBatch.every((item) => item.outcome),
+      outcomesRecorded: firstBatch.filter((item) => item.outcome).length,
+      size: firstBatchSize,
+    },
+    preliminarySignal,
+    modelNames: [...new Set(completedJobs.map((item) => item.job?.modelName).filter((value): value is string => Boolean(value)))],
+    modelProviders: [...new Set(completedJobs.map((item) => item.job?.modelProvider).filter((value): value is string => Boolean(value)))],
+    promptVersions: [...new Set(completedJobs.map((item) => item.job?.promptVersion).filter((value): value is string => Boolean(value)))],
+    recommendationCounts,
+    regenerationOrRejected,
+    remainingOutcomes,
+    totalCostUsd: Number(totalCostUsd.toFixed(4)),
+    totalInputTokens,
+    totalLatencyMs,
+    totalOutputTokens,
+  }
+}
+
 const safeOutcome = (outcome: CalibrationOutcome) => ({
   domainAssessment: outcome.domainAssessment,
   editLevel: outcome.editLevel,
@@ -279,7 +380,14 @@ export const getM5CalibrationDashboard = async (
           ? {
               cost: formatCurrency(job.estimatedCostUsd),
               duration: formatDuration(job.latencyMs),
+              estimatedCostUsd: job.estimatedCostUsd ?? null,
               id: job.id,
+              inputTokens: job.inputTokens ?? null,
+              latencyMs: job.latencyMs ?? null,
+              modelName: job.modelName,
+              modelProvider: job.modelProvider,
+              outputTokens: job.outputTokens ?? null,
+              promptVersion: job.generationPromptVersion,
               status: job.status,
               tokens:
                 typeof job.inputTokens === 'number' || typeof job.outputTokens === 'number'
@@ -294,6 +402,12 @@ export const getM5CalibrationDashboard = async (
         subcategory: term.subcategory,
       }
     })
+
+  const rollup = buildCalibrationRollup(
+    items,
+    manifest.runPolicy.firstBatchSize,
+    manifest.terms.length,
+  )
 
   return {
     items,
@@ -313,6 +427,7 @@ export const getM5CalibrationDashboard = async (
       jobsQueued: items.filter((item) => item.job?.status === 'queued').length,
       outcomeCounts,
       outcomesRecorded: items.filter((item) => item.outcome).length,
+      rollup,
       terms: manifest.terms.length,
     },
   }

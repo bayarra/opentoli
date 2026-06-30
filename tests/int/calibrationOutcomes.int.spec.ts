@@ -1,6 +1,10 @@
 import { enqueueGenerationJob, processGenerationJob } from '@/ai/pipeline/jobs'
 import { DeterministicAIProvider } from '@/ai/providers/deterministic'
-import { parseCalibrationOutcomeFields, recordCalibrationOutcome } from '@/calibration/outcomes'
+import {
+  buildCalibrationRollup,
+  parseCalibrationOutcomeFields,
+  recordCalibrationOutcome,
+} from '@/calibration/outcomes'
 import config from '@/payload.config'
 import type { User } from '@/payload-types'
 import { getPayload, type Payload } from 'payload'
@@ -207,5 +211,79 @@ describe('M5 calibration outcomes', () => {
       where: { aiDraft: { equals: draftId } },
     })
     expect(saved.docs).toHaveLength(1)
+  })
+
+  it('derives first-batch, quality, cost, and decision-readiness metrics', () => {
+    const rollup = buildCalibrationRollup(
+      [
+        {
+          job: {
+            estimatedCostUsd: 0.1,
+            inputTokens: 100,
+            latencyMs: 1000,
+            modelName: 'model-a',
+            modelProvider: 'provider-a',
+            outputTokens: 50,
+            promptVersion: 'prompt-v1',
+            status: 'completed',
+          },
+          outcome: {
+            domainAssessment: 'accurate',
+            editLevel: 'none',
+            goNoGoRecommendation: 'continue',
+            languageAssessment: 'natural',
+            outcome: 'accepted_as_is',
+          },
+          priority: 1,
+        },
+        {
+          job: {
+            estimatedCostUsd: 0.2,
+            inputTokens: 200,
+            latencyMs: 3000,
+            modelName: 'model-a',
+            modelProvider: 'provider-a',
+            outputTokens: 100,
+            promptVersion: 'prompt-v1',
+            status: 'completed',
+          },
+          outcome: {
+            domainAssessment: 'needs_expert_review',
+            editLevel: 'major',
+            goNoGoRecommendation: 'tune_prompt',
+            languageAssessment: 'major_edits',
+            outcome: 'accepted_with_edits',
+          },
+          priority: 2,
+        },
+        {
+          job: {
+            estimatedCostUsd: null,
+            inputTokens: null,
+            latencyMs: null,
+            outputTokens: null,
+            status: 'queued',
+          },
+          outcome: null,
+          priority: 3,
+        },
+      ],
+      2,
+      5,
+    )
+
+    expect(rollup).toMatchObject({
+      acceptanceRate: 100,
+      averageInputTokens: 150,
+      averageLatencyMs: 2000,
+      averageOutputTokens: 75,
+      decisionReady: false,
+      disagreementRate: 50,
+      editRate: 50,
+      firstBatch: { complete: true, outcomesRecorded: 2, size: 2 },
+      preliminarySignal: 'continue',
+      remainingOutcomes: 3,
+      totalCostUsd: 0.3,
+    })
   })
 })

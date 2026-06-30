@@ -54,7 +54,7 @@ test.describe('Admin Panel', () => {
       await expect(profilePage).toHaveURL('http://localhost:3000/contributions')
       await expect(
         profilePage.getByRole('heading', {
-          name: /Track your comments and translation suggestions/,
+          name: /Track your comments and terminology proposals/,
         }),
       ).toBeVisible()
       await profilePage.goto('http://localhost:3000/profile')
@@ -113,7 +113,7 @@ test.describe('Admin Panel', () => {
 
     await expect(page).toHaveURL('http://localhost:3000/workspace/feedback', { timeout: 20_000 })
     await expect(
-      page.getByRole('heading', { name: /Review comments and translation suggestions/ }),
+      page.getByRole('heading', { name: /Review comments and contributor proposals/ }),
     ).toBeVisible()
   })
 
@@ -130,6 +130,8 @@ test.describe('Admin Panel', () => {
       timeout: 20_000,
     })
     await expect(page.getByRole('heading', { name: /Track the fixed 50-term/ })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Calibration metrics' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'M5 go/no-go summary' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Human calibration evidence' })).toBeVisible()
   })
 

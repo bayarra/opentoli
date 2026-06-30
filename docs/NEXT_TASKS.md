@@ -65,14 +65,15 @@ Remaining API tasks:
 
 - Agent Jobs: safe job detail and retry-now are done. Remaining work is richer filtering,
   batch grouping, and any future operational diagnostics that still avoid raw provider output.
-- Calibration: basic outcome recording is done inside `/workspace/calibration`. Remaining work is
-  aggregate edit-rate metrics, first-five review completion, and the final M5 go/no-go rollup.
+- Calibration: outcome recording, aggregate quality/cost metrics, first-five completion, and a
+  generated go/no-go rollup are done inside `/workspace/calibration`. Remaining work is the
+  actual human review of all 50 terms and the written final decision.
 - References: optional draft reference management and contributor reference proposals are done.
   Add duplicate detection only when real editorial use requires it.
 - Public draft visibility: done for active drafts explicitly opened by an Editor; references
   and internal AI routes do not gate visibility.
 - Published terms: core web editing is done. Add revision comparison or specialized context management only when editorial use demonstrates a need.
-- Contributions: basic own-comments/suggestions dashboard is done. Remaining work is richer submissions, votes, ownership controls, saved terms, and profile history when M8 starts.
+- Contributions: own-proposal tracking plus translation, example, and reference proposals are done. Remaining work is term submissions, votes, ownership controls, saved terms, and profile history when M8 starts.
 - Moderation: comments, translations, bilingual examples, and reference proposals share one web queue. Future proposal types should reuse this boundary.
 - Imports: add web preparation review for CSV/manual batches, but keep provider execution controlled.
 

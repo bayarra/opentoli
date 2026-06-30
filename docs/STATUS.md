@@ -37,6 +37,8 @@ edit-level notes, language/domain assessments, go/no-go hints, and safe job evid
 examples, contexts, and optional references from `/workspace/terms` without Payload Admin.
 Contributors can submit structured bilingual examples and reference suggestions alongside
 comments and translation suggestions; Editors moderate all of them in one web queue.
+Calibration reporting now derives first-five completion, quality rates, disagreement, token,
+latency, cost, and decision-readiness evidence without automating the final M5 decision.
 
 ## Milestone Status
 
@@ -57,6 +59,10 @@ comments and translation suggestions; Editors moderate all of them in one web qu
 
 ### 2026-06-29
 
+- Added aggregate M5 acceptance, edit, disagreement, failure, token, latency, and cost metrics to `/workspace/calibration` and the Editor v1 calibration response.
+- Added first-five completion, recommendation counts, decision readiness, and a generated go/no-go summary that remains non-final until all 50 human outcomes are recorded.
+- Added deterministic rollup coverage and browser expectations for the calibration metrics and go/no-go sections.
+- Passed `npm run typecheck`, `npm run lint`, all 43 integration tests in 14 files, the production build, and all 17 browser tests after completing the three web-workflow slices.
 - Expanded authenticated feedback with structured bilingual example suggestions and optional structured reference details for public drafts and published terms.
 - Extended `/workspace/feedback` and `/contributions` to show the complete proposal while preserving approve/reject/hide moderation and the no-canonical-mutation boundary.
 - Added and locally applied migration `20260630_021449_expanded_proposal_moderation`; targeted proposal, feedback, and contribution integration tests pass.
@@ -264,7 +270,7 @@ comments and translation suggestions; Editors moderate all of them in one web qu
 | Production build          | Pass        | Next.js generated all current public and Payload routes                                                                |
 | HTTP smoke test           | Pass        | `/` and `/search?q=authentication` returned `200`                                                                      |
 | Hydration smoke test      | Pass        | Clean Chrome profile produced no hydration warning                                                                     |
-| Database integration      | Pass        | 40 self-contained integration tests in 12 files pass against PostgreSQL without requiring seed data                    |
+| Database integration      | Pass        | 43 self-contained integration tests in 14 files pass against PostgreSQL without requiring seed data                    |
 | API v1 read contracts     | Pass        | Public search, term, category, public draft redaction, and Editor auth-denial contract tests pass                     |
 | Agent Job Detail          | Pass        | Safe job detail and retry-now tests cover redaction, Editor authorization, retryable states, and route auth denial     |
 | Optional References       | Pass        | Editor reference add/edit/remove and verification work without gating publication; unsafe URLs stay redacted          |
@@ -275,39 +281,44 @@ comments and translation suggestions; Editors moderate all of them in one web qu
 | M5 manifest validation    | Pass        | `npm run m5:validate` passed for 50 terms and 8 source groups                                                          |
 | M5 first enqueue          | Pass        | First run created 5 Terms, 7 Sources, and 5 Generation Jobs; second run reused all records without provider calls      |
 | M5 first worker job       | Pass        | Job 131 for `application` completed; draft 189 retained as private blocked/high-risk review evidence                  |
-| Migration status          | Pass        | `npm run payload -- migrate:status` reports all eight tracked migrations ran locally                                |
+| Migration status          | Pass        | `npm run payload -- migrate:status` reports all nine tracked migrations ran locally                                |
 | Local HTTP smoke          | Pass        | `/`, `/register`, and `/login` return `200`; an unknown draft returns `404`                                            |
 | M4 browser regression     | Pass        | Browser tests cover public/auth/feedback/Editor keyboard flows, optional references, job detail, and serious WCAG A/AA scans              |
-| Web workflow navigation   | Pass        | Global web navigation, `/workflow`, `/drafts`, `/workspace`, `/workspace/drafts`, `/workspace/feedback`, `/workspace/jobs`, `/workspace/calibration`, and admin Back link build successfully; 15 browser tests pass |
-| Web account workflow      | Pass        | `/profile`, header account links, editor Workspace visibility, and Profile-only Payload-backed logout pass in 15 browser tests |
+| Web workflow navigation   | Pass        | Global navigation plus Workspace drafts, published terms, feedback, jobs, calibration, and admin maintenance build successfully; 17 browser tests pass |
+| Web account workflow      | Pass        | `/profile`, header account links, Editor Workspace visibility, contributions, and Profile-only logout pass in 17 browser tests |
 | Editor web Workspace      | Pass        | `/workspace` and Workspace menu organize draft, feedback, generation job, calibration, batch, and published-term summaries without raw AI outputs |
 | Feedback Moderation       | Pass        | `/workspace/feedback` and `/api/editor/feedback/[id]` let Editors approve, reject, or hide pending feedback without canonical mutations |
 | Contributor Dashboard     | Pass        | `/contributions` shows signed-in users only their own comments, suggestions, statuses, moderator notes, and safe target links |
 | M5 Calibration Outcomes   | Pass        | `/workspace/calibration` records Editor-only human outcomes with safe job evidence; migration `20260625_044141_m5_calibration_outcomes` is applied |
+| Published term editing    | Pass        | `/workspace/terms` updates canonical wording and related records transactionally with Editor-only integration coverage |
+| Proposal moderation       | Pass        | Translation, example, and reference proposals stay pending and advisory; migration `20260630_021449_expanded_proposal_moderation` is applied |
+| Calibration reporting     | Pass        | First-five progress, aggregate quality/cost metrics, and non-automatic go/no-go readiness are derived and browser-tested |
 | Historical full rollback  | Known issue | M2 `editorial_core` down migration has an existing lock-relation drop-order defect                                     |
 
 ## Current Work
 
-M3 and M4 are complete. Normal Editor work for drafts, feedback moderation, optional reference
-verification, agent-job status, and calibration status now lives under the Workspace menu
+M3 and M4 are complete. Normal Editor work for drafts, feedback moderation, optional references,
+published terms, agent-job status, and calibration status now lives under the Workspace menu
 in OpenToli web. Stable `/api/v1` read contracts now cover the public dictionary/draft
 surfaces and Editor Workspace summaries for future mobile use. Editors can inspect safe job
 detail and queue eligible failed/retry-scheduled jobs for retry without starting provider work
 from the browser. Editors can also manage draft public feedback visibility and optional references
-from the web draft page. Contributors can track their own moderated comments and translation
-suggestions from `/contributions` without opening Payload admin. `/workspace/calibration` now
-records human outcome evidence for generated calibration drafts. M5 is in progress: the fixed
+from the web draft page. Contributors can track their own moderated comments, translations,
+examples, and reference proposals from `/contributions` without opening Payload admin.
+`/workspace/calibration` records human outcomes and derives quality, cost, progress, and
+decision-readiness metrics. M5 is in progress: the fixed
 50-term manifest is tracked and validated, and the first live worker job has completed. Job 131
-produced private draft 189 for `application`; it is blocked/high-risk and needs a recorded human
-calibration outcome before continuing the first-five calibration run. See
+produced private draft 189 for `application`; its legacy internal route remains provenance and
+does not block Editor actions. It still needs a recorded human calibration outcome before the
+first-five calibration run continues. See
 [`NEXT_TASKS.md`](NEXT_TASKS.md) for the brief next-agent handoff covering admin/web
 separation, remaining admin-to-web moves, and remaining milestones.
 
 ## Next Actions
 
 1. Review draft 189 for `application`, especially register choice, dual-form wording, and separate web/mobile/desktop contexts, then record its outcome in `/workspace/calibration`.
-2. Decide whether the prompt/routing should be tuned before processing the remaining queued first-five M5 jobs.
-3. Record the human calibration outcome for draft 189 in `/workspace/calibration`.
+2. Use the aggregate calibration metrics to decide whether the prompt should be tuned before processing the remaining queued first-five M5 jobs.
+3. Process each remaining first-five job one at a time and record its human outcome.
 4. Add logged-in Editor success coverage for `/api/v1/editor/*` before mobile work begins.
 5. Repair and separately validate the historical M2 down migration ordering defect.
 
@@ -319,7 +330,7 @@ No active blocker is recorded.
 
 | Risk                                                    | Impact                                    | Current mitigation                                                                             |
 | ------------------------------------------------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| AI output sounds natural but is technically wrong       | Loss of trust                             | Explicit Editor publication, optional supporting references, and retained provenance           |
+| AI output sounds natural but is technically wrong       | Loss of trust                             | Explicit Editor publication, human calibration, and retained provenance                        |
 | AI pipeline cost grows during batch generation          | Budget pressure                           | Calibration batch, idempotent jobs, and cost metrics                                           |
 | Conflicting status fields permit accidental publication | Data exposure                             | Formal publication state machine required in M0                                                |
 | Search leaks drafts                                     | Unreviewed content becomes public         | Public-query and authorization tests required in M2 and M7                                     |

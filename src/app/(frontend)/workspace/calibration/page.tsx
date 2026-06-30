@@ -43,6 +43,25 @@ export default async function CalibrationPage() {
   const manifest = dashboard.manifest
   const validation = dashboard.manifest.validation
   const m5Batches = workspace.batches.filter((batch) => batch.name.includes('M5'))
+  const rollup = dashboard.summary.rollup
+  const goNoGoReport = [
+    'M5 Go/No-Go Summary',
+    `Status: ${rollup.decisionReady ? 'Ready for a human decision' : `Collecting evidence (${rollup.remainingOutcomes} outcomes remaining)`}`,
+    `Terms processed: ${dashboard.summary.jobsCompleted}/${dashboard.summary.terms}`,
+    `Human outcomes: ${dashboard.summary.outcomesRecorded}/${dashboard.summary.terms}`,
+    `First-five review: ${rollup.firstBatch.outcomesRecorded}/${rollup.firstBatch.size}`,
+    `Accepted: ${rollup.accepted} (${rollup.acceptanceRate}%)`,
+    `Edited: ${rollup.edited} (${rollup.editRate}%)`,
+    `Disagreement: ${rollup.disagreements} (${rollup.disagreementRate}%)`,
+    `Regenerate or reject: ${rollup.regenerationOrRejected}`,
+    `Average input/output tokens: ${rollup.averageInputTokens}/${rollup.averageOutputTokens}`,
+    `Average latency: ${Math.round(rollup.averageLatencyMs / 1000)}s`,
+    `Total estimated cost: $${rollup.totalCostUsd.toFixed(4)}`,
+    `Models: ${rollup.modelProviders.map((provider, index) => `${provider}:${rollup.modelNames[index] || 'unknown'}`).join(', ') || 'No completed jobs'}`,
+    `Prompt versions: ${rollup.promptVersions.join(', ') || 'No completed jobs'}`,
+    `Preliminary signal: ${statusLabel(rollup.preliminarySignal)}`,
+    `Decision: ${rollup.decisionReady ? 'Human decision required' : 'Not ready'}`,
+  ].join('\n')
 
   return (
     <WorkspaceShell>
@@ -78,6 +97,35 @@ export default async function CalibrationPage() {
             <strong>{dashboard.summary.outcomesRecorded}</strong>
             <p>Human calibration records saved from OpenToli web</p>
           </article>
+        </section>
+
+        <section className="workspace-grid calibration-rollup-grid">
+          <div className="workspace-panel">
+            <div className="panel-heading"><div><p className="eyebrow">Aggregate quality</p><h2>Calibration metrics</h2></div></div>
+            <dl className="job-detail-list job-detail-list-wide">
+              <div><dt>First five</dt><dd>{rollup.firstBatch.outcomesRecorded}/{rollup.firstBatch.size}{rollup.firstBatch.complete ? ' complete' : ' reviewed'}</dd></div>
+              <div><dt>Acceptance</dt><dd>{rollup.acceptanceRate}%</dd></div>
+              <div><dt>Edit rate</dt><dd>{rollup.editRate}%</dd></div>
+              <div><dt>Disagreement</dt><dd>{rollup.disagreementRate}%</dd></div>
+              <div><dt>Average latency</dt><dd>{Math.round(rollup.averageLatencyMs / 1000)}s</dd></div>
+            </dl>
+            <div className="calibration-outcome-breakdown">
+              {Object.entries(dashboard.summary.outcomeCounts).map(([outcome, count]) => <span key={outcome}>{statusLabel(outcome)}: <strong>{count}</strong></span>)}
+            </div>
+          </div>
+
+          <div className="workspace-panel go-no-go-panel">
+            <div className="panel-heading"><div><p className="eyebrow">Decision readiness</p><h2>{rollup.decisionReady ? 'Ready for human go/no-go' : 'More evidence required'}</h2></div></div>
+            <p><strong>Preliminary signal:</strong> {statusLabel(rollup.preliminarySignal)}</p>
+            <p>{rollup.decisionReady ? 'All 50 human outcomes are present. Review this rollup and write the final M5 decision.' : `${rollup.remainingOutcomes} human outcomes remain. This signal is descriptive and cannot complete M5 automatically.`}</p>
+            <div className="calibration-outcome-breakdown">{Object.entries(rollup.recommendationCounts).map(([recommendation, count]) => <span key={recommendation}>{statusLabel(recommendation)}: <strong>{count}</strong></span>)}</div>
+          </div>
+        </section>
+
+        <section className="workspace-panel calibration-report-panel">
+          <div className="panel-heading"><div><p className="eyebrow">Generated rollup</p><h2>M5 go/no-go summary</h2></div></div>
+          <p className="muted-copy">This report is derived from recorded human outcomes and retained job metrics. It never starts jobs or makes the final decision.</p>
+          <pre>{goNoGoReport}</pre>
         </section>
 
         <section className="workspace-grid">

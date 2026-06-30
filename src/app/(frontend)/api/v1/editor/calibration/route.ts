@@ -27,5 +27,6 @@ export async function GET(request: Request) {
       runningJobs: workspace.counts.runningJobs,
     },
     items: dashboard.items,
+    summary: dashboard.summary,
   })
 }
