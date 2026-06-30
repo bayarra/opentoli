@@ -990,6 +990,7 @@ Comment types:
 
 - `general`
 - `translation_suggestion`
+- `example_suggestion`
 - `usage_question`
 - `reference_note`
 - `review_note`
@@ -1005,8 +1006,9 @@ Comment status options:
 
 `term_id` or `ai_draft_id` is required, and `user_id` must identify the authenticated
 contributor. Abuse-prevention metadata is private. Contributor submissions always start as
-`pending`, and translation suggestions are proposals rather than direct edits to a Term,
-Translation, or AI Draft.
+`pending`. Translation, bilingual example, and reference suggestions are proposals rather
+than direct edits to a Term, Translation, Example, Reference, or AI Draft. Structured
+reference URLs must use HTTP(S).
 
 ### 10.8 Votes Collection
 
@@ -1142,7 +1144,7 @@ Role options:
 
 Can read and search published terms, view explicitly public AI drafts, browse categories,
 and view approved discussions, references, and revision summaries. Authentication is required
-to submit comments or translation suggestions.
+to submit comments, translation suggestions, bilingual examples, or reference proposals.
 
 ### Contributors
 
@@ -1356,10 +1358,10 @@ human-reviewed publication decision is made. Rejected, failed, or explicitly pri
 drafts are never publicly visible. Internal AI review routes do not override an Editor's
 explicit public-visibility choice.
 
-Comments and translation suggestions require an authenticated contributor and are stored
-as pending proposals. They do not immediately appear publicly and cannot directly update
-an AI draft, Translation, or Term. Approved feedback remains advisory evidence for
-reviewers.
+Comments, translation suggestions, bilingual examples, and reference suggestions require
+an authenticated contributor and are stored as pending proposals. They do not immediately
+appear publicly and cannot directly update an AI draft, Translation, Example, Reference, or
+Term. Approved feedback remains advisory evidence for reviewers.
 
 An AI-prepared term may become a canonical published Term only when an Editor explicitly
 uses `Publish` after:

@@ -137,6 +137,8 @@ export default async function PublicDraftPage({ params }: DraftPageProps) {
                     <strong>{comment.suggestedTranslationMn}</strong>
                   </p>
                 ) : null}
+                {comment.suggestedExampleEn && comment.suggestedExampleMn ? <blockquote><p>{comment.suggestedExampleEn}</p><p lang="mn">{comment.suggestedExampleMn}</p></blockquote> : null}
+                {comment.suggestedReferenceTitle && comment.suggestedReferenceUrl ? <p><a href={comment.suggestedReferenceUrl} rel="noreferrer" target="_blank">{comment.suggestedReferenceTitle}</a></p> : null}
                 <p>{comment.body}</p>
               </article>
             ))}

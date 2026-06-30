@@ -977,6 +977,18 @@ blockquote p {
   outline: 0;
 }
 
+.feedback-proposal-fields {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.proposal-reference a {
+  color: var(--blue);
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
 .account-form button,
 .feedback-form button {
   background: var(--navy);
@@ -2176,6 +2188,7 @@ blockquote p {
   }
 
   .editor-term-list a,
+  .feedback-proposal-fields,
   .term-editor-grid {
     grid-template-columns: 1fr;
   }

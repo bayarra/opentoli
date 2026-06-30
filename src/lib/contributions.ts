@@ -54,6 +54,10 @@ export const getUserContributions = async (user: User) => {
     moderatorNote: comment.moderatorNote || null,
     status: comment.status,
     suggestedTranslationMn: comment.suggestedTranslationMn || null,
+    suggestedExampleEn: comment.suggestedExampleEn || null,
+    suggestedExampleMn: comment.suggestedExampleMn || null,
+    suggestedReferenceTitle: comment.suggestedReferenceTitle || null,
+    suggestedReferenceUrl: comment.suggestedReferenceUrl || null,
     target: targetFor(comment),
     updatedAt: comment.updatedAt,
   }))

@@ -18,6 +18,7 @@ evidence in [`STATUS.md`](STATUS.md).
 - Public AI drafts remain unverified and redacted.
 - Contributors can comment or suggest translations only after sign-in.
 - Contributors can track their own comments, translation suggestions, moderation status, and outcomes at `/contributions`.
+- Contributors can propose bilingual examples and references on public drafts or published terms; Editors moderate them in `/workspace/feedback`.
 - No AI output may publish without an explicit Editor `Publish` action.
 
 ## API, Web, and Admin Separation
@@ -66,13 +67,13 @@ Remaining API tasks:
   batch grouping, and any future operational diagnostics that still avoid raw provider output.
 - Calibration: basic outcome recording is done inside `/workspace/calibration`. Remaining work is
   aggregate edit-rate metrics, first-five review completion, and the final M5 go/no-go rollup.
-- References: optional draft reference management is done. Add richer notes, duplicate
-  detection, or proposal moderation only when real editorial use requires them.
+- References: optional draft reference management and contributor reference proposals are done.
+  Add duplicate detection only when real editorial use requires it.
 - Public draft visibility: done for active drafts explicitly opened by an Editor; references
   and internal AI routes do not gate visibility.
 - Published terms: core web editing is done. Add revision comparison or specialized context management only when editorial use demonstrates a need.
 - Contributions: basic own-comments/suggestions dashboard is done. Remaining work is richer submissions, votes, ownership controls, saved terms, and profile history when M8 starts.
-- Moderation: expand from comment moderation to contributor proposals, examples, and reference notes.
+- Moderation: comments, translations, bilingual examples, and reference proposals share one web queue. Future proposal types should reuse this boundary.
 - Imports: add web preparation review for CSV/manual batches, but keep provider execution controlled.
 
 ## Remaining Milestones

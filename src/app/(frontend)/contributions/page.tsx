@@ -26,7 +26,7 @@ export default async function ContributionsPage() {
       </Link>
       <div className="page-heading">
         <p className="eyebrow">My contributions</p>
-        <h1>Track your comments and translation suggestions.</h1>
+        <h1>Track your comments and terminology proposals.</h1>
         <p>
           Contributions are moderated proposals. They never directly change canonical terms,
           translations, examples, or AI drafts.
@@ -63,6 +63,8 @@ export default async function ContributionsPage() {
                   <p>{contribution.suggestedTranslationMn}</p>
                 </blockquote>
               ) : null}
+              {contribution.suggestedExampleEn && contribution.suggestedExampleMn ? <blockquote><p>{contribution.suggestedExampleEn}</p><p lang="mn">{contribution.suggestedExampleMn}</p></blockquote> : null}
+              {contribution.suggestedReferenceTitle && contribution.suggestedReferenceUrl ? <p className="proposal-reference"><a href={contribution.suggestedReferenceUrl} rel="noreferrer" target="_blank">{contribution.suggestedReferenceTitle}</a></p> : null}
               <p>{contribution.body}</p>
 
               {contribution.moderatorNote ? (

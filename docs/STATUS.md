@@ -35,6 +35,8 @@ outcomes from an OpenToli web dashboard. Editors can record M5 human calibration
 edit-level notes, language/domain assessments, go/no-go hints, and safe job evidence from
 `/workspace/calibration`. Editors can also update published canonical terms, translations,
 examples, contexts, and optional references from `/workspace/terms` without Payload Admin.
+Contributors can submit structured bilingual examples and reference suggestions alongside
+comments and translation suggestions; Editors moderate all of them in one web queue.
 
 ## Milestone Status
 
@@ -55,6 +57,9 @@ examples, contexts, and optional references from `/workspace/terms` without Payl
 
 ### 2026-06-29
 
+- Expanded authenticated feedback with structured bilingual example suggestions and optional structured reference details for public drafts and published terms.
+- Extended `/workspace/feedback` and `/contributions` to show the complete proposal while preserving approve/reject/hide moderation and the no-canonical-mutation boundary.
+- Added and locally applied migration `20260630_021449_expanded_proposal_moderation`; targeted proposal, feedback, and contribution integration tests pass.
 - Added `/workspace/terms` and `/workspace/terms/[id]` for Editor-only canonical term editing in OpenToli web.
 - Added transactional published-term updates for wording, explanations, recommended and alternative translations, examples, categories, contexts, and optional references while preserving human attribution and publication guards.
 - Added `PATCH /api/editor/terms/[id]`, integration coverage for Editor authorization and related-record replacement, and browser coverage for Workspace navigation.

@@ -12,7 +12,7 @@ export default async function TermPage({ params }: TermPageProps) {
 
   if (!data) notFound()
 
-  const { examples, references, term, translations } = data
+  const { comments, examples, references, term, translations } = data
   const recommendedTranslation = getRecommendedTranslation(term)
   const alternatives = translations.filter(
     (translation) => translation.id !== recommendedTranslation?.id,
@@ -113,6 +113,16 @@ export default async function TermPage({ params }: TermPageProps) {
           {term.usageNoteMn ? <p lang="mn">{term.usageNoteMn}</p> : null}
         </section>
       ) : null}
+
+      <section className="term-section feedback-section">
+        <p className="eyebrow">Community proposals</p>
+        <h2>Suggest an improvement</h2>
+        <p>Suggest wording, a bilingual example, or a useful reference. Every proposal is moderated and never changes this term automatically.</p>
+        <FeedbackForm targetPath={`/terms/${term.slug}`} termId={term.id} />
+      </section>
+
+      {comments.length > 0 ? <section className="term-section"><p className="eyebrow">Approved discussion</p><div className="comment-list">{comments.map((comment) => <article key={comment.id}><div><strong>OpenToli contributor</strong><span>{comment.createdAt.slice(0, 10)}</span></div>{comment.suggestedTranslationMn ? <p lang="mn"><strong>{comment.suggestedTranslationMn}</strong></p> : null}{comment.suggestedExampleEn && comment.suggestedExampleMn ? <blockquote><p>{comment.suggestedExampleEn}</p><p lang="mn">{comment.suggestedExampleMn}</p></blockquote> : null}{comment.suggestedReferenceTitle && comment.suggestedReferenceUrl ? <p><a href={comment.suggestedReferenceUrl} rel="noreferrer" target="_blank">{comment.suggestedReferenceTitle}</a></p> : null}<p>{comment.body}</p></article>)}</div></section> : null}
     </main>
   )
 }
+import { FeedbackForm } from '@/app/(frontend)/components/FeedbackForm'

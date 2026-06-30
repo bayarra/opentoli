@@ -1,5 +1,5 @@
 import config from '@/payload.config'
-import type { Category, Example, Source, Term, Translation } from '@/payload-types'
+import type { Category, Comment, Example, Source, Term, Translation } from '@/payload-types'
 import { getPayload, type Where } from 'payload'
 
 const getPayloadClient = async () => getPayload({ config: await config })
@@ -17,7 +17,7 @@ export const getPublishedTermBySlug = async (slug: string) => {
 
   if (!term) return null
 
-  const [translations, examples, references] = await Promise.all([
+  const [translations, examples, references, comments] = await Promise.all([
     payload.find({
       collection: 'translations',
       depth: 1,
@@ -42,10 +42,19 @@ export const getPublishedTermBySlug = async (slug: string) => {
       sort: 'createdAt',
       where: { term: { equals: term.id } },
     }),
+    payload.find({
+      collection: 'comments',
+      depth: 1,
+      limit: 100,
+      overrideAccess: false,
+      sort: 'createdAt',
+      where: { term: { equals: term.id } },
+    }),
   ])
 
   return {
     examples: examples.docs as Example[],
+    comments: comments.docs as Comment[],
     references: references.docs as Source[],
     term: term as Term,
     translations: translations.docs as Translation[],

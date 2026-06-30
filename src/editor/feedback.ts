@@ -83,6 +83,10 @@ export const getPendingFeedback = async (user: User) => {
       createdAt: comment.createdAt,
       id: comment.id,
       suggestedTranslationMn: comment.suggestedTranslationMn || null,
+      suggestedExampleEn: comment.suggestedExampleEn || null,
+      suggestedExampleMn: comment.suggestedExampleMn || null,
+      suggestedReferenceTitle: comment.suggestedReferenceTitle || null,
+      suggestedReferenceUrl: comment.suggestedReferenceUrl || null,
       target,
     }
   })

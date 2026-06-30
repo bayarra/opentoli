@@ -79,6 +79,12 @@ export const getPublicAIDraftById = async (id: number) => {
       createdAt: comment.createdAt,
       id: comment.id,
       suggestedTranslationMn: comment.suggestedTranslationMn,
+      suggestedExampleEn: comment.suggestedExampleEn,
+      suggestedExampleMn: comment.suggestedExampleMn,
+      suggestedReferenceTitle: comment.suggestedReferenceTitle,
+      suggestedReferenceUrl: comment.suggestedReferenceUrl
+        ? safePublicUrl(comment.suggestedReferenceUrl)
+        : null,
     })),
     context: relationName(draft.inputContext),
     examples: generated.examples,

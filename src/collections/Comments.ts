@@ -42,11 +42,21 @@ export const Comments: CollectionConfig = {
     { name: 'user', type: 'relationship', index: true, relationTo: 'users', required: true },
     { name: 'body', type: 'textarea', maxLength: 2000, minLength: 3, required: true },
     { name: 'suggestedTranslationMn', type: 'text', maxLength: 300 },
+    { name: 'suggestedExampleEn', type: 'textarea', maxLength: 2000 },
+    { name: 'suggestedExampleMn', type: 'textarea', maxLength: 2000 },
+    { name: 'suggestedReferenceTitle', type: 'text', maxLength: 500 },
+    { name: 'suggestedReferenceUrl', type: 'text', maxLength: 2000 },
     {
       name: 'commentType',
       type: 'select',
       defaultValue: 'general',
-      options: ['general', 'translation_suggestion', 'usage_question', 'reference_note'],
+      options: [
+        'general',
+        'translation_suggestion',
+        'example_suggestion',
+        'usage_question',
+        'reference_note',
+      ],
       required: true,
     },
     {
@@ -119,6 +129,30 @@ export const Comments: CollectionConfig = {
         }
         if (next.commentType === 'translation_suggestion' && !next.suggestedTranslationMn) {
           throw new APIError('A translation suggestion requires Mongolian wording.', 400)
+        }
+        if (
+          operation === 'create' &&
+          next.commentType === 'example_suggestion' &&
+          (!next.suggestedExampleEn || !next.suggestedExampleMn)
+        ) {
+          throw new APIError('An example suggestion requires English and Mongolian text.', 400)
+        }
+        if (operation === 'create' && next.commentType === 'reference_note') {
+          const hasStructuredReference = Boolean(
+            next.suggestedReferenceTitle || next.suggestedReferenceUrl,
+          )
+          if (hasStructuredReference && (!next.suggestedReferenceTitle || !next.suggestedReferenceUrl)) {
+            throw new APIError('A reference suggestion requires a title and URL.', 400)
+          }
+          if (hasStructuredReference) {
+            try {
+              const referenceUrl = new URL(next.suggestedReferenceUrl)
+              if (!['http:', 'https:'].includes(referenceUrl.protocol)) throw new Error('unsafe')
+              data.suggestedReferenceUrl = referenceUrl.toString()
+            } catch {
+              throw new APIError('Reference URL must use http or https.', 400)
+            }
+          }
         }
 
         if (operation === 'create' && aiDraftId) {

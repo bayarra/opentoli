@@ -44,7 +44,7 @@ export default async function FeedbackModerationPage() {
       </Link>
       <div className="page-heading">
         <p className="eyebrow">Feedback moderation</p>
-        <h1>Review comments and translation suggestions in OpenToli web.</h1>
+        <h1>Review comments and contributor proposals in OpenToli web.</h1>
         <p>
           Approving feedback can make it visible as public evidence. Rejecting or hiding keeps it
           out of public pages. None of these actions directly edits a term, translation, or AI
@@ -75,6 +75,8 @@ export default async function FeedbackModerationPage() {
                   <p>{item.suggestedTranslationMn}</p>
                 </blockquote>
               ) : null}
+              {item.suggestedExampleEn && item.suggestedExampleMn ? <blockquote><p>{item.suggestedExampleEn}</p><p lang="mn">{item.suggestedExampleMn}</p></blockquote> : null}
+              {item.suggestedReferenceTitle && item.suggestedReferenceUrl ? <p className="proposal-reference"><a href={item.suggestedReferenceUrl} rel="noreferrer" target="_blank">{item.suggestedReferenceTitle}</a></p> : null}
               <p>{item.body}</p>
 
               <FeedbackModerationForm commentId={item.id} />

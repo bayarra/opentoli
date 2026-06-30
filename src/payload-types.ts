@@ -672,7 +672,11 @@ export interface Comment {
   user: number | User;
   body: string;
   suggestedTranslationMn?: string | null;
-  commentType: 'general' | 'translation_suggestion' | 'usage_question' | 'reference_note';
+  suggestedExampleEn?: string | null;
+  suggestedExampleMn?: string | null;
+  suggestedReferenceTitle?: string | null;
+  suggestedReferenceUrl?: string | null;
+  commentType: 'general' | 'translation_suggestion' | 'example_suggestion' | 'usage_question' | 'reference_note';
   status: 'pending' | 'approved' | 'rejected' | 'spam' | 'hidden';
   moderatorNote?: string | null;
   moderatedBy?: (number | null) | User;
@@ -1154,6 +1158,10 @@ export interface CommentsSelect<T extends boolean = true> {
   user?: T;
   body?: T;
   suggestedTranslationMn?: T;
+  suggestedExampleEn?: T;
+  suggestedExampleMn?: T;
+  suggestedReferenceTitle?: T;
+  suggestedReferenceUrl?: T;
   commentType?: T;
   status?: T;
   moderatorNote?: T;
