@@ -55,6 +55,7 @@ export default async function WorkspacePage() {
 
       <section className="workspace-actions" aria-label="Workspace actions">
         <Link href="/workspace/drafts">Open Draft Inbox</Link>
+        <Link href="/workspace/terms">Edit published terms</Link>
         <Link href="/workspace/feedback">Moderate feedback</Link>
         <Link href="/workspace/jobs">Agent jobs</Link>
         <Link href="/workspace/calibration">Calibration</Link>
@@ -160,7 +161,7 @@ export default async function WorkspacePage() {
         </div>
         <div className="published-term-list">
           {workspace.terms.map((term) => (
-            <Link href={`/terms/${term.slug}`} key={term.id}>
+            <Link href={`/workspace/terms/${term.id}`} key={term.id}>
               <strong>{term.headwordEn}</strong>
               <span>
                 {statusLabel(term.reviewStatus)} / updated {formatDate(term.updatedAt)}

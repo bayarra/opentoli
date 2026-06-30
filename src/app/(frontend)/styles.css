@@ -1905,6 +1905,129 @@ blockquote p {
   padding-top: 0;
 }
 
+.editor-term-list {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 10px 28px;
+}
+
+.editor-term-list a {
+  align-items: center;
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) auto;
+}
+
+.editor-term-list a:first-child {
+  padding-top: 16px;
+}
+
+.editor-term-list small {
+  color: var(--muted);
+  text-align: right;
+}
+
+.published-term-editor {
+  display: grid;
+  gap: 24px;
+}
+
+.term-editor-section {
+  display: grid;
+  gap: 18px;
+}
+
+.term-editor-section label,
+.repeatable-list label {
+  color: var(--ink);
+  display: grid;
+  font-size: 0.9rem;
+  font-weight: 750;
+  gap: 7px;
+}
+
+.term-editor-section input,
+.term-editor-section select,
+.term-editor-section textarea {
+  background: #fff;
+  border: 1px solid #b8c2d4;
+  border-radius: 11px;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 500;
+  padding: 11px 12px;
+  width: 100%;
+}
+
+.term-editor-section select[multiple] {
+  min-height: 130px;
+}
+
+.term-editor-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.term-editor-grid .wide-field {
+  grid-column: 1 / -1;
+}
+
+.repeatable-list {
+  display: grid;
+  gap: 16px;
+}
+
+.repeatable-list article {
+  background: #f8fbff;
+  border: 1px solid #d7dfec;
+  border-radius: 14px;
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+}
+
+.secondary-button,
+.sticky-save-bar button {
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+  justify-self: start;
+  padding: 10px 15px;
+}
+
+.term-editor-section .secondary-button {
+  background: #eef3f9;
+  color: var(--navy);
+}
+
+.sticky-save-bar {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  bottom: 18px;
+  box-shadow: 0 12px 40px rgba(20, 35, 60, 0.14);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 16px;
+  position: sticky;
+  z-index: 5;
+}
+
+.sticky-save-bar button {
+  background: var(--navy);
+  color: #fff;
+}
+
+.sticky-save-bar button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
 .moderation-page .back-link {
   margin-bottom: 36px;
 }
@@ -2050,6 +2173,15 @@ blockquote p {
 @media (max-width: 760px) {
   .site-shell {
     padding: 0 20px;
+  }
+
+  .editor-term-list a,
+  .term-editor-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .editor-term-list small {
+    text-align: left;
   }
 
   .site-header {

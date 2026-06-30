@@ -33,7 +33,8 @@ manage background references from OpenToli web instead of Payload admin. Signed-
 contributors can now track their own comments, translation suggestions, moderation status, and
 outcomes from an OpenToli web dashboard. Editors can record M5 human calibration outcomes,
 edit-level notes, language/domain assessments, go/no-go hints, and safe job evidence from
-`/workspace/calibration`.
+`/workspace/calibration`. Editors can also update published canonical terms, translations,
+examples, contexts, and optional references from `/workspace/terms` without Payload Admin.
 
 ## Milestone Status
 
@@ -54,6 +55,10 @@ edit-level notes, language/domain assessments, go/no-go hints, and safe job evid
 
 ### 2026-06-29
 
+- Added `/workspace/terms` and `/workspace/terms/[id]` for Editor-only canonical term editing in OpenToli web.
+- Added transactional published-term updates for wording, explanations, recommended and alternative translations, examples, categories, contexts, and optional references while preserving human attribution and publication guards.
+- Added `PATCH /api/editor/terms/[id]`, integration coverage for Editor authorization and related-record replacement, and browser coverage for Workspace navigation.
+- Passed `npm run typecheck`, `npm run lint`, and the published-term integration test.
 - Removed the Source workflow completely: no verification state or endpoint, no evidence gate, no source-specific calibration outcome, and no source-based AI routing.
 - Renamed active web and `/api/v1` contracts to References; manual reference management now contains only title and safe URL.
 - Added and locally applied migrations `20260630_012122_optional_references_cleanup` and `20260630_012522_reference_enums`, preserving legacy storage and AI provenance keys only for backward compatibility.

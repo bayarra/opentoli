@@ -13,6 +13,7 @@ evidence in [`STATUS.md`](STATUS.md).
 - Stable `/api/v1` read contracts now exist for public dictionary/draft data and Editor Workspace summaries.
 - Editors can open safe Agent Job detail pages and queue eligible failed/retry-scheduled jobs for retry without running the worker from the browser.
 - Editors can open/close public feedback and manage optional background references from `/workspace/drafts/[id]`.
+- Editors can edit published wording, translations, examples, categories, contexts, and optional references from `/workspace/terms`.
 - Editors can record M5 calibration outcomes, edit level, language/domain assessments, go/no-go hints, and safe job evidence at `/workspace/calibration`.
 - Public AI drafts remain unverified and redacted.
 - Contributors can comment or suggest translations only after sign-in.
@@ -69,7 +70,7 @@ Remaining API tasks:
   detection, or proposal moderation only when real editorial use requires them.
 - Public draft visibility: done for active drafts explicitly opened by an Editor; references
   and internal AI routes do not gate visibility.
-- Published terms: add web editing for term wording, examples, alternatives, and optional references.
+- Published terms: core web editing is done. Add revision comparison or specialized context management only when editorial use demonstrates a need.
 - Contributions: basic own-comments/suggestions dashboard is done. Remaining work is richer submissions, votes, ownership controls, saved terms, and profile history when M8 starts.
 - Moderation: expand from comment moderation to contributor proposals, examples, and reference notes.
 - Imports: add web preparation review for CSV/manual batches, but keep provider execution controlled.
@@ -93,7 +94,7 @@ Remaining API tasks:
 2. Record whether the internal route was useful calibration evidence; it does not control publication.
 3. Process the remaining queued first-five M5 jobs one at a time only after draft 189 is inspected.
 4. Add logged-in Editor success coverage for `/api/v1/editor/*` before mobile work begins.
-5. Add published-term web editing for wording, examples, alternatives, and optional references.
+5. Use `/workspace/terms` for canonical edits; keep Payload Admin for rare repair and destructive maintenance.
 
 ## Guardrails
 

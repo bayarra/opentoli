@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 const primaryItems = [
   { href: '/workspace', label: 'Overview' },
   { href: '/workspace/drafts', label: 'Draft Inbox' },
+  { href: '/workspace/terms', label: 'Published Terms' },
   { href: '/workspace/feedback', label: 'Feedback' },
   { href: '/workspace/jobs', label: 'Agent Jobs' },
   { href: '/workspace/calibration', label: 'Calibration' },

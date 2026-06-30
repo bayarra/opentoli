@@ -90,13 +90,21 @@ test.describe('Admin Panel', () => {
     const workspaceActions = page.getByRole('region', { name: 'Workspace actions' })
     await expect(page.getByRole('heading', { name: /Terminology and agent work/ })).toBeVisible()
     await expect(workspaceNav.getByRole('link', { name: 'Draft Inbox' })).toBeVisible()
+    await expect(workspaceNav.getByRole('link', { name: 'Published Terms' })).toBeVisible()
     await expect(workspaceNav.getByRole('link', { name: 'Agent Jobs' })).toBeVisible()
     await expect(workspaceNav.getByRole('link', { name: 'Calibration' })).toBeVisible()
     await expect(workspaceActions.getByRole('link', { name: 'Open Draft Inbox' })).toBeVisible()
+    await expect(workspaceActions.getByRole('link', { name: 'Edit published terms' })).toBeVisible()
     await expect(workspaceActions.getByRole('link', { name: 'Moderate feedback' })).toBeVisible()
     await expect(workspaceActions.getByRole('link', { name: 'Agent jobs' })).toBeVisible()
     await expect(workspaceActions.getByRole('link', { name: 'Calibration' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Recent generation jobs' })).toBeVisible()
+  })
+
+  test('opens published-term editing from Workspace', async () => {
+    await page.goto('http://localhost:3000/workspace/terms')
+    await expect(page.getByRole('heading', { name: /Edit published terms/ })).toBeVisible()
+    await expect(page.getByRole('navigation', { name: 'Workspace navigation' }).getByRole('link', { name: 'Published Terms' })).toHaveAttribute('aria-current', 'page')
   })
 
   test('opens Feedback Moderation from the web Workspace', async () => {
