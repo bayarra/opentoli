@@ -63,6 +63,10 @@ grouped by batch in both Workspace and the stable Editor API.
 
 ### 2026-06-29
 
+- Fixed leaked timestamp-suffixed terminology fixtures by moving integration tests from the development database to an automatically created and migrated `opentoli_test` database.
+- Added guarded test-database URL resolution that rejects explicitly configured databases without an `_test` suffix, plus deterministic isolation tests.
+- Added narrow preview/apply cleanup commands for known historical fixture prefixes and removed 11 leaked terms with their related drafts, jobs, and test categories from the development database.
+- Verified the development cleanup preview reports zero fixtures after all 48 integration tests pass in the isolated database.
 - Replaced the fixed Agent Jobs list with paginated headword, status, and Import Batch filtering plus visible grouping by batch.
 - Expanded `GET /api/v1/editor/jobs` with the same stable filter and grouping contract while preserving safe summaries and private-output redaction.
 - Added grouping/filter integration and browser coverage; all 46 integration tests, the production build, and all 18 browser tests pass.
@@ -281,7 +285,7 @@ grouped by batch in both Workspace and the stable Editor API.
 | Production build          | Pass        | Next.js generated all current public and Payload routes                                                                |
 | HTTP smoke test           | Pass        | `/` and `/search?q=authentication` returned `200`                                                                      |
 | Hydration smoke test      | Pass        | Clean Chrome profile produced no hydration warning                                                                     |
-| Database integration      | Pass        | 46 self-contained integration tests in 15 files pass against PostgreSQL without requiring seed data                    |
+| Database integration      | Pass        | 48 integration tests in 16 files pass against isolated `opentoli_test` without touching development content           |
 | API v1 read contracts     | Pass        | Public search, term, category, public draft redaction, and Editor auth-denial contract tests pass                     |
 | Agent Job Detail          | Pass        | Safe job detail and retry-now tests cover redaction, Editor authorization, retryable states, and route auth denial     |
 | Optional References       | Pass        | Editor reference add/edit/remove and verification work without gating publication; unsafe URLs stay redacted          |

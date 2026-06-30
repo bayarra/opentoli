@@ -1892,6 +1892,15 @@ Authentication in Mongolian | OpenToli
 - Media backup
 - Restore procedure documentation
 
+### 24.7 Test Data Isolation
+
+- Database integration tests must run against a database whose name ends in `_test`.
+- Test setup must never point at the development or production content database.
+- The integration command may derive and create a local test database, apply migrations, and
+  then run tests without seeding the normal development database.
+- Fixture cleanup remains a recovery tool for interrupted historical runs, not a substitute for
+  database isolation.
+
 ## 25. Example Codex / Claude Code Prompt
 
 ```text
