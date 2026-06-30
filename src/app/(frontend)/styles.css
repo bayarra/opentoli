@@ -746,7 +746,7 @@ h1 {
 }
 
 .alternative-list span,
-.source-list span {
+.reference-list span {
   color: var(--muted);
   font-size: 0.82rem;
   text-transform: capitalize;
@@ -763,13 +763,13 @@ blockquote p {
   margin: 8px 0;
 }
 
-.source-list {
+.reference-list {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.source-list li {
+.reference-list li {
   align-items: start;
   border-top: 1px solid var(--line);
   display: flex;
@@ -778,7 +778,7 @@ blockquote p {
   padding: 20px 0;
 }
 
-.source-list a {
+.reference-list a {
   font-weight: 750;
 }
 
@@ -1168,7 +1168,7 @@ blockquote p {
   line-height: 1.6;
 }
 
-.review-source,
+.review-reference,
 .review-comment {
   border-top: 1px solid var(--line);
   display: grid;
@@ -1177,7 +1177,7 @@ blockquote p {
   padding-top: 16px;
 }
 
-.review-source span,
+.review-reference span,
 .review-comment span {
   color: var(--muted);
   display: block;
@@ -1186,14 +1186,6 @@ blockquote p {
   text-transform: capitalize;
 }
 
-.source-verification-form {
-  align-items: flex-start;
-  display: grid;
-  gap: 8px;
-  justify-items: start;
-}
-
-.source-verification-form button,
 .draft-visibility-form button {
   background: #f8fbff;
   border: 1px solid #aebbd0;
@@ -1205,7 +1197,6 @@ blockquote p {
   padding: 8px 12px;
 }
 
-.source-verification-form button:disabled,
 .draft-visibility-form button:disabled {
   cursor: progress;
   opacity: 0.65;
@@ -1224,13 +1215,13 @@ blockquote p {
   margin: 0;
 }
 
-.draft-source-manager {
+.draft-reference-manager {
   display: grid;
   gap: 18px;
 }
 
-.draft-source-form,
-.draft-source-edit form {
+.draft-reference-form,
+.draft-reference-edit form {
   background: #f8fbff;
   border: 1px solid #d7dfec;
   border-radius: 16px;
@@ -1239,22 +1230,20 @@ blockquote p {
   padding: 18px;
 }
 
-.draft-source-form h3 {
+.draft-reference-form h3 {
   margin: 0;
 }
 
-.draft-source-form label,
-.draft-source-edit label {
+.draft-reference-form label,
+.draft-reference-edit label {
   display: grid;
   font-size: 0.86rem;
   font-weight: 750;
   gap: 6px;
 }
 
-.draft-source-form input,
-.draft-source-form select,
-.draft-source-edit input,
-.draft-source-edit select {
+.draft-reference-form input,
+.draft-reference-edit input {
   background: #fff;
   border: 1px solid #b8c2d4;
   border-radius: 10px;
@@ -1263,8 +1252,8 @@ blockquote p {
   padding: 11px 12px;
 }
 
-.draft-source-form button,
-.draft-source-edit button {
+.draft-reference-form button,
+.draft-reference-edit button {
   background: var(--navy);
   border: 0;
   border-radius: 999px;
@@ -1276,33 +1265,33 @@ blockquote p {
   padding: 10px 14px;
 }
 
-.draft-source-form button:disabled,
-.draft-source-edit button:disabled {
+.draft-reference-form button:disabled,
+.draft-reference-edit button:disabled {
   cursor: wait;
   opacity: 0.62;
 }
 
-.draft-source-edit {
+.draft-reference-edit {
   color: var(--muted);
   margin-top: 8px;
 }
 
-.draft-source-edit summary {
+.draft-reference-edit summary {
   cursor: pointer;
   font-weight: 800;
 }
 
-.draft-source-edit form {
+.draft-reference-edit form {
   margin-top: 12px;
 }
 
-.draft-source-edit form > div {
+.draft-reference-edit form > div {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
 
-.draft-source-edit form > div button + button {
+.draft-reference-edit form > div button + button {
   background: #eef3f9;
   color: var(--navy);
 }

@@ -73,7 +73,6 @@ describe('AI preparation execution', () => {
     const source = await payload.create({
       collection: 'sources',
       data: {
-        isVerified: false,
         publisher: 'OpenToli Test Publisher',
         sourceType: 'official_documentation',
         term: termId,

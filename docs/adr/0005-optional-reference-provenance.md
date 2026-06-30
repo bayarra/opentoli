@@ -12,9 +12,13 @@ before publishing overstates its evidentiary value and complicates the simple wo
 
 ## Decision
 
-Treat sources as optional background references and retained AI provenance. A missing,
-unverified, or internally blocked reference state does not prevent an Editor from opening an
-active draft for public feedback or explicitly publishing it.
+Use only optional background references in the active product workflow. References have a title
+and safe URL; they have no verification state, evidence status, required type, calibration
+assessment, or effect on AI routing, public feedback, and publication.
+
+The Payload collection slug, historical AI schema keys, and migration columns may retain the
+word `source` solely for backward compatibility with existing provenance. New web and `/api/v1`
+contracts use `reference` or `references`.
 
 Safe HTTP(S) references may appear in the public projection when present. Unsafe URLs and raw
 AI evidence remain private. AI and community actions still cannot publish canonical content;
@@ -22,10 +26,9 @@ the explicit attributed Editor action remains the publication boundary.
 
 ## Consequences
 
-Editors judge the wording directly without completing an artificial reference-verification
-stage. References remain useful for context and later audit but are visually secondary.
-Important factual claims may still benefit from references, but this is editorial judgment,
-not a universal system gate.
+Editors judge the wording directly without an artificial evidence workflow. References remain
+useful for navigation and later audit but are visually secondary. Removing a reference cannot
+change draft visibility or publication state.
 
 ## References
 

@@ -8,7 +8,7 @@
 ## Executive Summary
 
 OpenToli now has a buildable Next.js and Payload application plus its first complete
-database-backed terminology slice. Terms, translations, sources, examples, reviews, and
+database-backed terminology slice. Terms, translations, references, examples, reviews, and
 import batches are modeled. The published `authentication` reference term is searchable
 in English and Mongolian, appears in its category, and has a responsive detail page.
 Publication guards, clean migrations, seeding, integration tests, and browser checks pass.
@@ -17,9 +17,9 @@ contracts, provider-neutral staged execution, idempotent enqueueing, retry resum
 risk routing, retained provenance, deterministic end-to-end evidence, and a completed live
 OpenAI reference run for `authentication`. M4 now has an explicit safe public projection, registration,
 authenticated pending feedback, moderation, and a deliberately simple Editor experience:
-one Workspace menu, one Draft Inbox, four editable fields, web source verification, background save, one
+one Workspace menu, one Draft Inbox, four editable fields, optional references, background save, one
 Publish action, and secondary Hide. Audit and AI provenance remain automatic in the
-background, while unsafe source URLs cannot be verified for public citation. Keyboard-only
+background, while unsafe reference URLs are omitted from public projections. Keyboard-only
 critical flows and serious WCAG A/AA violations now have automated browser coverage. Stable
 `/api/v1` read contracts now expose public search, terms, categories, public AI drafts, and
 Editor Workspace summaries without leaking raw Payload records or private AI evidence. Editors
@@ -54,12 +54,16 @@ edit-level notes, language/domain assessments, go/no-go hints, and safe job evid
 
 ### 2026-06-29
 
+- Removed the Source workflow completely: no verification state or endpoint, no evidence gate, no source-specific calibration outcome, and no source-based AI routing.
+- Renamed active web and `/api/v1` contracts to References; manual reference management now contains only title and safe URL.
+- Added and locally applied migrations `20260630_012122_optional_references_cleanup` and `20260630_012522_reference_enums`, preserving legacy storage and AI provenance keys only for backward compatibility.
 - Reclassified sources as optional background references rather than evidence that proves a Mongolian translation.
 - Removed reference verification and internal AI routes from canonical publication and public-feedback visibility gates; explicit Editor actions remain mandatory.
 - Moved reference controls into a secondary collapsed section and retained safe URL redaction when optional references are shown publicly.
 - Removed source-support decisions from the primary M5 calibration form and summary while retaining legacy provenance compatibility.
 - Accepted ADR-0005 and updated the product specification, roadmap, and next-task handoff to prevent source gating from returning.
 - Passed TypeScript, ESLint, 41 integration tests, the production build, and 16 browser tests; no migration was required.
+- Passed TypeScript, ESLint, 40 integration tests, M5 manifest validation, the production build, and 16 browser tests after removing Source workflow behavior.
 
 ### 2026-06-27 (superseded source gate)
 
@@ -261,26 +265,25 @@ edit-level notes, language/domain assessments, go/no-go hints, and safe job evid
 | M5 manifest validation    | Pass        | `npm run m5:validate` passed for 50 terms and 8 source groups                                                          |
 | M5 first enqueue          | Pass        | First run created 5 Terms, 7 Sources, and 5 Generation Jobs; second run reused all records without provider calls      |
 | M5 first worker job       | Pass        | Job 131 for `application` completed; draft 189 retained as private blocked/high-risk review evidence                  |
-| Migration status          | Pass        | `npx payload migrate` applied `20260625_044141_m5_calibration_outcomes`; `npx payload migrate:status` reports all 6 migrations ran locally |
+| Migration status          | Pass        | `npm run payload -- migrate:status` reports all eight tracked migrations ran locally                                |
 | Local HTTP smoke          | Pass        | `/`, `/register`, and `/login` return `200`; an unknown draft returns `404`                                            |
-| M4 browser regression     | Pass        | 16 browser tests pass, including public/auth/feedback/Editor keyboard flows, source verification, job detail, and serious WCAG A/AA scans |
+| M4 browser regression     | Pass        | Browser tests cover public/auth/feedback/Editor keyboard flows, optional references, job detail, and serious WCAG A/AA scans              |
 | Web workflow navigation   | Pass        | Global web navigation, `/workflow`, `/drafts`, `/workspace`, `/workspace/drafts`, `/workspace/feedback`, `/workspace/jobs`, `/workspace/calibration`, and admin Back link build successfully; 15 browser tests pass |
 | Web account workflow      | Pass        | `/profile`, header account links, editor Workspace visibility, and Profile-only Payload-backed logout pass in 15 browser tests |
 | Editor web Workspace      | Pass        | `/workspace` and Workspace menu organize draft, feedback, generation job, calibration, batch, and published-term summaries without raw AI outputs |
 | Feedback Moderation       | Pass        | `/workspace/feedback` and `/api/editor/feedback/[id]` let Editors approve, reject, or hide pending feedback without canonical mutations |
-| Source Verification       | Pass        | Draft source verification works from `/workspace/drafts/[id]`; member access and unsafe source URLs are rejected       |
 | Contributor Dashboard     | Pass        | `/contributions` shows signed-in users only their own comments, suggestions, statuses, moderator notes, and safe target links |
 | M5 Calibration Outcomes   | Pass        | `/workspace/calibration` records Editor-only human outcomes with safe job evidence; migration `20260625_044141_m5_calibration_outcomes` is applied |
 | Historical full rollback  | Known issue | M2 `editorial_core` down migration has an existing lock-relation drop-order defect                                     |
 
 ## Current Work
 
-M3 and M4 are complete. Normal Editor work for drafts, feedback moderation, source
+M3 and M4 are complete. Normal Editor work for drafts, feedback moderation, optional reference
 verification, agent-job status, and calibration status now lives under the Workspace menu
 in OpenToli web. Stable `/api/v1` read contracts now cover the public dictionary/draft
 surfaces and Editor Workspace summaries for future mobile use. Editors can inspect safe job
 detail and queue eligible failed/retry-scheduled jobs for retry without starting provider work
-from the browser. Editors can also manage draft public feedback visibility and draft sources
+from the browser. Editors can also manage draft public feedback visibility and optional references
 from the web draft page. Contributors can track their own moderated comments and translation
 suggestions from `/contributions` without opening Payload admin. `/workspace/calibration` now
 records human outcome evidence for generated calibration drafts. M5 is in progress: the fixed

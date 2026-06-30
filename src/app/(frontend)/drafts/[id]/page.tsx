@@ -101,16 +101,15 @@ export default async function PublicDraftPage({ params }: DraftPageProps) {
         </section>
       ) : null}
 
-      {draft.sources.length > 0 ? (
+      {draft.references.length > 0 ? (
         <section className="term-section">
-          <p className="eyebrow">Evidence supplied to the draft</p>
-          <ul className="source-list">
-            {draft.sources.map((source) => (
-              <li key={source.id}>
-                <a href={source.url} rel="noreferrer" target="_blank">
-                  {source.title}
+          <p className="eyebrow">References</p>
+          <ul className="reference-list">
+            {draft.references.map((reference) => (
+              <li key={reference.id}>
+                <a href={reference.url} rel="noreferrer" target="_blank">
+                  {reference.title}
                 </a>
-                <span>{source.publisher}</span>
               </li>
             ))}
           </ul>

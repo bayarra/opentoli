@@ -9,19 +9,13 @@ export const routeAIDraft = ({
   critique,
   generation,
   preparation,
-  research,
 }: {
   critique: CritiqueOutputV1
   generation: GenerationOutputV1
   preparation: PreparationInput
   research: ResearchPacketV1
 }): RiskRoute => {
-  if (
-    preparation.sources.length === 0 ||
-    research.sourceIds.length === 0 ||
-    critique.blockingIssues.length > 0 ||
-    critique.checks.sourceQuality.assessment === 'fail'
-  ) {
+  if (critique.blockingIssues.length > 0) {
     return { reviewRoute: 'blocked', riskLevel: 'high' }
   }
 
@@ -44,7 +38,6 @@ export const routeAIDraft = ({
   }
 
   if (
-    generation.confidenceDimensions.sourceSupport === 'high' &&
     generation.confidenceDimensions.domainAccuracy === 'high' &&
     critique.recommendedRiskLevel === 'low'
   ) {

@@ -77,7 +77,6 @@ describe('public AI draft feedback', () => {
     const source = await payload.create({
       collection: 'sources',
       data: {
-        isVerified: true,
         publisher: 'OpenToli Integration Tests',
         sourceType: 'official_documentation',
         term: term.id,
@@ -165,7 +164,7 @@ describe('public AI draft feedback', () => {
       id: aiDraftId,
       reviewRoute: 'language_review',
     })
-    expect(publicDraft?.sources).toHaveLength(1)
+    expect(publicDraft?.references).toHaveLength(1)
     expect(publicDraft).not.toHaveProperty('researchPayload')
     expect(publicDraft).not.toHaveProperty('generatedPayload')
     expect(publicDraft).not.toHaveProperty('critiquePayload')
@@ -246,7 +245,7 @@ describe('public AI draft feedback', () => {
         data: {
           aiDraft: aiDraftId,
           body: 'Anonymous feedback must not be accepted.',
-          commentType: 'general',
+          commentType: 'reference_note',
           status: 'pending',
           user: admin.id,
         },
@@ -333,7 +332,7 @@ describe('public AI draft feedback', () => {
         data: {
           aiDraft: aiDraftId,
           body: `Rate-limit fixture ${index} for ${suffix}.`,
-          commentType: 'general',
+          commentType: 'reference_note',
           status: 'pending',
           user: contributor.id,
         },

@@ -29,7 +29,7 @@ evidence in [`STATUS.md`](STATUS.md).
 - **Never expose raw Payload records directly** as the mobile/public contract. Return
   OpenToli-shaped responses that enforce redaction, role checks, and safe public projections.
 - **Mutations must keep business logic in server helpers** such as `src/editor/drafts.ts`,
-  `src/editor/feedback.ts`, and `src/editor/sources.ts`.
+  `src/editor/feedback.ts`, and `src/editor/references.ts`.
 
 ## API Layer Status
 
@@ -69,9 +69,9 @@ Remaining API tasks:
   detection, or proposal moderation only when real editorial use requires them.
 - Public draft visibility: done for active drafts explicitly opened by an Editor; references
   and internal AI routes do not gate visibility.
-- Published terms: add web editing for term wording, examples, alternatives, and sources.
+- Published terms: add web editing for term wording, examples, alternatives, and optional references.
 - Contributions: basic own-comments/suggestions dashboard is done. Remaining work is richer submissions, votes, ownership controls, saved terms, and profile history when M8 starts.
-- Moderation: expand from comment moderation to contributor proposals, examples, and source notes.
+- Moderation: expand from comment moderation to contributor proposals, examples, and reference notes.
 - Imports: add web preparation review for CSV/manual batches, but keep provider execution controlled.
 
 ## Remaining Milestones
@@ -93,7 +93,7 @@ Remaining API tasks:
 2. Record whether the internal route was useful calibration evidence; it does not control publication.
 3. Process the remaining queued first-five M5 jobs one at a time only after draft 189 is inspected.
 4. Add logged-in Editor success coverage for `/api/v1/editor/*` before mobile work begins.
-5. Add published-term web editing for wording, examples, alternatives, and sources.
+5. Add published-term web editing for wording, examples, alternatives, and optional references.
 
 ## Guardrails
 

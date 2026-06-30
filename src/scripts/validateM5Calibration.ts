@@ -15,7 +15,7 @@ if (validation.errors.length > 0) {
 
 console.log(`M5 calibration manifest is valid: ${M5_MANIFEST_PATH}`)
 console.log(`Terms: ${validation.stats.termCount}`)
-console.log(`Sources: ${validation.stats.sourceCount}`)
+console.log(`References: ${validation.stats.referenceCount}`)
 console.log(
   `Difficulty mix: ${Object.entries(validation.stats.difficultyCounts)
     .map(([key, value]) => `${key}=${value}`)

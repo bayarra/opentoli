@@ -188,8 +188,8 @@ export class OpenAIProvider implements AIProvider {
     return this.request({
       input: { preparation },
       instructions: [
-        'You prepare source-grounded English-to-Mongolian terminology research for human reviewers.',
-        'Use only the supplied source metadata as evidence anchors and general linguistic knowledge.',
+        'You prepare English-to-Mongolian terminology research for human reviewers.',
+        'Treat supplied references as optional background context, not proof of a translation.',
         'Do not claim that you opened URLs, do not invent quotations, and surface uncertainty explicitly.',
         'Write original concise explanations and return only the requested structured output.',
       ].join(' '),
@@ -226,8 +226,8 @@ export class OpenAIProvider implements AIProvider {
       input: { generation, preparation, research },
       instructions: [
         'Act as an independent skeptical critic of an AI-prepared English-to-Mongolian term.',
-        'Check semantic accuracy, Mongolian naturalness, literal artifacts, terminology conflicts, unsupported claims, and source quality.',
-        'Use blockingIssues when evidence is insufficient and require appropriate human expertise.',
+        'Check semantic accuracy, Mongolian naturalness, literal artifacts, terminology conflicts, and unsupported claims.',
+        'Do not block or reroute a draft because references are missing or incomplete.',
         'Do not approve publication and return only the requested structured output.',
       ].join(' '),
       maxOutputTokens: 2_500,

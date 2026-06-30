@@ -3,7 +3,7 @@
 ## Purpose
 
 M5 validates OpenToli's AI preparation quality and cost before larger corpus generation.
-The batch is intentionally fixed, source-grounded, and reviewed by humans before any
+The batch is intentionally fixed, traceable, and reviewed by humans before any
 canonical publication decision.
 
 This milestone must not create automated publishing. M5 produces private AI drafts,
@@ -17,6 +17,7 @@ metrics, and review evidence.
 - Worker: [`../src/scripts/runAIWorker.ts`](../src/scripts/runAIWorker.ts)
 - Web outcome recorder: `/workspace/calibration`
 - Outcome migration: `20260625_044141_m5_calibration_outcomes`
+- Reference cleanup migrations: `20260630_012122_optional_references_cleanup` and `20260630_012522_reference_enums`
 
 ## Fixed Input Set
 
@@ -37,9 +38,9 @@ The set deliberately mixes straightforward, ambiguous, and domain-sensitive term
 - Cloud, Kubernetes, and infrastructure
 - General software architecture and packaging
 
-Source references point to trusted concept sources such as MDN, GitHub Docs, Kubernetes
-Docs, PostgreSQL Docs, NIST CSRC, and Microsoft Learn. They are concept-grounding sources;
-AI output and editors must not copy source definitions verbatim. They are optional background
+Optional references point to material such as MDN, GitHub Docs, Kubernetes Docs, PostgreSQL
+Docs, NIST CSRC, and Microsoft Learn. AI output and editors must not copy definitions verbatim.
+References are optional background
 provenance, not proof of Mongolian wording and not a publication gate.
 
 ## Preflight
@@ -55,7 +56,7 @@ Expected result:
 ```text
 M5 calibration manifest is valid
 Terms: 50
-Sources: 8
+References: 8
 ```
 
 Confirm `.env` points at the intended provider before enqueueing jobs:
@@ -68,7 +69,7 @@ Do not print or paste `AI_API_KEY`.
 
 ## Prepare Jobs
 
-The prepare command creates or reuses private draft Terms, creates or reuses Source
+The prepare command creates or reuses private draft Terms, creates or reuses Reference
 records, and enqueues Generation Jobs. It does not call the AI provider and does not spend
 API credit.
 
@@ -122,7 +123,7 @@ state in `Generation Jobs`.
 | Draft visibility | `private` |
 | Recommendation | `хэрэглээний програм (апп)` |
 | Output shape | 6 alternatives, 2 examples |
-| Required expertise | `language`, `domain`, `source_validation` |
+| Required expertise | `language`, `domain`; the legacy `source_validation` value has no workflow effect |
 
 Reviewer notes to resolve before continuing:
 

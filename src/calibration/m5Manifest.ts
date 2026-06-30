@@ -44,7 +44,7 @@ export type M5Term = {
   id: string
   notes?: string
   priority: number
-  sourceRefs: string[]
+  sourceRefs?: string[]
   subcategory: string
 }
 
@@ -69,7 +69,7 @@ export type M5Manifest = {
 
 export type M5ManifestStats = {
   difficultyCounts: Record<M5Difficulty, number>
-  sourceCount: number
+  referenceCount: number
   termCount: number
 }
 
@@ -115,7 +115,7 @@ export const validateM5Manifest = (manifest: unknown): M5ManifestValidation => {
   if (!isRecord(manifest)) {
     return {
       errors: ['Manifest must be a JSON object.'],
-      stats: { difficultyCounts, sourceCount: 0, termCount: 0 },
+      stats: { difficultyCounts, referenceCount: 0, termCount: 0 },
       warnings,
     }
   }
@@ -132,7 +132,6 @@ export const validateM5Manifest = (manifest: unknown): M5ManifestValidation => {
     ? manifest.requiredAmbiguousTerms
     : []
 
-  if (sources.length === 0) errors.push('At least one source is required.')
   if (terms.length !== 50) errors.push(`Expected exactly 50 terms, found ${terms.length}.`)
 
   const sourceIds = new Set<string>()
@@ -233,9 +232,9 @@ export const validateM5Manifest = (manifest: unknown): M5ManifestValidation => {
       difficultyCounts[difficulty] += 1
     }
 
-    if (!Array.isArray(sourceRefs) || sourceRefs.length === 0) {
-      errors.push(`terms[${index}].sourceRefs must contain at least one source id.`)
-    } else {
+    if (sourceRefs !== undefined && !Array.isArray(sourceRefs)) {
+      errors.push(`terms[${index}].sourceRefs must be an array when provided.`)
+    } else if (Array.isArray(sourceRefs)) {
       for (const sourceRef of sourceRefs) {
         if (typeof sourceRef !== 'string' || !sourceIds.has(sourceRef)) {
           errors.push(`terms[${index}] references unknown source: ${String(sourceRef)}.`)
@@ -265,7 +264,7 @@ export const validateM5Manifest = (manifest: unknown): M5ManifestValidation => {
     errors,
     stats: {
       difficultyCounts,
-      sourceCount: sources.length,
+      referenceCount: sources.length,
       termCount: terms.length,
     },
     warnings,

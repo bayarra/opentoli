@@ -465,7 +465,8 @@ export const critiqueOutputSchemaV1 = {
       type: 'object',
     },
     requiredExpertise: {
-      items: { enum: ['language', 'domain', 'source_validation'] },
+      // Historical payloads may retain source_validation, but new provider output cannot request it.
+      items: { enum: ['language', 'domain'] },
       type: 'array',
     },
     recommendedRiskLevel: { enum: riskLevels },

@@ -2,23 +2,24 @@ import type { CollectionConfig, Where } from 'payload'
 
 import { editorialAccess, hasRole, moderatorAccess } from '../access/roles'
 
-const publicSourceAccess: Where = {
-  and: [{ isVerified: { equals: true } }, { 'term._status': { equals: 'published' } }],
-}
+const publicReferenceAccess: Where = { 'term._status': { equals: 'published' } }
 
 export const Sources: CollectionConfig = {
   slug: 'sources',
   admin: {
-    defaultColumns: ['title', 'publisher', 'sourceType', 'isVerified'],
+    defaultColumns: ['title', 'url', 'updatedAt'],
+    description: 'Optional background links. References never approve or block terminology.',
+    group: 'Maintenance',
     useAsTitle: 'title',
   },
+  labels: { plural: 'References', singular: 'Reference' },
   access: {
     create: editorialAccess,
     delete: moderatorAccess,
     read: ({ req }) =>
       hasRole(req.user, ['reviewer', 'language_expert', 'moderator', 'admin'])
         ? true
-        : publicSourceAccess,
+        : publicReferenceAccess,
     update: editorialAccess,
   },
   fields: [
@@ -59,7 +60,6 @@ export const Sources: CollectionConfig = {
     },
     { name: 'licenseNote', type: 'textarea' },
     { name: 'excerptNote', type: 'textarea' },
-    { name: 'isVerified', type: 'checkbox', defaultValue: false, index: true },
     { name: 'createdBy', type: 'relationship', relationTo: 'users' },
   ],
   timestamps: true,

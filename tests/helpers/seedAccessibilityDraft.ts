@@ -7,7 +7,7 @@ export type AccessibilityDraftFixture = {
   categoryId: number
   draftId: number
   jobId: number
-  sourceId: number
+  referenceId: number
   termId: number
   user: {
     email: string
@@ -17,11 +17,7 @@ export type AccessibilityDraftFixture = {
   }
 }
 
-export async function seedAccessibilityDraft({
-  sourceVerified = true,
-}: {
-  sourceVerified?: boolean
-} = {}): Promise<AccessibilityDraftFixture> {
+export async function seedAccessibilityDraft(): Promise<AccessibilityDraftFixture> {
   const payload = await getPayload({ config })
   const suffix = `${process.pid}-${Date.now()}`
   const password = `accessible-editor-${suffix}`
@@ -50,8 +46,8 @@ export async function seedAccessibilityDraft({
     collection: 'terms',
     data: {
       categories: [category.id],
-      explanationEn: 'A source container used by the accessibility browser tests.',
-      explanationMn: 'A source container used by the accessibility browser tests.',
+      explanationEn: 'A reference container used by the accessibility browser tests.',
+      explanationMn: 'A reference container used by the accessibility browser tests.',
       headwordEn: `keyboard workflow ${suffix}`,
       reviewStatus: 'not_reviewed',
       shortDefinitionEn: 'A workflow that remains usable without a pointing device.',
@@ -63,11 +59,10 @@ export async function seedAccessibilityDraft({
   const source = await payload.create({
     collection: 'sources',
     data: {
-      isVerified: sourceVerified,
       publisher: 'OpenToli Accessibility Tests',
       sourceType: 'official_documentation',
       term: term.id,
-      title: 'Keyboard workflow source',
+      title: 'Keyboard workflow reference',
       url: 'https://example.com/accessibility-keyboard-workflow',
     },
     overrideAccess: true,
@@ -106,7 +101,7 @@ export async function seedAccessibilityDraft({
     categoryId: category.id,
     draftId: result.draft.id,
     jobId: queued.job.id,
-    sourceId: source.id,
+    referenceId: source.id,
     termId: term.id,
     user: { email: user.email, id: user.id, name: user.name, password },
   }
@@ -121,7 +116,7 @@ export async function cleanupAccessibilityDraft(fixture: AccessibilityDraftFixtu
   })
   await payload.delete({ collection: 'ai-drafts', id: fixture.draftId, overrideAccess: true })
   await payload.delete({ collection: 'generation-jobs', id: fixture.jobId, overrideAccess: true })
-  await payload.delete({ collection: 'sources', id: fixture.sourceId, overrideAccess: true })
+  await payload.delete({ collection: 'sources', id: fixture.referenceId, overrideAccess: true })
   await payload.delete({ collection: 'terms', id: fixture.termId, overrideAccess: true })
   await payload.delete({ collection: 'categories', id: fixture.categoryId, overrideAccess: true })
   await payload.delete({ collection: 'users', id: fixture.user.id, overrideAccess: true })

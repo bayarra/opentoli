@@ -7,7 +7,6 @@ import {
   calibrationGoNoGoRecommendations,
   calibrationLanguageAssessments,
   calibrationOutcomeValues,
-  calibrationSourceAssessments,
 } from '../calibration/options'
 
 export const CalibrationOutcomes: CollectionConfig = {
@@ -52,13 +51,6 @@ export const CalibrationOutcomes: CollectionConfig = {
       type: 'select',
       defaultValue: 'not_checked',
       options: [...calibrationEditLevels],
-      required: true,
-    },
-    {
-      name: 'sourceAssessment',
-      type: 'select',
-      defaultValue: 'not_checked',
-      options: [...calibrationSourceAssessments],
       required: true,
     },
     {

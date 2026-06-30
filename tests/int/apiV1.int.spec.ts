@@ -113,11 +113,10 @@ describe('/api/v1 read contracts', () => {
     const source = await payload.create({
       collection: 'sources',
       data: {
-        isVerified: true,
         publisher: 'OpenToli Integration Tests',
         sourceType: 'official_documentation',
         term: term.id,
-        title: 'API v1 fixture source',
+        title: 'API v1 fixture reference',
         url: 'https://example.com/opentoli-api-v1-fixture',
       },
       overrideAccess: true,
@@ -242,7 +241,7 @@ describe('/api/v1 read contracts', () => {
     const term = recordField(termJson, 'term')
     const recommendedTranslation = recordField(termJson, 'recommendedTranslation')
     const examples = arrayField(termJson, 'examples')
-    const sources = arrayField(termJson, 'sources')
+    const references = arrayField(termJson, 'references')
     expect(term).toMatchObject({
       headwordEn: headword,
       reviewStatus: 'human_reviewed',
@@ -250,8 +249,8 @@ describe('/api/v1 read contracts', () => {
     })
     expect(recommendedTranslation.translationMn).toBe(`api v1 орчуулга ${suffix}`)
     expect(examples).toHaveLength(1)
-    expect(sources[0]).toMatchObject({
-      title: 'API v1 fixture source',
+    expect(references[0]).toMatchObject({
+      title: 'API v1 fixture reference',
       url: 'https://example.com/opentoli-api-v1-fixture',
     })
     expect(term).not.toHaveProperty('createdBy')
@@ -294,7 +293,7 @@ describe('/api/v1 read contracts', () => {
       id: aiDraftId,
       reviewRoute: 'language_review',
     })
-    expect(draft.sources).toHaveLength(1)
+    expect(draft.references).toHaveLength(1)
     expect(draft).not.toHaveProperty('researchPayload')
     expect(draft).not.toHaveProperty('generatedPayload')
     expect(draft).not.toHaveProperty('critiquePayload')

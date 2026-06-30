@@ -9,11 +9,10 @@ import {
 } from '@/editor/drafts'
 import { getDraftInbox } from '@/editor/data'
 import {
-  addDraftSource,
-  removeDraftSource,
-  updateDraftSource,
-  verifySource,
-} from '@/editor/sources'
+  addDraftReference,
+  removeDraftReference,
+  updateDraftReference,
+} from '@/editor/references'
 import { getPublicAIDraftById } from '@/lib/publicAIDrafts'
 import config from '@/payload.config'
 import type { User } from '@/payload-types'
@@ -27,7 +26,7 @@ let contributor: User
 let technologyCategoryId: number
 const termIds: number[] = []
 const translationIds: number[] = []
-const sourceIds: number[] = []
+const referenceIds: number[] = []
 const jobIds: number[] = []
 const draftIds: number[] = []
 const decisionIds: number[] = []
@@ -39,23 +38,21 @@ const createPreparedDraft = async ({
   categoryName,
   categorySlug,
   headword,
-  sourceVerified = true,
 }: {
   categoryId: number
   categoryName: string
   categorySlug: string
   headword: string
-  sourceVerified?: boolean
 }) => {
   const term = await payload.create({
     collection: 'terms',
     data: {
       categories: [categoryId],
-      explanationEn: `Source container for ${headword}.`,
-      explanationMn: `Source container for ${headword}.`,
+      explanationEn: `Reference container for ${headword}.`,
+      explanationMn: `Reference container for ${headword}.`,
       headwordEn: headword,
       reviewStatus: 'not_reviewed',
-      shortDefinitionEn: `Source container for ${headword}.`,
+      shortDefinitionEn: `Reference container for ${headword}.`,
       workflowStatus: 'needs_review',
     },
     draft: true,
@@ -65,16 +62,15 @@ const createPreparedDraft = async ({
   const source = await payload.create({
     collection: 'sources',
     data: {
-      isVerified: sourceVerified,
       publisher: 'OpenToli Editor Tests',
       sourceType: 'official_documentation',
       term: term.id,
-      title: `Editor source for ${headword}`,
+      title: `Editor reference for ${headword}`,
       url: `https://example.com/${encodeURIComponent(headword)}`,
     },
     overrideAccess: true,
   })
-  sourceIds.push(source.id)
+  referenceIds.push(source.id)
   const provider = new DeterministicAIProvider()
   const queued = await enqueueGenerationJob({
     payload,
@@ -188,7 +184,7 @@ describe('simple AI draft editor workflow', () => {
     for (const id of jobIds.reverse()) {
       await payload.delete({ collection: 'generation-jobs', id, overrideAccess: true })
     }
-    for (const id of sourceIds.reverse()) {
+    for (const id of referenceIds.reverse()) {
       await payload.delete({ collection: 'sources', id, overrideAccess: true }).catch(() => null)
     }
     for (const id of translationIds.reverse()) {
@@ -370,7 +366,7 @@ describe('simple AI draft editor workflow', () => {
       payload,
       visibility: 'public',
     })
-    expect((await getPublicAIDraftById(blocked.id))?.sources).toEqual([])
+    expect((await getPublicAIDraftById(blocked.id))?.references).toEqual([])
 
     const unsafe = await createPreparedDraft({
       categoryId: technologyCategoryId,
@@ -381,16 +377,15 @@ describe('simple AI draft editor workflow', () => {
     const unsafeSource = await payload.create({
       collection: 'sources',
       data: {
-        isVerified: false,
         publisher: 'OpenToli Editor Tests',
         sourceType: 'other',
         term: termIds[termIds.length - 1]!,
-        title: `Unsafe public feedback source for ${suffix}`,
+        title: `Unsafe public feedback reference for ${suffix}`,
         url: 'javascript:alert(1)',
       },
       overrideAccess: true,
     })
-    sourceIds.push(unsafeSource.id)
+    referenceIds.push(unsafeSource.id)
     await payload.update({
       collection: 'ai-drafts',
       data: { sources: [unsafeSource.id] },
@@ -404,66 +399,24 @@ describe('simple AI draft editor workflow', () => {
       payload,
       visibility: 'public',
     })
-    expect((await getPublicAIDraftById(unsafe.id))?.sources).toEqual([])
+    expect((await getPublicAIDraftById(unsafe.id))?.references).toEqual([])
   })
 
-  it('lets Editors verify draft sources while blocking members and unsafe URLs', async () => {
-    await createPreparedDraft({
-      categoryId: technologyCategoryId,
-      categoryName: `Editor Technology ${suffix}`,
-      categorySlug: `editor-technology-${suffix}`,
-      headword: `source verification ${suffix}`,
-      sourceVerified: false,
-    })
-    const sourceId = sourceIds[sourceIds.length - 1]!
-
-    await expect(verifySource({ actor: contributor, payload, sourceId })).rejects.toThrow(
-      'Editor access',
-    )
-
-    const verified = await verifySource({ actor: editor, payload, sourceId })
-    expect(verified.isVerified).toBe(true)
-
-    const repeated = await verifySource({ actor: editor, payload, sourceId })
-    expect(repeated.isVerified).toBe(true)
-
-    const unsafe = await payload.create({
-      collection: 'sources',
-      data: {
-        isVerified: false,
-        publisher: 'OpenToli Editor Tests',
-        sourceType: 'other',
-        term: termIds[termIds.length - 1]!,
-        title: `Unsafe source for ${suffix}`,
-        url: 'javascript:alert(1)',
-      },
-      overrideAccess: true,
-    })
-    sourceIds.push(unsafe.id)
-
-    await expect(verifySource({ actor: editor, payload, sourceId: unsafe.id })).rejects.toThrow(
-      'Only http and https',
-    )
-  })
-
-  it('lets Editors add, edit, and remove draft sources', async () => {
+  it('lets Editors add, edit, and remove optional references', async () => {
     const draft = await createPreparedDraft({
       categoryId: technologyCategoryId,
       categoryName: `Editor Technology ${suffix}`,
       categorySlug: `editor-technology-${suffix}`,
-      headword: `source management ${suffix}`,
-      sourceVerified: false,
+      headword: `reference management ${suffix}`,
     })
 
     const fields = {
-      publisher: 'OpenToli Managed Sources',
-      sourceType: 'official_documentation' as const,
-      title: `Managed source ${suffix}`,
-      url: `https://example.com/managed-source-${suffix}`,
+      title: `Managed reference ${suffix}`,
+      url: `https://example.com/managed-reference-${suffix}`,
     }
 
     await expect(
-      addDraftSource({
+      addDraftReference({
         actor: contributor,
         draftId: draft.id,
         fields,
@@ -471,47 +424,42 @@ describe('simple AI draft editor workflow', () => {
       }),
     ).rejects.toThrow('Editor access')
 
-    const added = await addDraftSource({
+    const added = await addDraftReference({
       actor: editor,
       draftId: draft.id,
       fields,
       payload,
     })
-    sourceIds.push(added.source.id)
-    expect(added.source).toMatchObject({
-      isVerified: false,
-      publisher: fields.publisher,
+    referenceIds.push(added.reference.id)
+    expect(added.reference).toMatchObject({
       title: fields.title,
     })
 
-    const updated = await updateDraftSource({
+    const updated = await updateDraftReference({
       actor: editor,
       draftId: draft.id,
       fields: {
         ...fields,
-        publisher: 'OpenToli Updated Sources',
-        title: `Updated managed source ${suffix}`,
+        title: `Updated managed reference ${suffix}`,
       },
       payload,
-      sourceId: added.source.id,
+      referenceId: added.reference.id,
     })
     expect(updated).toMatchObject({
-      isVerified: false,
-      publisher: 'OpenToli Updated Sources',
-      title: `Updated managed source ${suffix}`,
+      title: `Updated managed reference ${suffix}`,
     })
 
-    const removed = await removeDraftSource({
+    const removed = await removeDraftReference({
       actor: editor,
       draftId: draft.id,
       payload,
-      sourceId: added.source.id,
+      referenceId: added.reference.id,
     })
-    expect(removed.sourceId).toBe(added.source.id)
+    expect(removed.referenceId).toBe(added.reference.id)
     await expect(
       payload.findByID({
         collection: 'sources',
-        id: added.source.id,
+        id: added.reference.id,
         overrideAccess: true,
       }),
     ).rejects.toThrow()
@@ -524,7 +472,7 @@ describe('simple AI draft editor workflow', () => {
       categorySlug: `editor-technology-${suffix}`,
       headword: `optional reference removal ${suffix}`,
     })
-    const sourceId = sourceIds[sourceIds.length - 1]!
+    const referenceId = referenceIds[referenceIds.length - 1]!
 
     const opened = await updateEditorDraftVisibility({
       actorId: editor.id,
@@ -535,11 +483,11 @@ describe('simple AI draft editor workflow', () => {
     expect(opened.publicVisibility).toBe('public')
     expect(await getPublicAIDraftById(draft.id)).not.toBeNull()
 
-    const removed = await removeDraftSource({
+    const removed = await removeDraftReference({
       actor: editor,
       draftId: draft.id,
       payload,
-      sourceId,
+      referenceId,
     })
     expect(removed.draft.publicVisibility).toBe('public')
     expect((await getPublicAIDraftById(draft.id))?.id).toBe(draft.id)

@@ -83,7 +83,6 @@ describe('M5 calibration outcomes', () => {
     const source = await payload.create({
       collection: 'sources',
       data: {
-        isVerified: true,
         publisher: 'OpenToli Calibration Tests',
         sourceType: 'official_documentation',
         term: term.id,
@@ -163,7 +162,6 @@ describe('M5 calibration outcomes', () => {
       languageAssessment: 'major_edits',
       notes: 'The candidate is useful, but the English/Mongolian explanation needs substantial human editing.',
       outcome: 'accepted_with_edits',
-      sourceAssessment: 'not_checked',
     })
 
     await expect(
@@ -183,7 +181,6 @@ describe('M5 calibration outcomes', () => {
       languageAssessment: 'major_edits',
       modelProvider: 'deterministic',
       outcome: 'accepted_with_edits',
-      sourceAssessment: 'not_checked',
     })
     expect(created.latencyMs).toBeGreaterThan(0)
     expect(created.estimatedCostUsd).toBe(0)

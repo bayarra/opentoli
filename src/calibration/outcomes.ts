@@ -10,7 +10,6 @@ import {
   calibrationGoNoGoRecommendations,
   calibrationLanguageAssessments,
   calibrationOutcomeValues,
-  calibrationSourceAssessments,
 } from './options'
 
 export class CalibrationOutcomeError extends Error {
@@ -30,7 +29,6 @@ type CalibrationOutcomeInput = {
   languageAssessment: CalibrationOutcome['languageAssessment']
   notes: string
   outcome: CalibrationOutcome['outcome']
-  sourceAssessment: CalibrationOutcome['sourceAssessment']
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -109,10 +107,6 @@ export const parseCalibrationOutcomeFields = (input: unknown): CalibrationOutcom
     ),
     notes,
     outcome: allowedValue(input.outcome, calibrationOutcomeValues, 'outcome'),
-    sourceAssessment:
-      input.sourceAssessment === undefined
-        ? 'not_checked'
-        : allowedValue(input.sourceAssessment, calibrationSourceAssessments, 'source assessment'),
   }
 }
 
@@ -178,7 +172,6 @@ export const recordCalibrationOutcome = async ({
     reviewedAt: new Date().toISOString(),
     reviewedBy: actor.id,
     schemaVersion: draft.schemaVersion || job.schemaVersion,
-    sourceAssessment: fields.sourceAssessment,
     term: relationshipId(draft.term),
   }
 

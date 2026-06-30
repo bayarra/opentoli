@@ -17,6 +17,8 @@ test.describe('Frontend', () => {
     await focusByTab(page, search)
     await page.keyboard.type('authentication')
     await page.keyboard.press('Enter')
-    await expect(page).toHaveURL('http://localhost:3000/search?q=authentication')
+    await expect(page).toHaveURL('http://localhost:3000/search?q=authentication', {
+      timeout: 15_000,
+    })
   })
 })

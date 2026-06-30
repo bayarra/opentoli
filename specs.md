@@ -17,7 +17,7 @@ OpenToli combines:
 - A structured editorial system
 - Community translation suggestions
 - Human review and approval
-- An AI-first, source-grounded term preparation pipeline
+- An AI-first, traceable term preparation pipeline with optional references
 - Context-specific translation guidance
 
 AI-first means that AI prepares candidate terms, research packets, translation options,
@@ -37,7 +37,7 @@ The platform should help users answer:
 - Why was one translation recommended over another?
 - How is the term used in a real sentence?
 - Has the translation been reviewed by a human?
-- What sources support the usage?
+- What references provide useful background?
 
 > OpenToli is a modern English-to-Mongolian terminology platform for technology, artificial intelligence, finance, law, medicine, science, business, education, media, and everyday professional language.
 
@@ -431,7 +431,7 @@ Each term may include:
 - Categories and subcategories
 - Usage notes
 - Example sentences
-- Sources and references
+- Optional references
 - Discussion
 - Review status
 - Contributor history
@@ -470,7 +470,7 @@ Human Reviewed
 - Read explanations
 - Browse categories
 - View examples
-- View sources
+- View references
 - View discussions
 - View review status
 - View explicitly public AI drafts labeled `Unverified AI Draft`
@@ -483,7 +483,7 @@ Public users must register or sign in before commenting or suggesting a translat
 - Suggest Mongolian translations
 - Suggest alternative translations
 - Add examples
-- Add sources
+- Add references
 - Propose explanation changes
 - Comment in discussions
 - Vote on translation suggestions
@@ -493,7 +493,7 @@ Public users must register or sign in before commenting or suggesting a translat
 
 - Open AI drafts from one Draft Inbox
 - Edit the English headword, Mongolian translation, and explanations directly
-- Review sources and community suggestions on the same page
+- Review optional references and community suggestions on the same page
 - Publish with one explicit human action
 - Hide an unusable draft from the active inbox without deleting its provenance
 
@@ -599,7 +599,7 @@ PostgreSQL should store:
 - Categories
 - Contexts
 - Examples
-- Sources
+- References
 - Comments
 - Votes
 - Users
@@ -710,7 +710,7 @@ Required sections:
 - Usage notes
 - Examples
 - Related terms
-- Sources
+- References
 - Contributor and reviewer notes
 - Discussion
 - Revision history
@@ -759,7 +759,7 @@ Fields:
 - English example
 - Mongolian example
 - Reason for suggestion
-- Source links
+- Reference links
 - Notes
 
 New submissions begin with:
@@ -791,7 +791,7 @@ Show:
 - Translation suggestions
 - Explanation changes
 - New examples
-- New sources
+- New references
 - Duplicate warnings
 - Flagged discussions
 
@@ -925,14 +925,17 @@ Fields:
 - `example_en`
 - `example_mn`
 - `context`
-- `source`
+- `reference`
 - `created_by`
 - `status`
 - `review_status`
 - `created_at`
 - `updated_at`
 
-### 10.6 Sources Collection
+### 10.6 References Collection
+
+The implementation may retain the legacy Payload slug `sources` for migration compatibility.
+References are links, not review evidence, and have no verification or approval state.
 
 Fields:
 
@@ -945,13 +948,13 @@ Fields:
 - `url`
 - `publication_date`
 - `accessed_date`
-- `source_type`
+- `reference_type`
 - `license_note`
 - `excerpt_note`
 - `created_by`
 - `created_at`
 
-Source types:
+Legacy reference metadata types:
 
 - `government`
 - `standards_body`
@@ -988,7 +991,7 @@ Comment types:
 - `general`
 - `translation_suggestion`
 - `usage_question`
-- `source_note`
+- `reference_note`
 - `review_note`
 - `moderator_note`
 
@@ -1043,7 +1046,6 @@ Review types:
 - `linguistic`
 - `technical`
 - `editorial`
-- `source_validation`
 - `final_approval`
 
 Decision options:
@@ -1061,7 +1063,7 @@ Fields:
 - `input_headword`
 - `input_category`
 - `input_context`
-- `source_ids`
+- `reference_ids`
 - `research_payload`
 - `generated_payload`
 - `critique_payload`
@@ -1083,7 +1085,8 @@ Fields:
 - `updated_at`
 
 Confidence dimensions should be stored separately for concept understanding,
-translation naturalness, domain accuracy, source support, and ambiguity.
+translation naturalness, domain accuracy, and ambiguity. Historical AI payloads may retain
+legacy source fields for provenance, but active decisions must ignore them.
 
 Risk levels:
 
@@ -1138,16 +1141,16 @@ Role options:
 ### Public Users
 
 Can read and search published terms, view explicitly public AI drafts, browse categories,
-and view approved discussions, sources, and revision summaries. Authentication is required
+and view approved discussions, references, and revision summaries. Authentication is required
 to submit comments or translation suggestions.
 
 ### Contributors
 
-Can submit terms, suggest translations, add examples and sources, comment, vote, and edit their own drafts.
+Can submit terms, suggest translations, add examples and references, comment, vote, and edit their own drafts.
 
 ### Reviewers
 
-Can review submissions, edit explanations, approve examples, validate sources, request changes, and mark content as human reviewed.
+Can review submissions, edit explanations, approve examples, request changes, and mark content as human reviewed.
 
 ### Language Experts
 
@@ -1185,7 +1188,6 @@ Possible outcomes:
 
 - Approved without changes
 - Approved with edits
-- Needs additional sources
 - Needs domain expert
 - Needs community discussion
 - Rejected
@@ -1234,9 +1236,9 @@ must not block an Editor from reviewing, sharing, or publishing a draft.
 ### 13.3 AI Draft Workflow
 
 ```text
-Trusted source or manually entered headword
+Manually entered or imported headword
 ↓
-Candidate extraction and source capture
+Candidate extraction and optional reference capture
 ↓
 Normalization and duplicate detection
 ↓
@@ -1267,7 +1269,7 @@ The research packet should include:
 - Part of speech and acronym expansion, when applicable
 - Domain-specific meanings
 - Commonly confused or related terms
-- Existing Mongolian usage found in supplied sources
+- Existing Mongolian usage found during preparation
 - Ambiguities and questions for reviewers
 
 The generation pass should produce:
@@ -1280,8 +1282,8 @@ The generation pass should produce:
 - Misleading or rejected candidates with reasons
 
 The independent critique pass should check semantic accuracy, natural Mongolian,
-literal-translation artifacts, terminology conflicts, unsupported claims, source
-quality, and the type of human expertise required. Critique output must be retained
+literal-translation artifacts, terminology conflicts, unsupported claims, and the type
+of human expertise required. Critique output must be retained
 separately from the generated draft.
 
 ### 13.4 Structured AI Output
@@ -1312,7 +1314,6 @@ separately from the generated draft.
     "concept_understanding": "high",
     "translation_naturalness": "medium",
     "domain_accuracy": "medium",
-    "source_support": "medium",
     "ambiguity": "low"
   },
   "risk_level": "medium",
@@ -1335,8 +1336,8 @@ from the active inbox. Hide preserves the draft and its provenance; it is not de
 
 AI risk, confidence, critique, and routing metadata may be retained internally for quality
 analysis, but they must not create separate inboxes, reviewer types, reroute controls,
-merge controls, warnings, or approval stages in the MVP UI. Blocked or unsourced drafts
-remain available to Editors; internal AI routes do not control publication.
+merge controls, warnings, or approval stages in the MVP UI. References and internal AI
+routes do not control publication.
 
 ### 13.6 Public Draft Visibility and Canonical Publication
 
@@ -1346,7 +1347,7 @@ verified, and provide a route for comments and translation suggestions. Public v
 does not make the draft a published Term and does not grant it canonical status.
 
 The public projection may include the headword, candidate translations, draft
-explanations, examples, source citations, risk-neutral review status, and approved public
+explanations, examples, optional references, risk-neutral review status, and approved public
 feedback. It must exclude raw provider output, prompts, job errors, private reviewer notes,
 contact details, abuse-prevention metadata, and other internal generation evidence.
 
@@ -1389,7 +1390,7 @@ Track:
 
 ## 14. Headword Collection Strategy
 
-Headwords should come from real, high-value sources such as:
+Headwords may be discovered from real, high-value references such as:
 
 - Government glossaries
 - Standards organizations
@@ -1403,7 +1404,7 @@ Headwords should come from real, high-value sources such as:
 - Industry glossaries
 - Professional guides
 
-Recommended source groups:
+Recommended reference groups:
 
 ### Technology & Software
 
@@ -1484,13 +1485,13 @@ Recommended source groups:
 ## 15. Term Ingestion Workflow
 
 ```text
-Select source and category
+Select category and optional reference
 ↓
 Extract candidate headwords
 ↓
 Remove duplicates and irrelevant terms
 ↓
-Store source metadata
+Store optional reference link
 ↓
 Generate AI research packet
 ↓
@@ -1507,14 +1508,14 @@ Add examples and context
 Approve and publish
 ```
 
-Imports should be processed as traceable batches. A batch should retain its source,
+Imports should be processed as traceable batches. A batch should retain its origin,
 extraction settings, prompt and model versions, validation failures, duplicate results,
 and review outcomes. Importing a batch must never publish its terms automatically.
 
 Initial import format:
 
 ```csv
-headword_en,category,subcategory,context,source_title,source_url,status
+headword_en,category,subcategory,context,reference_title,reference_url,status
 authentication,Technology & Software,Cybersecurity,security,NIST Glossary,https://example.org,needs_ai_draft
 equity,Finance & Economics,Investing,finance,Investor Glossary,https://example.org,needs_ai_draft
 diagnosis,Medicine & Health,Clinical Care,medical,MedlinePlus,https://example.org,needs_ai_draft
@@ -1554,7 +1555,7 @@ Suggested launch requirement:
 - At least 300 human-reviewed terms
 - At least 100 additional terms marked as AI Draft or Needs Review
 - At least 5 active primary categories
-- Sources attached to important or disputed terms
+- Optional references attached where useful
 
 ## 17. Search Requirements
 
@@ -1615,7 +1616,7 @@ Later features:
 - Create and edit categories
 - Create and edit contexts
 - Add examples
-- Add sources
+- Add references
 - Draft and publish workflow
 - Version history
 - Review queue
@@ -1627,13 +1628,13 @@ Later features:
 - Suggest a translation
 - Suggest an explanation
 - Add examples
-- Add sources
+- Add references
 - Comment
 - Vote
 
 ### AI Features
 
-- Generate source-grounded research packets
+- Generate traceable research packets
 - Generate multiple translation candidates
 - Run an independent AI critique
 - Assign risk-based review routes
@@ -1642,7 +1643,7 @@ Later features:
 - Suggest context-specific meanings
 - Suggest examples
 - Detect likely duplicates
-- Save source, prompt, model, and schema metadata
+- Save optional reference, prompt, model, and schema metadata
 - Measure acceptance, edits, and rejection reasons
 - Require human review
 
@@ -1675,20 +1676,20 @@ Later features:
 - Terms
 - Translations
 - Examples
-- Sources
+- References
 - Public search
 - Term pages
 - Admin CRUD
 
 ### Phase 2 — Initial Content
 
-- Source registry
+- Reference registry
 - CSV headword import
 - AI research-packet generation
 - Multiple-candidate translation generation
 - Independent AI critique
 - Risk-based review routing
-- Prompt, model, schema, and source provenance
+- Prompt, model, schema, and optional reference provenance
 - AI quality evaluation set
 - Duplicate detection
 - 50-term calibration batch
@@ -1709,7 +1710,6 @@ Later features:
 
 - Reviewer workflow
 - Language expert workflow
-- Source validation
 - Review records
 - Revision summaries
 - Merge and archive tools
@@ -1721,7 +1721,7 @@ Later features:
 - Translation comparison
 - Batch draft generation
 - Category classification
-- Cross-source evidence comparison
+- Cross-reference comparison
 - Advanced conflict detection
 - Automated evaluation reporting
 
@@ -1790,7 +1790,7 @@ Admin navigation:
 - Categories
 - Contexts
 - Examples
-- Sources
+- References
 - AI Drafts
 - Reviews
 - Comments
@@ -1870,7 +1870,7 @@ Authentication in Mongolian | OpenToli
 
 - Unique normalized headword rules
 - Duplicate detection
-- Required sources for disputed terms
+- Optional references for disputed terms
 - Human review requirement for publication
 - Version history
 - Reviewer attribution
@@ -1880,7 +1880,7 @@ Authentication in Mongolian | OpenToli
 
 - Automated database backups
 - CSV and JSON exports
-- Source metadata export
+- Reference metadata export
 - Version history retention
 - Media backup
 - Restore procedure documentation
@@ -1918,7 +1918,7 @@ Core collections:
 - Categories
 - Contexts
 - Examples
-- Sources
+- References
 - Comments
 - Votes
 - Reviews
@@ -1932,7 +1932,7 @@ Requirements:
 - English and Mongolian explanations
 - Categories and contexts
 - Examples
-- Sources
+- References
 - Review statuses
 - Draft and publishing workflow
 - Version history
@@ -2021,7 +2021,6 @@ Humans provide:
 
 - Natural Mongolian wording
 - Context verification
-- Source validation
 - Technical accuracy
 - Final approval
 - Trust

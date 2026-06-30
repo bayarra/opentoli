@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 export const metadata = {
   description:
-    'Find sourced, human-reviewed Mongolian translations for modern English terminology.',
+    'Find clear, human-reviewed Mongolian translations for modern English terminology.',
   title: 'OpenToli | English-to-Mongolian terminology',
 }
 

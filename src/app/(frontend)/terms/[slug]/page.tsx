@@ -12,7 +12,7 @@ export default async function TermPage({ params }: TermPageProps) {
 
   if (!data) notFound()
 
-  const { examples, sources, term, translations } = data
+  const { examples, references, term, translations } = data
   const recommendedTranslation = getRecommendedTranslation(term)
   const alternatives = translations.filter(
     (translation) => translation.id !== recommendedTranslation?.id,
@@ -91,16 +91,15 @@ export default async function TermPage({ params }: TermPageProps) {
         </section>
       ) : null}
 
-      {sources.length > 0 ? (
+      {references.length > 0 ? (
         <section className="term-section">
-          <p className="eyebrow">Sources</p>
-          <ul className="source-list">
-            {sources.map((source) => (
-              <li key={source.id}>
-                <a href={source.url} rel="noreferrer" target="_blank">
-                  {source.title}
+          <p className="eyebrow">References</p>
+          <ul className="reference-list">
+            {references.map((reference) => (
+              <li key={reference.id}>
+                <a href={reference.url} rel="noreferrer" target="_blank">
+                  {reference.title}
                 </a>
-                <span>{source.publisher}</span>
               </li>
             ))}
           </ul>

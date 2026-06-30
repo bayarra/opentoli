@@ -27,7 +27,7 @@ export class DeterministicAIProvider implements AIProvider {
         canonicalMeaning:
           preparation.headwordEn === 'authentication'
             ? 'The process of verifying that a claimed identity is genuine.'
-            : `A source-grounded working definition for ${preparation.headwordEn}.`,
+            : `A working definition for ${preparation.headwordEn}.`,
         confusedTerms:
           preparation.headwordEn === 'authentication' ? ['authorization', 'identification'] : [],
         domainMeanings: [`Usage in ${preparation.category.nameEn}.`],
@@ -63,7 +63,7 @@ export class DeterministicAIProvider implements AIProvider {
           ambiguity: 'low',
           conceptUnderstanding: 'high',
           domainAccuracy: 'medium',
-          sourceSupport: preparation.sources.length > 0 ? 'high' : 'low',
+          sourceSupport: 'medium',
           translationNaturalness: 'medium',
         },
         contexts: preparation.context ? [preparation.context.nameEn] : [],
@@ -99,14 +99,13 @@ export class DeterministicAIProvider implements AIProvider {
     }
   }
 
-  async critique({ preparation }: Parameters<AIProvider['critique']>[0]): Promise<ProviderResult> {
+  async critique(_input: Parameters<AIProvider['critique']>[0]): Promise<ProviderResult> {
     this.calls.critique += 1
     const passingCheck = { assessment: 'pass', notes: [] }
 
     return {
       output: {
-        blockingIssues:
-          preparation.sources.length > 0 ? [] : ['No supporting source was supplied.'],
+        blockingIssues: [],
         checks: {
           literalTranslationArtifacts: passingCheck,
           mongolianNaturalness: {
@@ -115,15 +114,15 @@ export class DeterministicAIProvider implements AIProvider {
           },
           semanticAccuracy: passingCheck,
           sourceQuality: {
-            assessment: preparation.sources.length > 0 ? 'pass' : 'fail',
-            notes: preparation.sources.length > 0 ? [] : ['Source evidence is required.'],
+            assessment: 'pass',
+            notes: ['References are optional context and do not control the outcome.'],
           },
           terminologyConflicts: passingCheck,
           unsupportedClaims: passingCheck,
         },
-        recommendedReviewRoute: preparation.sources.length > 0 ? 'language_review' : 'blocked',
-        recommendedRiskLevel: preparation.sources.length > 0 ? 'medium' : 'high',
-        requiredExpertise: ['language', 'source_validation'],
+        recommendedReviewRoute: 'language_review',
+        recommendedRiskLevel: 'medium',
+        requiredExpertise: ['language'],
         schemaVersion: AI_SCHEMA_VERSION,
         summary:
           'The concept is usable as a draft, but the Mongolian wording requires human review.',

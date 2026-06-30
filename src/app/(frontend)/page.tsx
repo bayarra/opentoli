@@ -15,7 +15,7 @@ export default function HomePage() {
         <p className="eyebrow">English to Mongolian terminology</p>
         <h1>Clear language for modern ideas.</h1>
         <p className="hero-copy">
-          Find sourced, human-reviewed Mongolian translations for technology, science, finance,
+          Find clear, human-reviewed Mongolian translations for technology, science, finance,
           law, medicine, and professional life.
         </p>
         <form action="/search" className="search" role="search">
@@ -42,7 +42,7 @@ export default function HomePage() {
 
       <section className="trust-strip" aria-label="OpenToli editorial principles">
         <div>
-          <strong>Source-grounded</strong>
+          <strong>Reference-aware</strong>
           <span>Evidence stays attached to every important term.</span>
         </div>
         <div>
@@ -92,7 +92,7 @@ export default function HomePage() {
 
       <section className="mongolian-callout">
         <p lang="mn">
-          Modern Mongolian terminology should be clear, sourced, and built together.
+          Modern Mongolian terminology should be clear, human-reviewed, and built together.
         </p>
         <span>Modern terminology, built clearly and collaboratively.</span>
       </section>

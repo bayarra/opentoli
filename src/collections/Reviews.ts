@@ -20,7 +20,7 @@ export const Reviews: CollectionConfig = {
     {
       name: 'reviewType',
       type: 'select',
-      options: ['linguistic', 'technical', 'editorial', 'source_validation', 'final_approval'],
+      options: ['linguistic', 'technical', 'editorial', 'final_approval'],
       required: true,
     },
     {

@@ -46,7 +46,7 @@ export const Comments: CollectionConfig = {
       name: 'commentType',
       type: 'select',
       defaultValue: 'general',
-      options: ['general', 'translation_suggestion', 'usage_question', 'source_note'],
+      options: ['general', 'translation_suggestion', 'usage_question', 'reference_note'],
       required: true,
     },
     {

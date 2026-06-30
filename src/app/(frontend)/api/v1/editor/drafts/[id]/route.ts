@@ -50,6 +50,6 @@ export async function GET(request: Request, { params }: RouteProps) {
       })),
       examples: data.generated.examples,
     },
-    sources: data.sources,
+    references: data.references,
   })
 }

@@ -2,7 +2,7 @@ import { apiNotFound, apiOk } from '@/api/v1/http'
 import {
   exampleResource,
   recommendedTranslationFor,
-  sourceResource,
+  referenceResource,
   termDetailResource,
   translationResource,
 } from '@/api/v1/serialize'
@@ -29,8 +29,8 @@ export async function GET(_request: Request, { params }: RouteProps) {
     recommendedTranslation: recommendedTranslation
       ? translationResource(recommendedTranslation)
       : null,
-    sources: data.sources.flatMap((source) => {
-      const resource = sourceResource(source)
+    references: data.references.flatMap((reference) => {
+      const resource = referenceResource(reference)
       return resource ? [resource] : []
     }),
     term: termDetailResource(data.term),

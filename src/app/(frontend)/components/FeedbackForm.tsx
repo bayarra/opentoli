@@ -91,7 +91,7 @@ export function FeedbackForm({ draftId }: FeedbackFormProps) {
           <option value="general">General comment</option>
           <option value="translation_suggestion">Translation suggestion</option>
           <option value="usage_question">Usage question</option>
-          <option value="source_note">Source note</option>
+          <option value="reference_note">Reference note</option>
         </select>
       </label>
       <label>

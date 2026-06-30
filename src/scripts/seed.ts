@@ -203,7 +203,6 @@ try {
   const sourceData = {
     accessedDate: new Date().toISOString(),
     excerptNote: 'Used to verify the canonical English concept; the Mongolian wording is editorial.',
-    isVerified: true,
     publisher: 'National Institute of Standards and Technology',
     sourceType: 'government' as const,
     term: term.id,

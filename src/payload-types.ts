@@ -285,6 +285,8 @@ export interface Translation {
   createdAt: string;
 }
 /**
+ * Optional background links. References never approve or block terminology.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "sources".
  */
@@ -311,7 +313,6 @@ export interface Source {
     | 'other';
   licenseNote?: string | null;
   excerptNote?: string | null;
-  isVerified?: boolean | null;
   createdBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -343,7 +344,7 @@ export interface Review {
   term: number | Term;
   translation?: (number | null) | Translation;
   reviewer: number | User;
-  reviewType: 'linguistic' | 'technical' | 'editorial' | 'source_validation' | 'final_approval';
+  reviewType: 'linguistic' | 'technical' | 'editorial' | 'final_approval';
   decision: 'approved' | 'changes_requested' | 'rejected';
   notes?: string | null;
   updatedAt: string;
@@ -638,15 +639,8 @@ export interface CalibrationOutcome {
   generationJob: number | GenerationJob;
   term?: (number | null) | Term;
   headwordEn: string;
-  outcome:
-    | 'accepted_as_is'
-    | 'accepted_with_edits'
-    | 'needs_regeneration'
-    | 'blocked_for_sources'
-    | 'duplicate'
-    | 'rejected';
+  outcome: 'accepted_as_is' | 'accepted_with_edits' | 'needs_regeneration' | 'duplicate' | 'rejected';
   editLevel: 'none' | 'minor' | 'major' | 'rewrite' | 'not_checked';
-  sourceAssessment: 'supported' | 'needs_more_sources' | 'unsupported' | 'not_checked';
   languageAssessment: 'natural' | 'minor_edits' | 'major_edits' | 'not_checked';
   domainAssessment: 'accurate' | 'needs_expert_review' | 'incorrect' | 'not_checked';
   goNoGoRecommendation?: ('continue' | 'tune_prompt' | 'pause_batch' | 'not_ready') | null;
@@ -678,7 +672,7 @@ export interface Comment {
   user: number | User;
   body: string;
   suggestedTranslationMn?: string | null;
-  commentType: 'general' | 'translation_suggestion' | 'usage_question' | 'source_note';
+  commentType: 'general' | 'translation_suggestion' | 'usage_question' | 'reference_note';
   status: 'pending' | 'approved' | 'rejected' | 'spam' | 'hidden';
   moderatorNote?: string | null;
   moderatedBy?: (number | null) | User;
@@ -953,7 +947,6 @@ export interface SourcesSelect<T extends boolean = true> {
   sourceType?: T;
   licenseNote?: T;
   excerptNote?: T;
-  isVerified?: T;
   createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1131,7 +1124,6 @@ export interface CalibrationOutcomesSelect<T extends boolean = true> {
   headwordEn?: T;
   outcome?: T;
   editLevel?: T;
-  sourceAssessment?: T;
   languageAssessment?: T;
   domainAssessment?: T;
   goNoGoRecommendation?: T;

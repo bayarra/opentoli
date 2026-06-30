@@ -76,9 +76,8 @@ const createDraftTermData = (term: M5Term, categoryId: number) => ({
   workflowStatus: 'draft' as const,
 })
 
-const sourceData = (source: M5Source, termId: number, headwordEn: string, isVerified: boolean) => ({
+const referenceData = (source: M5Source, termId: number, headwordEn: string) => ({
   excerptNote: `M5 calibration source for ${headwordEn}. Use for concept grounding only; do not copy definitions verbatim.`,
-  isVerified,
   licenseNote: source.licenseNote,
   publisher: source.publisher,
   sourceType: source.sourceType,
@@ -193,7 +192,7 @@ try {
     else createdTerms += 1
 
     const sources = []
-    for (const sourceRef of termInput.sourceRefs) {
+    for (const sourceRef of termInput.sourceRefs || []) {
       const source = sourceById.get(sourceRef)
       if (!source) throw new Error(`Unknown source ref "${sourceRef}" for ${termInput.headwordEn}.`)
 
@@ -210,19 +209,14 @@ try {
       const sourceRecord = existingSource.docs[0]
         ? await payload.update({
             collection: 'sources',
-            data: sourceData(
-              source,
-              term.id,
-              termInput.headwordEn,
-              existingSource.docs[0].isVerified === true,
-            ),
+            data: referenceData(source, term.id, termInput.headwordEn),
             depth: 0,
             id: existingSource.docs[0].id,
             overrideAccess: true,
           })
         : await payload.create({
             collection: 'sources',
-            data: sourceData(source, term.id, termInput.headwordEn, false),
+            data: referenceData(source, term.id, termInput.headwordEn),
             depth: 0,
             overrideAccess: true,
           })

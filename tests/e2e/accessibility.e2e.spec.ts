@@ -14,7 +14,7 @@ test.describe('M4 accessibility', () => {
   let fixture: AccessibilityDraftFixture
 
   test.beforeAll(async () => {
-    fixture = await seedAccessibilityDraft({ sourceVerified: false })
+    fixture = await seedAccessibilityDraft()
   })
 
   test.afterAll(async () => {
@@ -23,7 +23,7 @@ test.describe('M4 accessibility', () => {
 
   test('keeps the public draft and sign-in path accessible without a mouse', async ({ page }) => {
     await page.goto(`${serverURL}/drafts/${fixture.draftId}`)
-    await expect(page.getByText('Sign in to contribute')).toBeVisible()
+    await expect(page.getByText('Sign in to contribute')).toBeVisible({ timeout: 15_000 })
     await expectNoSeriousAccessibilityViolations(page)
 
     const signIn = page.getByRole('link', { name: 'Sign in' })
@@ -111,22 +111,8 @@ test.describe('M4 accessibility', () => {
     await expect(references).toBeVisible()
     await references.click()
 
-    await expect(
-      page.getByText('OpenToli Accessibility Tests / official documentation / not verified'),
-    ).toBeVisible()
-
-    const verified = page.waitForResponse(
-      (response) =>
-        response.url().includes(`/api/editor/sources/${fixture.sourceId}`) &&
-        response.request().method() === 'POST',
-    )
-    await page.getByRole('button', { name: 'Verify source' }).click()
-    expect((await verified).ok()).toBe(true)
-
-    await expect(
-      page.getByText('OpenToli Accessibility Tests / official documentation / verified'),
-    ).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Verify source' })).toHaveCount(0)
+    await expect(page.getByRole('link', { name: 'Keyboard workflow reference' })).toBeVisible()
+    await expect(page.getByRole('button', { name: /verify/i })).toHaveCount(0)
     await context.close()
   })
 

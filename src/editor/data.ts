@@ -78,18 +78,15 @@ export const getEditorDraft = async (id: number, user: User) => {
     context: relationLabel(draft.inputContext, 'nameEn'),
     draft: draft as AiDraft,
     generated,
-    sources: (draft.sources || []).flatMap((value) => {
+    references: (draft.sources || []).flatMap((value) => {
       if (!value || typeof value !== 'object') return []
-      const source = value as Source
+      const reference = value as Source
       return [
         {
-          id: source.id,
-          isVerified: source.isVerified,
-          publisher: source.publisher,
-          safeUrl: safeUrl(source.url),
-          sourceType: source.sourceType,
-          title: source.title,
-          url: source.url,
+          id: reference.id,
+          safeUrl: safeUrl(reference.url),
+          title: reference.title,
+          url: reference.url,
         },
       ]
     }),

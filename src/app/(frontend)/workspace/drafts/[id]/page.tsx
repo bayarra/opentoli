@@ -1,6 +1,6 @@
 import { AIDraftEditorForm } from '@/app/(frontend)/components/AIDraftEditorForm'
 import { DraftVisibilityForm } from '@/app/(frontend)/components/DraftVisibilityForm'
-import { DraftSourceManager } from '@/app/(frontend)/components/DraftSourceManager'
+import { DraftReferenceManager } from '@/app/(frontend)/components/DraftReferenceManager'
 import { WorkspaceShell } from '@/app/(frontend)/components/WorkspaceShell'
 import { getEditorDraft } from '@/editor/data'
 import { getCurrentUser } from '@/lib/currentUser'
@@ -25,7 +25,7 @@ export default async function AIDraftEditorPage({ params }: EditorPageProps) {
   const data = await getEditorDraft(id, user)
   if (!data) notFound()
 
-  const { comments, draft, generated, sources } = data
+  const { comments, draft, generated, references } = data
   const active = ['editing', 'needs_review'].includes(draft.status)
   const publicFeedbackDisabledReason = 'Only active drafts can be opened for public feedback.'
 
@@ -41,8 +41,8 @@ export default async function AIDraftEditorPage({ params }: EditorPageProps) {
           <h1>{draft.inputHeadword}</h1>
           <p>{[data.category, data.context].filter(Boolean).join(' / ')}</p>
           <p>
-            Edit the public wording here. Sources and community suggestions are shown below; raw
-            AI evidence stays in the background.
+            Edit the public wording here. Community suggestions are shown below; optional
+            references and raw AI evidence stay in the background.
           </p>
         </div>
         <div className="review-queue-badges">
@@ -111,7 +111,7 @@ export default async function AIDraftEditorPage({ params }: EditorPageProps) {
               These links show background material used during preparation. They are not required
               to publish and do not prove that a translation is correct.
             </p>
-            <DraftSourceManager draftId={draft.id} sources={sources} />
+            <DraftReferenceManager draftId={draft.id} references={references} />
           </details>
         </section>
       </div>

@@ -88,11 +88,11 @@ export const getPublicAIDraftById = async (id: number) => {
     id: draft.id,
     recommendedTranslationMn: generated.recommendedTranslationMn,
     reviewRoute: draft.reviewRoute,
-    sources: (draft.sources || [])
-      .filter((source): source is Source => typeof source === 'object')
-      .flatMap((source) => {
-        const url = safePublicUrl(source.url)
-        return url ? [{ id: source.id, publisher: source.publisher, title: source.title, url }] : []
+    references: (draft.sources || [])
+      .filter((reference): reference is Source => typeof reference === 'object')
+      .flatMap((reference) => {
+        const url = safePublicUrl(reference.url)
+        return url ? [{ id: reference.id, title: reference.title, url }] : []
       }),
     updatedAt: draft.updatedAt,
   }

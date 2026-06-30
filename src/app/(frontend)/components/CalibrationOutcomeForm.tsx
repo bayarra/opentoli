@@ -37,7 +37,6 @@ const fieldsFrom = (form: HTMLFormElement, draftId: number) => {
     languageAssessment: String(data.get('languageAssessment') || ''),
     notes: String(data.get('notes') || ''),
     outcome: String(data.get('outcome') || ''),
-    sourceAssessment: 'not_checked',
   }
 }
 
@@ -75,16 +74,11 @@ export function CalibrationOutcomeForm({ draftId, outcome }: CalibrationOutcomeF
         <label>
           Outcome
           <select defaultValue={outcome?.outcome || 'accepted_with_edits'} name="outcome">
-            {outcome?.outcome === 'blocked_for_sources' ? (
-              <option value="blocked_for_sources">blocked for sources (legacy)</option>
-            ) : null}
-            {calibrationOutcomeValues
-              .filter((value) => value !== 'blocked_for_sources')
-              .map((value) => (
-                <option key={value} value={value}>
-                  {labelFor(value)}
-                </option>
-              ))}
+            {calibrationOutcomeValues.map((value) => (
+              <option key={value} value={value}>
+                {labelFor(value)}
+              </option>
+            ))}
           </select>
         </label>
         <label>

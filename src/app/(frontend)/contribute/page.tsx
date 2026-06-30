@@ -18,7 +18,7 @@ export default async function ContributePage() {
               Signed in as <strong>{user.name || user.email}</strong>.
             </p>
             <p>
-              Open an unverified public AI draft to comment on its meaning, question a source, or
+              Open an unverified public AI draft to comment on its meaning, question a reference, or
               suggest more natural Mongolian wording. Every submission enters moderation before it
               becomes public.
             </p>

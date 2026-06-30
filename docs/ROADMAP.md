@@ -27,7 +27,7 @@ it does not weaken an acceptance gate or create conflicting architectural decisi
 | M0  | Product and architecture baseline            | None       | Approved technical baseline and development workflow           |
 | M1  | Application foundation                       | M0         | Deployable Next.js, Payload, and PostgreSQL skeleton           |
 | M2  | Editorial data core                          | M1         | Manually authored term can be reviewed and published           |
-| M3  | AI preparation pipeline                      | M2         | Source-grounded draft can be generated, critiqued, and queued  |
+| M3  | AI preparation pipeline                      | M2         | Traceable draft can be generated, critiqued, and queued        |
 | M4  | Public draft feedback and reviewer workspace | M3         | Public can safely review drafts and reviewers can resolve them |
 | M5  | Calibration batch                            | M4         | Fifty terms processed and pipeline quality measured            |
 | M6  | Public dictionary                            | M2, M5     | Published terms are discoverable and readable publicly         |
@@ -74,12 +74,12 @@ shadcn/ui, environment validation, migrations, seed runner, linting, tests, and 
 
 **Objective:** Prove the human-controlled terminology lifecycle without AI.
 
-**Scope:** Users, roles, Categories, Contexts, Terms, Translations, Examples, Sources,
+**Scope:** Users, roles, Categories, Contexts, Terms, Translations, Examples, References,
 Reviews, Import Batches, access control, drafts, versions, validation, and audit fields.
 
 **Exit criteria:**
 
-- An administrator can create a sourced bilingual term.
+- An administrator can create a bilingual term with optional references.
 - A reviewer can approve it through valid state transitions.
 - Only an authorized human action can publish it.
 - Unauthorized role and invalid-transition tests pass.
@@ -87,9 +87,9 @@ Reviews, Import Batches, access control, drafts, versions, validation, and audit
 
 ## M3 - AI Preparation Pipeline
 
-**Objective:** Turn a sourced headword into a traceable, review-ready draft.
+**Objective:** Turn a headword into a traceable, review-ready draft.
 
-**Scope:** CSV/manual input, source capture, normalization, duplicate checks, research
+**Scope:** CSV/manual input, optional reference capture, normalization, duplicate checks, research
 packet, multiple translation candidates, independent critique, schema validation,
 risk routing, background jobs, retries, and generation provenance.
 
@@ -98,7 +98,7 @@ risk routing, background jobs, retries, and generation provenance.
 - The `authentication` reference term completes the pipeline end to end.
 - Re-running the same job does not create duplicate records or charges unexpectedly.
 - Failures are retryable and visible without losing partial evidence.
-- Provider, model, prompt, schema, source input, and raw outputs are retained.
+- Provider, model, prompt, schema, optional reference input, and raw outputs are retained.
 - No generated record can be presented as verified or become a canonical Term without M2 review and approval.
 - Raw prompts, provider outputs, job errors, and private review evidence remain restricted.
 - At least one configured non-test AI provider completes the reference term in a non-production environment.
@@ -146,14 +146,14 @@ terms such as `agent`, `token`, `session`, and `repository`.
 **Objective:** Present approved content as a trustworthy bilingual reference while keeping
 public unverified drafts unmistakably separate.
 
-**Scope:** Homepage, term detail, category pages, new terms, review badges, sources,
+**Scope:** Homepage, term detail, category pages, new terms, review badges, references,
 related terms, revision summaries, responsive UI, metadata, and accessibility basics.
 
 **Exit criteria:**
 
 - Only published Terms appear as canonical dictionary entries through public pages and APIs.
 - Explicitly public AI draft projections may appear with an `Unverified AI Draft` label and `noindex` metadata.
-- A term displays translation, context, explanation, examples, sources, and review state.
+- A term displays translation, context, explanation, examples, optional references, and review state.
 - AI-prepared and human-reviewed states are visually distinct.
 - Critical pages pass responsive, accessibility, and metadata checks.
 
@@ -177,7 +177,7 @@ ranking; normalization; category, context, and review filters; pagination; analy
 the authenticated moderated feedback path delivered in M4.
 
 **Scope:** Contributor profiles, attributed term submissions, translation and explanation
-suggestions, examples, sources, comments, votes, contributor dashboard, history,
+suggestions, examples, references, comments, votes, contributor dashboard, history,
 reputation signals, and expanded moderation tooling.
 
 **Exit criteria:**

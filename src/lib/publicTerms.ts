@@ -17,7 +17,7 @@ export const getPublishedTermBySlug = async (slug: string) => {
 
   if (!term) return null
 
-  const [translations, examples, sources] = await Promise.all([
+  const [translations, examples, references] = await Promise.all([
     payload.find({
       collection: 'translations',
       depth: 1,
@@ -46,7 +46,7 @@ export const getPublishedTermBySlug = async (slug: string) => {
 
   return {
     examples: examples.docs as Example[],
-    sources: sources.docs as Source[],
+    references: references.docs as Source[],
     term: term as Term,
     translations: translations.docs as Translation[],
   }

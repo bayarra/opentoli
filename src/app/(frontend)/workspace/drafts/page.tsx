@@ -41,7 +41,7 @@ export default async function DraftInboxPage() {
           <h1>Draft Inbox</h1>
           <p>
             Work here, not in Payload admin, for normal terminology decisions. Open a draft, edit
-            the four public fields, verify sources, then Publish or Hide.
+            the four public fields, then Publish or Hide. References are optional background links.
           </p>
         </div>
         <p>{drafts.length} active drafts</p>

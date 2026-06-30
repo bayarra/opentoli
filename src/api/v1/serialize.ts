@@ -57,24 +57,19 @@ export const exampleResource = (example: Example) => ({
   exampleMn: example.exampleMn,
   id: example.id,
   reviewStatus: example.reviewStatus,
-  sourceId: relationId(example.source),
+  referenceId: relationId(example.source),
   status: example.status,
   updatedAt: example.updatedAt,
 })
 
-export const sourceResource = (source: Source) => {
-  const url = safePublicUrl(source.url)
+export const referenceResource = (reference: Source) => {
+  const url = safePublicUrl(reference.url)
   if (!url) return null
 
   return {
-    accessedDate: source.accessedDate || null,
-    author: source.author || null,
-    id: source.id,
-    publicationDate: source.publicationDate || null,
-    publisher: source.publisher,
-    sourceType: source.sourceType,
-    title: source.title,
-    updatedAt: source.updatedAt,
+    id: reference.id,
+    title: reference.title,
+    updatedAt: reference.updatedAt,
     url,
   }
 }
