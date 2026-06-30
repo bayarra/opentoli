@@ -3,7 +3,7 @@
 **Last updated:** 2026-06-29
 **Current milestone:** M5 - Calibration Batch
 **Milestone status:** `IN_PROGRESS`
-**Delivery state:** First M5 live worker job completed; draft 189 is ready for a human calibration outcome and internal AI routing does not gate Editor actions
+**Delivery state:** First five M5 terms completed, explicitly accepted, and have calibration outcomes; current prompt continues to the next controlled batch
 
 ## Executive Summary
 
@@ -25,10 +25,11 @@ critical flows and serious WCAG A/AA violations now have automated browser cover
 Editor Workspace summaries without leaking raw Payload records or private AI evidence. Editors
 can inspect safe Agent Job detail and queue eligible failed/retry-scheduled jobs for retry
 without exposing raw provider output or running the worker from the browser. The controlled
-50-term Technology and Software calibration batch is now fixed in a tracked manifest. The first
-M5 live worker job completed for `application`, creating private AI draft 189 with retained
-provenance and no validation errors; its internal route remains calibration evidence but does
-not control Editor actions. Editors can now open or close public draft feedback and optionally
+50-term Technology and Software calibration batch is fixed in a tracked manifest. The first five
+jobs completed and their drafts were explicitly accepted by an Editor without recorded field
+changes. Their calibration outcomes preserve those facts while language and domain assessments
+remain `not_checked`; internal routes remain provenance and do not control Editor actions.
+Editors can now open or close public draft feedback and optionally
 manage background references from OpenToli web instead of Payload admin. Signed-in
 contributors can now track their own comments, translation suggestions, moderation status, and
 outcomes from an OpenToli web dashboard. Editors can record M5 human calibration outcomes,
@@ -53,7 +54,7 @@ grouped by batch in both Workspace and the stable Editor API.
 | M2  | Editorial data core                          | `DONE`        | Attributed reviewer/moderator workflow and public vertical slice verified |
 | M3  | AI preparation pipeline                      | `DONE`        | Live OpenAI job 33 completed; draft 22 retained; idempotency verified     |
 | M4  | Public draft feedback and simple editor flow | `DONE`        | All exit criteria pass with 27 integration and 15 browser tests           |
-| M5  | Calibration batch                            | `IN_PROGRESS` | Fixed 50-term manifest validates; first five jobs are queued              |
+| M5  | Calibration batch                            | `IN_PROGRESS` | First five jobs and human outcomes complete; next controlled batch pending |
 | M6  | Public dictionary                            | `PLANNED`     | Required pages are documented                                             |
 | M7  | Search and discovery                         | `PLANNED`     | Ranking and filters are documented                                        |
 | M8  | Community accounts and contributions         | `PLANNED`     | Rich contributor features extend the basic authenticated M4 feedback path |
@@ -63,6 +64,10 @@ grouped by batch in both Workspace and the stable Editor API.
 
 ### 2026-06-29
 
+- Completed the first-five M5 checkpoint: `agent`, `API`, `application`, `authorization`, and `access control` all have completed OpenAI jobs and explicit Editor acceptance.
+- Backfilled five factual `accepted_as_is` calibration outcomes from attributed publication decisions with empty `modifiedFields`; language/domain assessments remain `not_checked` rather than inferred.
+- Recorded the checkpoint rollup: 100% acceptance, 0% recorded edits, 16,625 input tokens, 15,020 output tokens, and 34.3-second average latency.
+- Decision: continue the current prompt into the next controlled batch of ten; do not process all remaining 45 at once.
 - Fixed leaked timestamp-suffixed terminology fixtures by moving integration tests from the development database to an automatically created and migrated `opentoli_test` database.
 - Added guarded test-database URL resolution that rejects explicitly configured databases without an `_test` suffix, plus deterministic isolation tests.
 - Added narrow preview/apply cleanup commands for known historical fixture prefixes and removed 11 leaked terms with their related drafts, jobs, and test categories from the development database.
@@ -296,6 +301,7 @@ grouped by batch in both Workspace and the stable Editor API.
 | M5 manifest validation    | Pass        | `npm run m5:validate` passed for 50 terms and 8 source groups                                                          |
 | M5 first enqueue          | Pass        | First run created 5 Terms, 7 Sources, and 5 Generation Jobs; second run reused all records without provider calls      |
 | M5 first worker job       | Pass        | Job 131 for `application` completed; draft 189 retained as private blocked/high-risk review evidence                  |
+| M5 first-five checkpoint  | Pass        | Five completed jobs, five explicit Editor acceptances, and five factual calibration outcomes; preliminary signal `continue` |
 | Migration status          | Pass        | `npm run payload -- migrate:status` reports all ten tracked migrations ran locally                                |
 | Local HTTP smoke          | Pass        | `/`, `/register`, and `/login` return `200`; an unknown draft returns `404`                                            |
 | M4 browser regression     | Pass        | Browser tests cover public/auth/feedback/Editor keyboard flows, optional references, job detail, and serious WCAG A/AA scans              |
@@ -323,19 +329,19 @@ from the browser. Editors can also manage draft public feedback visibility and o
 from the web draft page. Contributors can track their own moderated comments, translations,
 examples, and reference proposals from `/contributions` without opening Payload admin.
 `/workspace/calibration` records human outcomes and derives quality, cost, progress, and
-decision-readiness metrics. M5 is in progress: the fixed
-50-term manifest is tracked and validated, and the first live worker job has completed. Job 131
-produced private draft 189 for `application`; its legacy internal route remains provenance and
-does not block Editor actions. It still needs a recorded human calibration outcome before the
-first-five calibration run continues. See
+decision-readiness metrics. M5 is in progress: the fixed 50-term manifest is tracked and
+validated, and the first five jobs, Editor decisions, and calibration outcomes are complete.
+The checkpoint supports continuing the current prompt, but language and domain assessment
+fields remain `not_checked`. The next run should prepare ten terms and process them one at a
+time. See
 [`NEXT_TASKS.md`](NEXT_TASKS.md) for the brief next-agent handoff covering admin/web
 separation, remaining admin-to-web moves, and remaining milestones.
 
 ## Next Actions
 
-1. Review draft 189 for `application`, especially register choice, dual-form wording, and separate web/mobile/desktop contexts, then record its outcome in `/workspace/calibration`.
-2. Use the aggregate calibration metrics to decide whether the prompt should be tuned before processing the remaining queued first-five M5 jobs.
-3. Process each remaining first-five job one at a time and record its human outcome.
+1. Prepare the next ten terms with `npm run m5:prepare -- --offset=5 --limit=10`.
+2. Process one job with `npm run ai:work`, inspect its draft, and record the human outcome before running another.
+3. Fill language/domain assessments when a human performs those checks; do not infer them from publication alone.
 4. Add logged-in Editor success coverage for `/api/v1/editor/*` before mobile work begins.
 5. Repair and separately validate the historical M2 down migration ordering defect.
 

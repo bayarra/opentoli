@@ -106,6 +106,23 @@ state in `Generation Jobs`.
 
 ## Run Log
 
+### 2026-06-29 - First-Five Checkpoint
+
+| Field | Evidence |
+| --- | --- |
+| Terms | `agent`, `API`, `application`, `authorization`, `access control` |
+| Jobs | 5 completed |
+| Draft decisions | 5 explicitly accepted by Editor `Bayar Dem` |
+| Recorded field changes | None across the five decisions |
+| Calibration outcomes | 5 `accepted_as_is`, edit level `none` |
+| Language/domain fields | `not_checked`; no assessment was inferred |
+| Tokens | 16,625 input / 15,020 output |
+| Average latency | 34,332 ms |
+| Checkpoint decision | Continue current prompt into the next controlled batch of ten |
+
+The backfill records only facts already present in the attributed publication decisions. It does
+not claim linguistic or domain validation that was not separately recorded.
+
 ### 2026-06-24 - First Live M5 Worker Job
 
 | Field | Evidence |
