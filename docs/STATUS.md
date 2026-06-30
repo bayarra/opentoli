@@ -3,7 +3,7 @@
 **Last updated:** 2026-06-29
 **Current milestone:** M5 - Calibration Batch
 **Milestone status:** `IN_PROGRESS`
-**Delivery state:** `branch` reviewed and calibrated; `build` draft awaits human review before the next worker run
+**Delivery state:** Second M5 generation batch complete; eight private drafts await human review and calibration
 
 ## Executive Summary
 
@@ -54,7 +54,7 @@ grouped by batch in both Workspace and the stable Editor API.
 | M2  | Editorial data core                          | `DONE`        | Attributed reviewer/moderator workflow and public vertical slice verified |
 | M3  | AI preparation pipeline                      | `DONE`        | Live OpenAI job 33 completed; draft 22 retained; idempotency verified     |
 | M4  | Public draft feedback and simple editor flow | `DONE`        | All exit criteria pass with 27 integration and 15 browser tests           |
-| M5  | Calibration batch                            | `IN_PROGRESS` | Six outcomes complete; second-batch `build` draft awaiting review |
+| M5  | Calibration batch                            | `IN_PROGRESS` | Seven outcomes complete; eight second-batch drafts awaiting review |
 | M6  | Public dictionary                            | `PLANNED`     | Required pages are documented                                             |
 | M7  | Search and discovery                         | `PLANNED`     | Ranking and filters are documented                                        |
 | M8  | Community accounts and contributions         | `PLANNED`     | Rich contributor features extend the basic authenticated M4 feedback path |
@@ -64,6 +64,9 @@ grouped by batch in both Workspace and the stable Editor API.
 
 ### 2026-06-29
 
+- Confirmed `build` outcome 19 as `accepted_with_edits` / `rewrite`, with `major_edits` language assessment and `needs_expert_review` domain assessment.
+- Processed all eight remaining second-batch jobs by explicit operator request: jobs 607-614 completed on attempt 1 and created private drafts 439-446 without publishing.
+- Recorded combined evidence for those eight jobs: 26,767 input tokens, 23,404 output tokens, 252,951 ms provider latency, zero blocking issues, and an empty Generation Job queue.
 - Confirmed the Editor changed `branch` from `салбар` to `мөчир`, corrected the canonical explanation, and recorded outcome 18 as `accepted_with_edits` / `rewrite` with natural-language and accurate-domain assessments.
 - Processed only `build`: job 606 completed on attempt 1 with 3,866 input tokens, 3,242 output tokens, and 40,879 ms latency; the remaining eight jobs stayed queued.
 - Retained private draft 438 as `needs_review`, recommending `билд / билдлэх` with medium risk and `language_review` routing.
@@ -311,7 +314,7 @@ grouped by batch in both Workspace and the stable Editor API.
 | M5 first enqueue          | Pass        | First run created 5 Terms, 7 References, and 5 Generation Jobs; second run reused all records without provider calls   |
 | M5 first worker job       | Pass        | Job 131 for `application` completed; draft 189 retained as private blocked/high-risk review evidence                  |
 | M5 first-five checkpoint  | Pass        | Five completed jobs, five explicit Editor acceptances, and five factual calibration outcomes; preliminary signal `continue` |
-| M5 second batch checkpoint | Pending review | `branch` outcome recorded; job 606 completed and private draft 438 requires a human outcome before job 607 runs      |
+| M5 second batch checkpoint | Pending review | Jobs 605-614 complete; `branch` and `build` outcomes recorded; private drafts 439-446 await human outcomes            |
 | Migration status          | Pass        | `npm run payload -- migrate:status` reports all ten tracked migrations ran locally                                |
 | Local HTTP smoke          | Pass        | `/`, `/register`, and `/login` return `200`; an unknown draft returns `404`                                            |
 | M4 browser regression     | Pass        | Browser tests cover public/auth/feedback/Editor keyboard flows, optional references, job detail, and serious WCAG A/AA scans              |
@@ -341,17 +344,17 @@ examples, and reference proposals from `/contributions` without opening Payload 
 `/workspace/calibration` records human outcomes and derives quality, cost, progress, and
 decision-readiness metrics. M5 is in progress: the fixed 50-term manifest is tracked and
 validated, and the first five jobs, Editor decisions, and calibration outcomes are complete.
-Priorities 6-15 are prepared. `branch` has a recorded rewrite outcome, and `build` is the only
-unreviewed newly processed draft. It remains private and requires human review before the next
-queued job runs. The first-five checkpoint supports continuing the current prompt. See
+Priorities 6-15 have completed generation. `branch` and `build` have recorded rewrite outcomes;
+private drafts 439-446 still require individual human review and calibration. The worker queue is
+empty, and no generated content was published automatically. See
 [`NEXT_TASKS.md`](NEXT_TASKS.md) for the brief next-agent handoff covering admin/web
 separation, remaining admin-to-web moves, and remaining milestones.
 
 ## Next Actions
 
-1. Review draft 438 (`build`) in `/workspace/drafts/438` and record its factual human outcome in `/workspace/calibration`.
-2. Only after that review, process the next queued job (`cache`) with `npm run ai:work`.
-3. Fill language/domain assessments when a human performs those checks; do not infer them from publication alone.
+1. Review private drafts 439-446 (`cache` through `configuration`) and record each factual outcome in `/workspace/calibration`.
+2. Recheck aggregate quality and disagreement metrics after all ten second-batch outcomes exist.
+3. Decide whether to prepare priorities 16-50 with `npm run m5:prepare:remaining`; do not infer approval from generation success alone.
 4. Add logged-in Editor success coverage for `/api/v1/editor/*` before mobile work begins.
 5. Repair and separately validate the historical M2 down migration ordering defect.
 

@@ -7,8 +7,8 @@ evidence in [`STATUS.md`](STATUS.md).
 ## Current Baseline
 
 - M0-M4 are complete.
-- M5 is active: six outcomes are complete; priorities 6-15 are prepared, and the private
-  `build` draft is waiting for human review before another worker run.
+- M5 is active: seven outcomes are complete; priorities 6-15 finished generation, and private
+  drafts 439-446 (`cache` through `configuration`) await human review and calibration.
 - Normal Editor work now starts in `/workspace`.
 - Stable `/api/v1` read contracts now exist for public dictionary/draft data and Editor Workspace summaries.
 - Editors can open safe Agent Job detail pages and queue eligible failed/retry-scheduled jobs for retry without running the worker from the browser.
@@ -96,9 +96,9 @@ Remaining API tasks:
 
 ## Suggested Next Sequence
 
-1. Review `/workspace/drafts/438` (`build`) and record the factual outcome in `/workspace/calibration`.
-2. Then process and inspect one queued job at a time, recording its outcome before running the next.
-3. Complete language/domain assessments through actual human review; the first-five backfill intentionally left them `not_checked`.
+1. Review `/workspace/drafts/439` through `/workspace/drafts/446` and record each factual outcome in `/workspace/calibration`.
+2. Recheck second-batch quality and disagreement metrics after all ten outcomes exist.
+3. Decide whether the evidence supports `npm run m5:prepare:remaining`; generation completion alone is not approval.
 4. Add logged-in Editor success coverage for `/api/v1/editor/*` before mobile work begins.
 5. Use `/workspace/terms` for canonical edits; keep Payload Admin for rare repair and destructive maintenance.
 

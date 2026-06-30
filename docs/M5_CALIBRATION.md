@@ -148,6 +148,29 @@ Before another worker run, an Editor must decide how noun and verb forms should 
 OpenToli should retain the loanword or use a Mongolian equivalent, and record the factual outcome
 in `/workspace/calibration`.
 
+### 2026-06-29 - Second Batch Generation Complete
+
+The Editor recorded `build` as `accepted_with_edits` with edit level `rewrite`, language
+assessment `major_edits`, and domain assessment `needs_expert_review`. The remaining eight jobs
+were then processed together by explicit operator request. All completed on attempt 1, created
+private `needs_review` drafts, and reported no blocking issues.
+
+| Term | Job | Draft | Recommendation | Route / risk |
+| --- | ---: | ---: | --- | --- |
+| `cache` | 607 | 439 | `кэш` | `language_review` / `medium` |
+| `callback` | 608 | 440 | `callback (коллбэк) / дуудлагын функц` | `language_review` / `medium` |
+| `certificate` | 609 | 441 | `гэрчилгээ / сертификат` | `language_review` / `medium` |
+| `client` | 610 | 442 | `клиент` | `language_review` / `medium` |
+| `cluster` | 611 | 443 | `кластер` | `language_review` / `medium` |
+| `commit` | 612 | 444 | `коммит (коммит хийх)` | `community_discussion` / `medium` |
+| `component` | 613 | 445 | `компонент` | `language_review` / `medium` |
+| `configuration` | 614 | 446 | `тохиргоо` | `fast_review` / `low` |
+
+Combined evidence for these eight jobs is 26,767 input tokens, 23,404 output tokens, and
+252,951 ms provider latency. The Generation Job queue is empty. These drafts still require
+individual human decisions and calibration outcomes; batch generation does not authorize
+publication.
+
 ### 2026-06-29 - First-Five Checkpoint
 
 | Field | Evidence |
