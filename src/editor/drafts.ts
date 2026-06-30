@@ -293,11 +293,11 @@ export const publishEditorDraft = async ({
   payload: Payload
 }) => {
   const { actor, draft } = await loadEditorAndDraft(payload, actorId, draftId)
-  if (draft.reviewRoute === 'blocked') {
-    throw new EditorWorkflowError('This draft is blocked because its evidence is incomplete.')
-  }
-  if (!Array.isArray(draft.sources) || draft.sources.length === 0) {
-    throw new EditorWorkflowError('At least one source is required before publication.')
+  const verifiedSourceCount = await countVerifiedSafeSources(payload, draft)
+  if (verifiedSourceCount < 1) {
+    throw new EditorWorkflowError(
+      'Review and verify at least one safe http or https source before publication.',
+    )
   }
 
   const req = await createLocalReq({ context: { aiDraftDecision: true }, user: actor }, payload)
@@ -395,6 +395,21 @@ const countSafePublicSources = async (payload: Payload, draft: AiDraft): Promise
   })
 
   return sources.docs.filter((source) => safePublicUrl(source.url)).length
+}
+
+const countVerifiedSafeSources = async (payload: Payload, draft: AiDraft): Promise<number> => {
+  const sourceIds = draftSourceIds(draft)
+  if (sourceIds.length === 0) return 0
+
+  const sources = await payload.find({
+    collection: 'sources',
+    depth: 0,
+    limit: sourceIds.length,
+    overrideAccess: true,
+    where: { id: { in: sourceIds } },
+  })
+
+  return sources.docs.filter((source) => source.isVerified && safePublicUrl(source.url)).length
 }
 
 export const updateEditorDraftVisibility = async ({

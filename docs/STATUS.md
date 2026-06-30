@@ -1,6 +1,6 @@
 # OpenToli Project Status
 
-**Last updated:** 2026-06-24
+**Last updated:** 2026-06-27
 **Current milestone:** M5 - Calibration Batch
 **Milestone status:** `IN_PROGRESS`
 **Delivery state:** First M5 live worker job completed; draft 189 is private and blocked; web calibration outcome recording is ready for human review evidence
@@ -51,6 +51,13 @@ edit-level notes, source/language/domain assessments, go/no-go hints, and safe j
 | M9  | Launch readiness                             | `PLANNED`     | Launch content and quality gates are documented                           |
 
 ## Achievements
+
+### 2026-06-27
+
+- Removed the blocked-draft dead end from the simple Editor workflow: an Editor can publish after reviewing and verifying at least one safe HTTP(S) source, while the original AI route remains in decision provenance.
+- Added clear draft-page guidance for source verification and AI evidence warnings; no extra approval stage was introduced.
+- Added integration coverage for missing or unverified source denial and human resolution of an AI-blocked draft.
+- Passed TypeScript, ESLint, 41 integration tests, the production build, and 16 browser tests after the publication workflow fix.
 
 ### 2026-06-24
 

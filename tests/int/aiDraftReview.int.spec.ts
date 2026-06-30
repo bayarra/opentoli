@@ -245,7 +245,7 @@ describe('simple AI draft editor workflow', () => {
     )
   })
 
-  it('publishes with one human action and requires a source', async () => {
+  it('publishes with one human action and requires a verified safe source', async () => {
     const draft = await createPreparedDraft({
       categoryId: technologyCategoryId,
       categoryName: `Editor Technology ${suffix}`,
@@ -266,14 +266,31 @@ describe('simple AI draft editor workflow', () => {
         draftId: draft.id,
         payload,
       }),
-    ).rejects.toThrow('At least one source')
+    ).rejects.toThrow('verify at least one safe')
+
+    const unverifiedSource = await payload.update({
+      collection: 'sources',
+      data: { isVerified: false },
+      id: sourceIds[sourceIds.length - 1]!,
+      overrideAccess: true,
+    })
 
     await payload.update({
       collection: 'ai-drafts',
-      data: { sources: [sourceIds[sourceIds.length - 1]!] },
+      data: { sources: [unverifiedSource.id] },
       id: draft.id,
       overrideAccess: true,
     })
+
+    await expect(
+      publishEditorDraft({
+        actorId: editor.id,
+        draftId: draft.id,
+        payload,
+      }),
+    ).rejects.toThrow('verify at least one safe')
+
+    await verifySource({ actor: editor, payload, sourceId: unverifiedSource.id })
 
     const result = await publishEditorDraft({
       actorId: editor.id,
@@ -296,6 +313,41 @@ describe('simple AI draft editor workflow', () => {
       where: { id: { equals: result.term.id } },
     })
     expect(publicTerms.docs).toHaveLength(1)
+  })
+
+  it('lets an Editor resolve an AI block by verifying evidence and publishing', async () => {
+    const draft = await createPreparedDraft({
+      categoryId: technologyCategoryId,
+      categoryName: `Editor Technology ${suffix}`,
+      categorySlug: `editor-technology-${suffix}`,
+      headword: `human resolved block ${suffix}`,
+      sourceVerified: false,
+    })
+    await payload.update({
+      collection: 'ai-drafts',
+      context: { aiDraftDecision: true },
+      data: { reviewRoute: 'blocked' },
+      id: draft.id,
+      overrideAccess: true,
+    })
+
+    await expect(
+      publishEditorDraft({ actorId: editor.id, draftId: draft.id, payload }),
+    ).rejects.toThrow('verify at least one safe')
+
+    await verifySource({ actor: editor, payload, sourceId: sourceIds[sourceIds.length - 1]! })
+    const result = await publishEditorDraft({
+      actorId: editor.id,
+      draftId: draft.id,
+      payload,
+    })
+    decisionIds.push(result.decision.id)
+    translationIds.push(result.translation.id)
+
+    expect(result.term._status).toBe('published')
+    expect(result.draft.status).toBe('accepted')
+    expect(result.decision.previousReviewRoute).toBe('blocked')
+    expect(result.decision.newReviewRoute).toBe('blocked')
   })
 
   it('lets Editors open and close safe drafts for public feedback', async () => {

@@ -27,6 +27,7 @@ export default async function AIDraftEditorPage({ params }: EditorPageProps) {
 
   const { comments, draft, generated, sources } = data
   const active = ['editing', 'needs_review'].includes(draft.status)
+  const hasVerifiedSource = sources.some((source) => source.isVerified && source.safeUrl)
   const canOpenPublicFeedback = active && draft.reviewRoute !== 'blocked' && sources.some((source) => source.url)
   const publicFeedbackDisabledReason = !active
     ? 'Only active drafts can be opened for public feedback.'
@@ -59,6 +60,21 @@ export default async function AIDraftEditorPage({ params }: EditorPageProps) {
 
       <section className="review-panel">
         <p className="eyebrow">Term fields</p>
+        {active && !hasVerifiedSource ? (
+          <div className="review-notice">
+            <strong>Source review required before publishing.</strong>
+            <p>Review the sources below and verify at least one safe source.</p>
+          </div>
+        ) : null}
+        {active && hasVerifiedSource && draft.reviewRoute === 'blocked' ? (
+          <div className="review-notice">
+            <strong>The AI preparation flagged evidence concerns.</strong>
+            <p>
+              A source is now verified. Publishing records your explicit human approval while
+              retaining the original AI warning in the draft history.
+            </p>
+          </div>
+        ) : null}
         {active ? (
           <AIDraftEditorForm
             draftId={draft.id}
