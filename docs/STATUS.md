@@ -39,6 +39,8 @@ Contributors can submit structured bilingual examples and reference suggestions 
 comments and translation suggestions; Editors moderate all of them in one web queue.
 Calibration reporting now derives first-five completion, quality rates, disagreement, token,
 latency, cost, and decision-readiness evidence without automating the final M5 decision.
+Editors can prepare manual or CSV imports, review each parsed row, resolve duplicates, and
+explicitly queue accepted terms from `/workspace/imports` without executing the AI provider.
 
 ## Milestone Status
 
@@ -59,6 +61,10 @@ latency, cost, and decision-readiness evidence without automating the final M5 d
 
 ### 2026-06-29
 
+- Added `/workspace/imports` with manual/CSV parsing, row-level validation, duplicate detection, Editor accept/reject review, and explicit queueing of accepted rows.
+- Added the `import-batch-items` collection, stable Editor import read APIs, and migration `20260630_023959_web_import_preparation`, applied locally.
+- Preserved controlled execution: browser queueing creates private Terms and Generation Jobs with batch/requester attribution but never calls the AI provider.
+- Added parser and database integration coverage; TypeScript, ESLint, migration status, the production build, and all 12 Editor browser tests pass.
 - Added aggregate M5 acceptance, edit, disagreement, failure, token, latency, and cost metrics to `/workspace/calibration` and the Editor v1 calibration response.
 - Added first-five completion, recommendation counts, decision readiness, and a generated go/no-go summary that remains non-final until all 50 human outcomes are recorded.
 - Added deterministic rollup coverage and browser expectations for the calibration metrics and go/no-go sections.
@@ -281,7 +287,7 @@ latency, cost, and decision-readiness evidence without automating the final M5 d
 | M5 manifest validation    | Pass        | `npm run m5:validate` passed for 50 terms and 8 source groups                                                          |
 | M5 first enqueue          | Pass        | First run created 5 Terms, 7 Sources, and 5 Generation Jobs; second run reused all records without provider calls      |
 | M5 first worker job       | Pass        | Job 131 for `application` completed; draft 189 retained as private blocked/high-risk review evidence                  |
-| Migration status          | Pass        | `npm run payload -- migrate:status` reports all nine tracked migrations ran locally                                |
+| Migration status          | Pass        | `npm run payload -- migrate:status` reports all ten tracked migrations ran locally                                |
 | Local HTTP smoke          | Pass        | `/`, `/register`, and `/login` return `200`; an unknown draft returns `404`                                            |
 | M4 browser regression     | Pass        | Browser tests cover public/auth/feedback/Editor keyboard flows, optional references, job detail, and serious WCAG A/AA scans              |
 | Web workflow navigation   | Pass        | Global navigation plus Workspace drafts, published terms, feedback, jobs, calibration, and admin maintenance build successfully; 17 browser tests pass |

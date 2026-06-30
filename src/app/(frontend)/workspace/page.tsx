@@ -58,6 +58,7 @@ export default async function WorkspacePage() {
         <Link href="/workspace/terms">Edit published terms</Link>
         <Link href="/workspace/feedback">Moderate feedback</Link>
         <Link href="/workspace/jobs">Agent jobs</Link>
+        <Link href="/workspace/imports">Prepare imports</Link>
         <Link href="/workspace/calibration">Calibration</Link>
         <Link href="/drafts">Public drafts</Link>
       </section>

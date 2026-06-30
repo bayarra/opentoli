@@ -69,15 +69,19 @@ const findJobByKey = async (payload: Payload, idempotencyKey: string) => {
 }
 
 export const enqueueGenerationJob = async ({
+  importBatchId,
   maxAttempts = 3,
   payload,
   preparation,
   provider,
+  requestedById,
 }: {
+  importBatchId?: number
   maxAttempts?: number
   payload: Payload
   preparation: PreparationInput
   provider: AIProvider
+  requestedById?: number
 }): Promise<EnqueueGenerationJobResult> => {
   const idempotencyKey = createGenerationIdempotencyKey(preparation, provider)
   const existing = await findJobByKey(payload, idempotencyKey)
@@ -94,6 +98,7 @@ export const enqueueGenerationJob = async ({
         critiquePromptVersion: provider.metadata.critiquePromptVersion,
         generationPromptVersion: provider.metadata.generationPromptVersion,
         idempotencyKey,
+        importBatch: importBatchId,
         inputHeadword: preparation.headwordEn,
         inputPayload: {
           category: preparation.category,
@@ -107,6 +112,7 @@ export const enqueueGenerationJob = async ({
         modelProvider: provider.metadata.provider,
         queuedAt,
         researchPromptVersion: provider.metadata.researchPromptVersion,
+        requestedBy: requestedById,
         schemaVersion: AI_SCHEMA_VERSION,
         sourceInputSnapshot: { sources: preparation.sources },
         stage: 'research',

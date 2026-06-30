@@ -1687,6 +1687,7 @@ Later features:
 
 - Reference registry
 - CSV headword import
+- Manual and CSV row validation with duplicate review before queueing
 - AI research-packet generation
 - Multiple-candidate translation generation
 - Independent AI critique
@@ -1697,6 +1698,10 @@ Later features:
 - 50-term calibration batch
 - Initial 1,300 candidates
 - First 300 reviewed entries
+
+Import preparation in OpenToli web must separate parsing, human row review, and queueing.
+Queueing accepted rows may create private Terms and Generation Jobs, but it must not execute
+the AI provider. Provider work remains an explicit controlled worker action.
 
 ### Phase 3 — Community
 

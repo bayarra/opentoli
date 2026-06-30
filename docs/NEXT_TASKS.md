@@ -51,6 +51,8 @@ Completed read contracts:
    - `GET /api/v1/editor/feedback`
    - `GET /api/v1/editor/jobs`
    - `GET /api/v1/editor/calibration`
+   - `GET /api/v1/editor/imports`
+   - `GET /api/v1/editor/imports/[id]`
 - Contract tests cover public response shape, public AI draft redaction, and Editor auth denial.
 
 Remaining API tasks:
@@ -75,7 +77,8 @@ Remaining API tasks:
 - Published terms: core web editing is done. Add revision comparison or specialized context management only when editorial use demonstrates a need.
 - Contributions: own-proposal tracking plus translation, example, and reference proposals are done. Remaining work is term submissions, votes, ownership controls, saved terms, and profile history when M8 starts.
 - Moderation: comments, translations, bilingual examples, and reference proposals share one web queue. Future proposal types should reuse this boundary.
-- Imports: add web preparation review for CSV/manual batches, but keep provider execution controlled.
+- Imports: manual/CSV parsing, duplicate detection, row review, and explicit queueing are done in
+  `/workspace/imports`. Queueing never executes the provider; the CLI worker remains controlled.
 
 ## Remaining Milestones
 

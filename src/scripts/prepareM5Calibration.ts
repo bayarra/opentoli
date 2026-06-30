@@ -126,6 +126,7 @@ try {
     acceptedRows: slice.length,
     category: category.id,
     modelName: provider.metadata.modelName,
+    inputMode: 'manifest' as const,
     name: batchName,
     promptVersion: [
       provider.metadata.researchPromptVersion,

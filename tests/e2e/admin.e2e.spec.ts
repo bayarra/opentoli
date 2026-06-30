@@ -92,11 +92,13 @@ test.describe('Admin Panel', () => {
     await expect(workspaceNav.getByRole('link', { name: 'Draft Inbox' })).toBeVisible()
     await expect(workspaceNav.getByRole('link', { name: 'Published Terms' })).toBeVisible()
     await expect(workspaceNav.getByRole('link', { name: 'Agent Jobs' })).toBeVisible()
+    await expect(workspaceNav.getByRole('link', { name: 'Imports' })).toBeVisible()
     await expect(workspaceNav.getByRole('link', { name: 'Calibration' })).toBeVisible()
     await expect(workspaceActions.getByRole('link', { name: 'Open Draft Inbox' })).toBeVisible()
     await expect(workspaceActions.getByRole('link', { name: 'Edit published terms' })).toBeVisible()
     await expect(workspaceActions.getByRole('link', { name: 'Moderate feedback' })).toBeVisible()
     await expect(workspaceActions.getByRole('link', { name: 'Agent jobs' })).toBeVisible()
+    await expect(workspaceActions.getByRole('link', { name: 'Prepare imports' })).toBeVisible()
     await expect(workspaceActions.getByRole('link', { name: 'Calibration' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Recent generation jobs' })).toBeVisible()
   })
@@ -105,6 +107,12 @@ test.describe('Admin Panel', () => {
     await page.goto('http://localhost:3000/workspace/terms')
     await expect(page.getByRole('heading', { name: /Edit published terms/ })).toBeVisible()
     await expect(page.getByRole('navigation', { name: 'Workspace navigation' }).getByRole('link', { name: 'Published Terms' })).toHaveAttribute('aria-current', 'page')
+  })
+
+  test('opens import preparation from Workspace', async () => {
+    await page.goto('http://localhost:3000/workspace/imports')
+    await expect(page.getByRole('heading', { name: /Review terms before they enter the AI queue/ })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Prepare for review' })).toBeVisible()
   })
 
   test('opens Feedback Moderation from the web Workspace', async () => {

@@ -16,6 +16,7 @@ import { CalibrationOutcomes } from './collections/CalibrationOutcomes'
 import { Examples } from './collections/Examples'
 import { GenerationJobs } from './collections/GenerationJobs'
 import { ImportBatches } from './collections/ImportBatches'
+import { ImportBatchItems } from './collections/ImportBatchItems'
 import { Reviews } from './collections/Reviews'
 import { Sources } from './collections/Sources'
 import { Terms } from './collections/Terms'
@@ -42,6 +43,7 @@ export default buildConfig({
     Examples,
     Reviews,
     ImportBatches,
+    ImportBatchItems,
     GenerationJobs,
     AIDrafts,
     AIDraftDecisions,

@@ -9,6 +9,7 @@ const primaryItems = [
   { href: '/workspace/terms', label: 'Published Terms' },
   { href: '/workspace/feedback', label: 'Feedback' },
   { href: '/workspace/jobs', label: 'Agent Jobs' },
+  { href: '/workspace/imports', label: 'Imports' },
   { href: '/workspace/calibration', label: 'Calibration' },
 ] as const
 

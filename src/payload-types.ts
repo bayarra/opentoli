@@ -77,6 +77,7 @@ export interface Config {
     examples: Example;
     reviews: Review;
     'import-batches': ImportBatch;
+    'import-batch-items': ImportBatchItem;
     'generation-jobs': GenerationJob;
     'ai-drafts': AiDraft;
     'ai-draft-decisions': AiDraftDecision;
@@ -99,6 +100,7 @@ export interface Config {
     examples: ExamplesSelect<false> | ExamplesSelect<true>;
     reviews: ReviewsSelect<false> | ReviewsSelect<true>;
     'import-batches': ImportBatchesSelect<false> | ImportBatchesSelect<true>;
+    'import-batch-items': ImportBatchItemsSelect<false> | ImportBatchItemsSelect<true>;
     'generation-jobs': GenerationJobsSelect<false> | GenerationJobsSelect<true>;
     'ai-drafts': AiDraftsSelect<false> | AiDraftsSelect<true>;
     'ai-draft-decisions': AiDraftDecisionsSelect<false> | AiDraftDecisionsSelect<true>;
@@ -359,8 +361,18 @@ export interface ImportBatch {
   name: string;
   sourceTitle: string;
   sourceUrl?: string | null;
+  inputMode: 'manual' | 'csv' | 'manifest';
   category?: (number | null) | Category;
-  status: 'pending' | 'validating' | 'processing' | 'completed' | 'completed_with_errors' | 'failed';
+  status:
+    | 'pending'
+    | 'validating'
+    | 'reviewing'
+    | 'ready'
+    | 'queued'
+    | 'processing'
+    | 'completed'
+    | 'completed_with_errors'
+    | 'failed';
   promptVersion?: string | null;
   modelName?: string | null;
   schemaVersion?: string | null;
@@ -378,6 +390,35 @@ export interface ImportBatch {
     | boolean
     | null;
   createdBy?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "import-batch-items".
+ */
+export interface ImportBatchItem {
+  id: number;
+  importBatch: number | ImportBatch;
+  rowNumber: number;
+  headwordEn: string;
+  normalizedHeadwordEn: string;
+  contextNote?: string | null;
+  status: 'pending' | 'accepted' | 'rejected' | 'duplicate' | 'queued';
+  validationMessages?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  term?: (number | null) | Term;
+  generationJob?: (number | null) | GenerationJob;
+  reviewedBy?: (number | null) | User;
+  reviewedAt?: string | null;
+  createdBy: number | User;
   updatedAt: string;
   createdAt: string;
 }
@@ -749,6 +790,10 @@ export interface PayloadLockedDocument {
         value: number | ImportBatch;
       } | null)
     | ({
+        relationTo: 'import-batch-items';
+        value: number | ImportBatchItem;
+      } | null)
+    | ({
         relationTo: 'generation-jobs';
         value: number | GenerationJob;
       } | null)
@@ -994,6 +1039,7 @@ export interface ImportBatchesSelect<T extends boolean = true> {
   name?: T;
   sourceTitle?: T;
   sourceUrl?: T;
+  inputMode?: T;
   category?: T;
   status?: T;
   promptVersion?: T;
@@ -1004,6 +1050,26 @@ export interface ImportBatchesSelect<T extends boolean = true> {
   rejectedRows?: T;
   duplicateRows?: T;
   validationReport?: T;
+  createdBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "import-batch-items_select".
+ */
+export interface ImportBatchItemsSelect<T extends boolean = true> {
+  importBatch?: T;
+  rowNumber?: T;
+  headwordEn?: T;
+  normalizedHeadwordEn?: T;
+  contextNote?: T;
+  status?: T;
+  validationMessages?: T;
+  term?: T;
+  generationJob?: T;
+  reviewedBy?: T;
+  reviewedAt?: T;
   createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
