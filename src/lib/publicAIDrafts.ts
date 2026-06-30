@@ -39,8 +39,7 @@ export const getPublicAIDraftById = async (id: number) => {
   if (
     !draft ||
     draft.publicVisibility !== 'public' ||
-    !['editing', 'needs_review'].includes(draft.status) ||
-    draft.reviewRoute === 'blocked'
+    !['editing', 'needs_review'].includes(draft.status)
   ) {
     return null
   }
@@ -116,8 +115,6 @@ export const getPublicAIDrafts = async () => {
   })
 
   return (result.docs as AiDraft[]).flatMap((draft) => {
-    if (draft.reviewRoute === 'blocked') return []
-
     let generated
     try {
       generated = validateGenerationOutputV1(draft.generatedPayload)

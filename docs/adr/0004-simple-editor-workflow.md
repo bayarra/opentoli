@@ -4,6 +4,9 @@
 - Date: 2026-06-21
 - Owners: Project maintainers
 
+> Amendment (2026-06-29): source and internal-route gating below is superseded by
+> [ADR-0005](0005-optional-reference-provenance.md).
+
 ## Context
 
 The first M4 reviewer implementation exposed separate accept, modify, reject, reroute, and
@@ -46,5 +49,6 @@ the human-publication boundary.
 
 - [`0002-editorial-state-machine.md`](0002-editorial-state-machine.md)
 - [`0003-public-ai-drafts-and-feedback.md`](0003-public-ai-drafts-and-feedback.md)
+- [`0005-optional-reference-provenance.md`](0005-optional-reference-provenance.md)
 - [`../ROADMAP.md`](../ROADMAP.md)
 - [`../../specs.md`](../../specs.md)

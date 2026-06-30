@@ -6,7 +6,6 @@ import {
   calibrationGoNoGoRecommendations,
   calibrationLanguageAssessments,
   calibrationOutcomeValues,
-  calibrationSourceAssessments,
 } from '@/calibration/options'
 import { useRouter } from 'next/navigation'
 import type { FormEvent } from 'react'
@@ -19,7 +18,6 @@ type CalibrationOutcomeSummary = {
   languageAssessment: string
   notes: string
   outcome: string
-  sourceAssessment: string
 }
 
 type CalibrationOutcomeFormProps = {
@@ -39,7 +37,7 @@ const fieldsFrom = (form: HTMLFormElement, draftId: number) => {
     languageAssessment: String(data.get('languageAssessment') || ''),
     notes: String(data.get('notes') || ''),
     outcome: String(data.get('outcome') || ''),
-    sourceAssessment: String(data.get('sourceAssessment') || ''),
+    sourceAssessment: 'not_checked',
   }
 }
 
@@ -77,30 +75,22 @@ export function CalibrationOutcomeForm({ draftId, outcome }: CalibrationOutcomeF
         <label>
           Outcome
           <select defaultValue={outcome?.outcome || 'accepted_with_edits'} name="outcome">
-            {calibrationOutcomeValues.map((value) => (
-              <option key={value} value={value}>
-                {labelFor(value)}
-              </option>
-            ))}
+            {outcome?.outcome === 'blocked_for_sources' ? (
+              <option value="blocked_for_sources">blocked for sources (legacy)</option>
+            ) : null}
+            {calibrationOutcomeValues
+              .filter((value) => value !== 'blocked_for_sources')
+              .map((value) => (
+                <option key={value} value={value}>
+                  {labelFor(value)}
+                </option>
+              ))}
           </select>
         </label>
         <label>
           Edit level
           <select defaultValue={outcome?.editLevel || 'not_checked'} name="editLevel">
             {calibrationEditLevels.map((value) => (
-              <option key={value} value={value}>
-                {labelFor(value)}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          Source support
-          <select
-            defaultValue={outcome?.sourceAssessment || 'not_checked'}
-            name="sourceAssessment"
-          >
-            {calibrationSourceAssessments.map((value) => (
               <option key={value} value={value}>
                 {labelFor(value)}
               </option>
@@ -147,7 +137,7 @@ export function CalibrationOutcomeForm({ draftId, outcome }: CalibrationOutcomeF
         <textarea
           defaultValue={outcome?.notes || ''}
           name="notes"
-          placeholder="Record human edits, source concerns, terminology questions, or prompt tuning evidence."
+          placeholder="Record human edits, terminology questions, or prompt tuning evidence."
           required
           rows={4}
         />

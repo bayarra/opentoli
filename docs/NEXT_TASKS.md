@@ -12,8 +12,8 @@ evidence in [`STATUS.md`](STATUS.md).
 - Normal Editor work now starts in `/workspace`.
 - Stable `/api/v1` read contracts now exist for public dictionary/draft data and Editor Workspace summaries.
 - Editors can open safe Agent Job detail pages and queue eligible failed/retry-scheduled jobs for retry without running the worker from the browser.
-- Editors can open/close public feedback and add/edit/remove draft sources from `/workspace/drafts/[id]`.
-- Editors can record M5 calibration outcomes, edit-level notes, source/language/domain assessments, go/no-go hints, and safe job evidence at `/workspace/calibration`.
+- Editors can open/close public feedback and manage optional background references from `/workspace/drafts/[id]`.
+- Editors can record M5 calibration outcomes, edit level, language/domain assessments, go/no-go hints, and safe job evidence at `/workspace/calibration`.
 - Public AI drafts remain unverified and redacted.
 - Contributors can comment or suggest translations only after sign-in.
 - Contributors can track their own comments, translation suggestions, moderation status, and outcomes at `/contributions`.
@@ -65,9 +65,10 @@ Remaining API tasks:
   batch grouping, and any future operational diagnostics that still avoid raw provider output.
 - Calibration: basic outcome recording is done inside `/workspace/calibration`. Remaining work is
   aggregate edit-rate metrics, first-five review completion, and the final M5 go/no-go rollup.
-- Sources: basic draft source add/edit/remove is done. Remaining work is richer source notes,
-  duplicate detection, and source proposal moderation.
-- Public draft visibility: done for active, non-blocked, safely sourced drafts.
+- References: optional draft reference management is done. Add richer notes, duplicate
+  detection, or proposal moderation only when real editorial use requires them.
+- Public draft visibility: done for active drafts explicitly opened by an Editor; references
+  and internal AI routes do not gate visibility.
 - Published terms: add web editing for term wording, examples, alternatives, and sources.
 - Contributions: basic own-comments/suggestions dashboard is done. Remaining work is richer submissions, votes, ownership controls, saved terms, and profile history when M8 starts.
 - Moderation: expand from comment moderation to contributor proposals, examples, and source notes.
@@ -89,7 +90,7 @@ Remaining API tasks:
 ## Suggested Next Sequence
 
 1. Review draft 189 for `application` and record its human outcome in `/workspace/calibration`.
-2. Decide whether blocked/high-risk routing is acceptable before processing more first-five jobs.
+2. Record whether the internal route was useful calibration evidence; it does not control publication.
 3. Process the remaining queued first-five M5 jobs one at a time only after draft 189 is inspected.
 4. Add logged-in Editor success coverage for `/api/v1/editor/*` before mobile work begins.
 5. Add published-term web editing for wording, examples, alternatives, and sources.

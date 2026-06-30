@@ -172,6 +172,15 @@ describe('public AI draft feedback', () => {
     expect(publicDraft).not.toHaveProperty('generationJob')
     expect(publicDraft).not.toHaveProperty('modelName')
     expect(publicDraft).not.toHaveProperty('promptVersion')
+
+    await payload.update({
+      collection: 'ai-drafts',
+      context: { aiDraftDecision: true },
+      data: { reviewRoute: 'blocked' },
+      id: aiDraftId,
+      overrideAccess: true,
+    })
+    expect((await getPublicAIDraftById(aiDraftId))?.id).toBe(aiDraftId)
   })
 
   it('registers contributors without opening anonymous user creation', async () => {

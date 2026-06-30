@@ -78,7 +78,6 @@ const safeOutcome = (outcome: CalibrationOutcome) => ({
   notes: outcome.notes,
   outcome: outcome.outcome,
   reviewedAt: outcome.reviewedAt,
-  sourceAssessment: outcome.sourceAssessment,
   languageAssessment: outcome.languageAssessment,
 })
 
@@ -110,11 +109,10 @@ export const parseCalibrationOutcomeFields = (input: unknown): CalibrationOutcom
     ),
     notes,
     outcome: allowedValue(input.outcome, calibrationOutcomeValues, 'outcome'),
-    sourceAssessment: allowedValue(
-      input.sourceAssessment,
-      calibrationSourceAssessments,
-      'source assessment',
-    ),
+    sourceAssessment:
+      input.sourceAssessment === undefined
+        ? 'not_checked'
+        : allowedValue(input.sourceAssessment, calibrationSourceAssessments, 'source assessment'),
   }
 }
 

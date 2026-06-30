@@ -1200,10 +1200,10 @@ The initial corpus should use an AI-first preparation workflow. AI should do the
 high-volume work of extracting, researching, drafting, comparing, and organizing
 terms so that humans can spend their time making focused editorial decisions.
 
-AI generation should be source-first. Candidate terms should normally originate
-from an identified glossary, standard, official document, or other trusted source.
-Open-ended term generation may be used for discovery, but those candidates must be
-linked to supporting sources before they can advance to publication review.
+AI generation should normally begin with useful reference material when it is available.
+References help ground the English concept and preserve preparation provenance, but they
+do not prove that a Mongolian translation is correct. Missing or unverified references
+must not block an Editor from reviewing, sharing, or publishing a draft.
 
 ### 13.1 AI Can Generate
 
@@ -1336,7 +1336,7 @@ from the active inbox. Hide preserves the draft and its provenance; it is not de
 AI risk, confidence, critique, and routing metadata may be retained internally for quality
 analysis, but they must not create separate inboxes, reviewer types, reroute controls,
 merge controls, warnings, or approval stages in the MVP UI. Blocked or unsourced drafts
-cannot publish.
+remain available to Editors; internal AI routes do not control publication.
 
 ### 13.6 Public Draft Visibility and Canonical Publication
 
@@ -1351,8 +1351,9 @@ feedback. It must exclude raw provider output, prompts, job errors, private revi
 contact details, abuse-prevention metadata, and other internal generation evidence.
 
 Public AI draft pages are excluded from the canonical sitemap and use `noindex` until a
-human-reviewed publication decision is made. Blocked, rejected, failed, or explicitly
-private drafts are never publicly visible.
+human-reviewed publication decision is made. Rejected, failed, or explicitly private
+drafts are never publicly visible. Internal AI review routes do not override an Editor's
+explicit public-visibility choice.
 
 Comments and translation suggestions require an authenticated contributor and are stored
 as pending proposals. They do not immediately appear publicly and cannot directly update
@@ -1364,8 +1365,7 @@ uses `Publish` after:
 
 - A human has selected or edited the recommended translation
 - Required English and Mongolian explanations have been reviewed
-- Important or disputed claims have supporting sources
-- AI provider, model, prompt version, schema version, and source inputs are retained
+- AI provider, model, prompt version, schema version, and any supplied reference inputs are retained
 
 The system records the editor, field changes, publication time, and retained AI provenance
 automatically. Editors do not manage acceptance categories, routes, merge states, or review

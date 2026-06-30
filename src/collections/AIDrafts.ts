@@ -192,12 +192,6 @@ export const AIDrafts: CollectionConfig = {
           if (!['editing', 'needs_review'].includes(next.status)) {
             throw new APIError('Only active AI drafts can be opened for public feedback.', 400)
           }
-          if (next.reviewRoute === 'blocked') {
-            throw new APIError('Blocked AI drafts cannot be opened for public feedback.', 400)
-          }
-          if (!Array.isArray(next.sources) || next.sources.length === 0) {
-            throw new APIError('A sourced AI draft is required for public feedback.', 400)
-          }
           if (originalDoc?.publicVisibility !== 'public') {
             data.publicFeedbackOpenedAt = new Date().toISOString()
           }

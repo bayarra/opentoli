@@ -39,7 +39,8 @@ The set deliberately mixes straightforward, ambiguous, and domain-sensitive term
 
 Source references point to trusted concept sources such as MDN, GitHub Docs, Kubernetes
 Docs, PostgreSQL Docs, NIST CSRC, and Microsoft Learn. They are concept-grounding sources;
-AI output and editors must not copy source definitions verbatim.
+AI output and editors must not copy source definitions verbatim. They are optional background
+provenance, not proof of Mongolian wording and not a publication gate.
 
 ## Preflight
 
@@ -130,8 +131,8 @@ Reviewer notes to resolve before continuing:
 - Validate Mongolian usage evidence for `апп` versus `програм`.
 - Decide whether web application, mobile application, and desktop application need separate
   context-specific entries or translations.
-- Decide whether the blocked route is expected for this source-validation gap or indicates a
-  prompt/routing issue before processing the remaining queued first-five jobs.
+- Record whether the internal route is useful calibration evidence; it does not control public
+  feedback or publication.
 
 ## Review Rubric
 
@@ -143,7 +144,7 @@ For each generated draft, an editor should record the human outcome in
 | Term | English headword |
 | Job | Generation Job ID |
 | Draft | AI Draft ID |
-| Source count | Number of source records used |
+| Reference count | Optional background references used during preparation |
 | Route | Review route after validation |
 | Status | `needs_review`, `blocked`, `accepted`, `hidden`, or published outcome |
 | Tokens | Input and output tokens |
@@ -151,14 +152,14 @@ For each generated draft, an editor should record the human outcome in
 | Cost | Provider-estimated cost when available |
 | Recommendation quality | Acceptable, needs edit, wrong, or unusable |
 | Human edits | Fields changed before publication |
-| Reviewer notes | Naturalness, domain accuracy, source support, ambiguity |
+| Reviewer notes | Naturalness, domain accuracy, ambiguity, and edit patterns |
 
 ## Stop Conditions
 
 Pause the batch and inspect the pipeline if any of these happen:
 
 - More than one job fails for the same validation reason.
-- A job loses source, provider, prompt, or schema provenance.
+- A job loses provider, prompt, schema, or supplied-reference provenance.
 - A draft appears public, verified, or published without an explicit editor action.
 - The critique repeatedly blocks drafts for the same prompt or schema weakness.
 - Average latency or token usage is materially higher than the `authentication` reference run.

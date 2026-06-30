@@ -135,26 +135,6 @@ const ensureDraftSource = async ({
   return { ...draftState, source }
 }
 
-const countSafeSources = async (payload: Payload, sourceIds: number[]) => {
-  if (sourceIds.length === 0) return 0
-  const sources = await payload.find({
-    collection: 'sources',
-    depth: 0,
-    limit: sourceIds.length,
-    overrideAccess: true,
-    where: { id: { in: sourceIds } },
-  })
-
-  return sources.docs.filter((source) => {
-    try {
-      const url = new URL(source.url)
-      return url.protocol === 'http:' || url.protocol === 'https:'
-    } catch {
-      return false
-    }
-  }).length
-}
-
 export const addDraftSource = async ({
   actor,
   draftId,
@@ -166,7 +146,7 @@ export const addDraftSource = async ({
   fields: DraftSourceFields
   payload: Payload
 }) => {
-  const { draft, sourceIds, termId } = await loadEditorDraft({ actor, draftId, payload })
+  const { sourceIds, termId } = await loadEditorDraft({ actor, draftId, payload })
   const req = await createLocalReq({ user: actor }, payload)
   const source = await payload.create({
     collection: 'sources',
@@ -186,7 +166,7 @@ export const addDraftSource = async ({
   const updatedDraft = await payload.update({
     collection: 'ai-drafts',
     data: { sources: [...new Set([...sourceIds, source.id])] },
-    id: draft.id,
+    id: draftId,
     overrideAccess: true,
     req,
   })
@@ -236,18 +216,13 @@ export const removeDraftSource = async ({
   payload: Payload
   sourceId: number
 }) => {
-  const { draft, sourceIds } = await ensureDraftSource({ actor, draftId, payload, sourceId })
+  const { sourceIds } = await ensureDraftSource({ actor, draftId, payload, sourceId })
   const remainingSourceIds = sourceIds.filter((id) => id !== sourceId)
-  const safeSourceCount = await countSafeSources(payload, remainingSourceIds)
   const req = await createLocalReq({ user: actor }, payload)
   const updatedDraft = await payload.update({
     collection: 'ai-drafts',
-    data: {
-      publicVisibility:
-        draft.publicVisibility === 'public' && safeSourceCount < 1 ? 'private' : draft.publicVisibility,
-      sources: remainingSourceIds,
-    },
-    id: draft.id,
+    data: { sources: remainingSourceIds },
+    id: draftId,
     overrideAccess: true,
     req,
   })

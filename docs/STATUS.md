@@ -1,9 +1,9 @@
 # OpenToli Project Status
 
-**Last updated:** 2026-06-27
+**Last updated:** 2026-06-29
 **Current milestone:** M5 - Calibration Batch
 **Milestone status:** `IN_PROGRESS`
-**Delivery state:** First M5 live worker job completed; draft 189 is private and blocked; web calibration outcome recording is ready for human review evidence
+**Delivery state:** First M5 live worker job completed; draft 189 is ready for a human calibration outcome and internal AI routing does not gate Editor actions
 
 ## Executive Summary
 
@@ -27,12 +27,12 @@ can inspect safe Agent Job detail and queue eligible failed/retry-scheduled jobs
 without exposing raw provider output or running the worker from the browser. The controlled
 50-term Technology and Software calibration batch is now fixed in a tracked manifest. The first
 M5 live worker job completed for `application`, creating private AI draft 189 with retained
-provenance and no validation errors; the draft is blocked/high-risk pending language, domain,
-and source-validation review. Editors can now open or close public draft feedback and add, edit,
-verify, or remove draft sources from OpenToli web instead of Payload admin. Signed-in
+provenance and no validation errors; its internal route remains calibration evidence but does
+not control Editor actions. Editors can now open or close public draft feedback and optionally
+manage background references from OpenToli web instead of Payload admin. Signed-in
 contributors can now track their own comments, translation suggestions, moderation status, and
 outcomes from an OpenToli web dashboard. Editors can record M5 human calibration outcomes,
-edit-level notes, source/language/domain assessments, go/no-go hints, and safe job evidence from
+edit-level notes, language/domain assessments, go/no-go hints, and safe job evidence from
 `/workspace/calibration`.
 
 ## Milestone Status
@@ -52,7 +52,16 @@ edit-level notes, source/language/domain assessments, go/no-go hints, and safe j
 
 ## Achievements
 
-### 2026-06-27
+### 2026-06-29
+
+- Reclassified sources as optional background references rather than evidence that proves a Mongolian translation.
+- Removed reference verification and internal AI routes from canonical publication and public-feedback visibility gates; explicit Editor actions remain mandatory.
+- Moved reference controls into a secondary collapsed section and retained safe URL redaction when optional references are shown publicly.
+- Removed source-support decisions from the primary M5 calibration form and summary while retaining legacy provenance compatibility.
+- Accepted ADR-0005 and updated the product specification, roadmap, and next-task handoff to prevent source gating from returning.
+- Passed TypeScript, ESLint, 41 integration tests, the production build, and 16 browser tests; no migration was required.
+
+### 2026-06-27 (superseded source gate)
 
 - Removed the blocked-draft dead end from the simple Editor workflow: an Editor can publish after reviewing and verifying at least one safe HTTP(S) source, while the original AI route remains in decision provenance.
 - Added clear draft-page guidance for source verification and AI evidence warnings; no extra approval stage was introduced.
@@ -147,14 +156,14 @@ edit-level notes, source/language/domain assessments, go/no-go hints, and safe j
 - Made `axe-core` an explicit test dependency and changed Playwright's web-server command from unavailable global pnpm to `npm run dev`.
 - Passed 26 integration tests, 9 Chromium browser tests, ESLint, TypeScript, and the production build; no migration was required.
 - Removed the visible high-risk label and publication confirmation from the Draft Inbox and Editor page; AI risk metadata remains internal provenance only.
-- Replaced the risk-confirmation integration scenario with a source-gate scenario proving unsourced drafts cannot publish and sourced drafts publish with one explicit Editor action.
+- Replaced the risk-confirmation integration scenario with a source-gate scenario proving unsourced drafts cannot publish and sourced drafts publish with one explicit Editor action. This gate was later removed by ADR-0005.
 - Verified the simplified workflow with 26 integration tests, 6 browser tests, ESLint, TypeScript, and a production build; no schema change or migration was required.
 - Accepted ADR-0004 and replaced the multi-action reviewer experience with `AI Draft -> Editor edits -> Publish`.
 - Reduced the private workspace to one Draft Inbox, four editable fields, background save, one Publish button, sources, and community suggestions.
 - Moved Hide under a secondary `More` control and retained all AI evidence instead of deleting hidden drafts.
 - Made Publish an atomic, attributed human action that approves the selected translation and publishes the canonical Term.
 - Replaced route-specific reviewer requirements with one Editor permission concept; granular stored roles remain compatibility aliases.
-- Kept blocked and unsourced publication guards without exposing risk or routing controls.
+- Kept blocked and unsourced publication guards without exposing risk or routing controls. This decision was later superseded by ADR-0005.
 - Added explicit Editor-controlled public visibility for sourced, non-blocked active AI Drafts.
 - Added a narrow public projection that excludes raw research, generated payloads, critique, jobs, provider and prompt metadata, and unsafe citation URLs.
 - Added `/drafts/[id]` with persistent `Unverified AI Draft` labeling and `noindex` metadata.
@@ -244,9 +253,9 @@ edit-level notes, source/language/domain assessments, go/no-go hints, and safe j
 | Database integration      | Pass        | 40 self-contained integration tests in 12 files pass against PostgreSQL without requiring seed data                    |
 | API v1 read contracts     | Pass        | Public search, term, category, public draft redaction, and Editor auth-denial contract tests pass                     |
 | Agent Job Detail          | Pass        | Safe job detail and retry-now tests cover redaction, Editor authorization, retryable states, and route auth denial     |
-| Draft Source Management   | Pass        | Editor source add/edit/remove, verification reset, public visibility closure, and unsafe-source guards pass           |
+| Optional References       | Pass        | Editor reference add/edit/remove and verification work without gating publication; unsafe URLs stay redacted          |
 | Public draft feedback     | Pass        | 4 scenarios verify projection redaction, registration roles, pending moderation, throttling, and resolved-draft hiding |
-| Simple Editor workflow    | Pass        | 4 scenarios verify background save, member denial, source verification, sourced one-action publication, Hide, and provenance |
+| Simple Editor workflow    | Pass        | Tests cover background save, member denial, explicit Editor publication, optional references, Hide, and provenance |
 | OpenAI adapter contract   | Pass        | 3 mocked tests verify strict Responses API requests, parsing, usage, and failures                                      |
 | OpenAI live calibration   | Pass        | Job 33 completed with `openai:gpt-5-mini`: 3,365 input tokens, 3,025 output tokens, 35,002 ms latency, no validation errors |
 | M5 manifest validation    | Pass        | `npm run m5:validate` passed for 50 terms and 8 source groups                                                          |
@@ -283,7 +292,7 @@ separation, remaining admin-to-web moves, and remaining milestones.
 
 ## Next Actions
 
-1. Review draft 189 for `application` in `/workspace/drafts/189`, especially source support, register choice, dual-form wording, and whether blocked routing is expected.
+1. Review draft 189 for `application`, especially register choice, dual-form wording, and separate web/mobile/desktop contexts, then record its outcome in `/workspace/calibration`.
 2. Decide whether the prompt/routing should be tuned before processing the remaining queued first-five M5 jobs.
 3. Record the human calibration outcome for draft 189 in `/workspace/calibration`.
 4. Add logged-in Editor success coverage for `/api/v1/editor/*` before mobile work begins.
@@ -297,7 +306,7 @@ No active blocker is recorded.
 
 | Risk                                                    | Impact                                    | Current mitigation                                                                             |
 | ------------------------------------------------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| AI output sounds natural but is technically wrong       | Loss of trust                             | Required sources, explicit Editor publication, and retained provenance                         |
+| AI output sounds natural but is technically wrong       | Loss of trust                             | Explicit Editor publication, optional supporting references, and retained provenance           |
 | AI pipeline cost grows during batch generation          | Budget pressure                           | Calibration batch, idempotent jobs, and cost metrics                                           |
 | Conflicting status fields permit accidental publication | Data exposure                             | Formal publication state machine required in M0                                                |
 | Search leaks drafts                                     | Unreviewed content becomes public         | Public-query and authorization tests required in M2 and M7                                     |

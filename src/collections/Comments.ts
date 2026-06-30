@@ -131,8 +131,7 @@ export const Comments: CollectionConfig = {
           })
           if (
             aiDraft.publicVisibility !== 'public' ||
-            aiDraft.status !== 'needs_review' ||
-            aiDraft.reviewRoute === 'blocked'
+            !['editing', 'needs_review'].includes(aiDraft.status)
           ) {
             throw new APIError('This AI draft is not open for public feedback.', 403)
           }

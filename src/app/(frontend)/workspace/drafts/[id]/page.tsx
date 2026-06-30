@@ -27,13 +27,7 @@ export default async function AIDraftEditorPage({ params }: EditorPageProps) {
 
   const { comments, draft, generated, sources } = data
   const active = ['editing', 'needs_review'].includes(draft.status)
-  const hasVerifiedSource = sources.some((source) => source.isVerified && source.safeUrl)
-  const canOpenPublicFeedback = active && draft.reviewRoute !== 'blocked' && sources.some((source) => source.url)
-  const publicFeedbackDisabledReason = !active
-    ? 'Only active drafts can be opened for public feedback.'
-    : draft.reviewRoute === 'blocked'
-      ? 'Blocked drafts need source or editorial review before public feedback.'
-      : 'Add at least one safe http or https source before opening public feedback.'
+  const publicFeedbackDisabledReason = 'Only active drafts can be opened for public feedback.'
 
   return (
     <WorkspaceShell>
@@ -60,21 +54,6 @@ export default async function AIDraftEditorPage({ params }: EditorPageProps) {
 
       <section className="review-panel">
         <p className="eyebrow">Term fields</p>
-        {active && !hasVerifiedSource ? (
-          <div className="review-notice">
-            <strong>Source review required before publishing.</strong>
-            <p>Review the sources below and verify at least one safe source.</p>
-          </div>
-        ) : null}
-        {active && hasVerifiedSource && draft.reviewRoute === 'blocked' ? (
-          <div className="review-notice">
-            <strong>The AI preparation flagged evidence concerns.</strong>
-            <p>
-              A source is now verified. Publishing records your explicit human approval while
-              retaining the original AI warning in the draft history.
-            </p>
-          </div>
-        ) : null}
         {active ? (
           <AIDraftEditorForm
             draftId={draft.id}
@@ -98,7 +77,7 @@ export default async function AIDraftEditorPage({ params }: EditorPageProps) {
           approve, or publish this term.
         </p>
         <DraftVisibilityForm
-          canOpen={canOpenPublicFeedback}
+          canOpen={active}
           disabledReason={publicFeedbackDisabledReason}
           draftId={draft.id}
           isPublic={draft.publicVisibility === 'public'}
@@ -106,11 +85,6 @@ export default async function AIDraftEditorPage({ params }: EditorPageProps) {
       </section>
 
       <div className="reviewer-grid">
-        <section className="review-panel">
-          <p className="eyebrow">Sources</p>
-          <DraftSourceManager draftId={draft.id} sources={sources} />
-        </section>
-
         <section className="review-panel">
           <p className="eyebrow">Community suggestions</p>
           {comments.map((comment) => (
@@ -128,6 +102,17 @@ export default async function AIDraftEditorPage({ params }: EditorPageProps) {
             </article>
           ))}
           {comments.length === 0 ? <p>No community suggestions.</p> : null}
+        </section>
+
+        <section className="review-panel">
+          <details className="editor-more-actions">
+            <summary>References (optional)</summary>
+            <p>
+              These links show background material used during preparation. They are not required
+              to publish and do not prove that a translation is correct.
+            </p>
+            <DraftSourceManager draftId={draft.id} sources={sources} />
+          </details>
         </section>
       </div>
       </main>

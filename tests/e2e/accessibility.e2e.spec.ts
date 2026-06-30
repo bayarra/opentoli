@@ -101,11 +101,15 @@ test.describe('M4 accessibility', () => {
     await context.close()
   })
 
-  test('lets Editors verify a draft source from OpenToli web', async ({ browser }) => {
+  test('keeps optional references available without making them primary', async ({ browser }) => {
     const context = await browser.newContext()
     const page = await context.newPage()
     await login({ page, user: fixture.user })
     await page.goto(`${serverURL}/workspace/drafts/${fixture.draftId}`)
+
+    const references = page.locator('summary', { hasText: 'References (optional)' })
+    await expect(references).toBeVisible()
+    await references.click()
 
     await expect(
       page.getByText('OpenToli Accessibility Tests / official documentation / not verified'),

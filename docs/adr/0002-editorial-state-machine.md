@@ -4,6 +4,10 @@
 - Date: 2026-06-20
 - Owners: Project maintainers
 
+> Amendment (2026-06-29): the publication-source clause below is superseded by
+> [ADR-0005](0005-optional-reference-provenance.md). References are optional provenance;
+> explicit human publication remains mandatory.
+
 ## Context
 
 The product specification defines both workflow and review statuses. Payload also has a

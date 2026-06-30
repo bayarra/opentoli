@@ -168,8 +168,9 @@ export default async function CalibrationPage() {
                   <div className="calibration-outcome-summary">
                     <strong>{statusLabel(item.outcome.outcome)}</strong>
                     <span>
-                      Edit {statusLabel(item.outcome.editLevel)} / sources{' '}
-                      {statusLabel(item.outcome.sourceAssessment)} / reviewed{' '}
+                      Edit {statusLabel(item.outcome.editLevel)} / language{' '}
+                      {statusLabel(item.outcome.languageAssessment)} / domain{' '}
+                      {statusLabel(item.outcome.domainAssessment)} / reviewed{' '}
                       {formatDate(item.outcome.reviewedAt)}
                     </span>
                     <p>{item.outcome.notes}</p>

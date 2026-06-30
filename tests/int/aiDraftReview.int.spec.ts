@@ -245,7 +245,7 @@ describe('simple AI draft editor workflow', () => {
     )
   })
 
-  it('publishes with one human action and requires a verified safe source', async () => {
+  it('publishes an unsourced draft with one explicit human action', async () => {
     const draft = await createPreparedDraft({
       categoryId: technologyCategoryId,
       categoryName: `Editor Technology ${suffix}`,
@@ -259,38 +259,6 @@ describe('simple AI draft editor workflow', () => {
       id: draft.id,
       overrideAccess: true,
     })
-
-    await expect(
-      publishEditorDraft({
-        actorId: editor.id,
-        draftId: draft.id,
-        payload,
-      }),
-    ).rejects.toThrow('verify at least one safe')
-
-    const unverifiedSource = await payload.update({
-      collection: 'sources',
-      data: { isVerified: false },
-      id: sourceIds[sourceIds.length - 1]!,
-      overrideAccess: true,
-    })
-
-    await payload.update({
-      collection: 'ai-drafts',
-      data: { sources: [unverifiedSource.id] },
-      id: draft.id,
-      overrideAccess: true,
-    })
-
-    await expect(
-      publishEditorDraft({
-        actorId: editor.id,
-        draftId: draft.id,
-        payload,
-      }),
-    ).rejects.toThrow('verify at least one safe')
-
-    await verifySource({ actor: editor, payload, sourceId: unverifiedSource.id })
 
     const result = await publishEditorDraft({
       actorId: editor.id,
@@ -315,13 +283,12 @@ describe('simple AI draft editor workflow', () => {
     expect(publicTerms.docs).toHaveLength(1)
   })
 
-  it('lets an Editor resolve an AI block by verifying evidence and publishing', async () => {
+  it('keeps the internal AI route as provenance without blocking an Editor', async () => {
     const draft = await createPreparedDraft({
       categoryId: technologyCategoryId,
       categoryName: `Editor Technology ${suffix}`,
       categorySlug: `editor-technology-${suffix}`,
       headword: `human resolved block ${suffix}`,
-      sourceVerified: false,
     })
     await payload.update({
       collection: 'ai-drafts',
@@ -331,11 +298,6 @@ describe('simple AI draft editor workflow', () => {
       overrideAccess: true,
     })
 
-    await expect(
-      publishEditorDraft({ actorId: editor.id, draftId: draft.id, payload }),
-    ).rejects.toThrow('verify at least one safe')
-
-    await verifySource({ actor: editor, payload, sourceId: sourceIds[sourceIds.length - 1]! })
     const result = await publishEditorDraft({
       actorId: editor.id,
       draftId: draft.id,
@@ -387,7 +349,7 @@ describe('simple AI draft editor workflow', () => {
     expect(await getPublicAIDraftById(draft.id)).toBeNull()
   })
 
-  it('blocks public feedback for blocked drafts or unsafe sources', async () => {
+  it('opens blocked or unsourced drafts while redacting unsafe references', async () => {
     const blocked = await createPreparedDraft({
       categoryId: technologyCategoryId,
       categoryName: `Editor Technology ${suffix}`,
@@ -397,19 +359,18 @@ describe('simple AI draft editor workflow', () => {
     await payload.update({
       collection: 'ai-drafts',
       context: { aiDraftDecision: true },
-      data: { reviewRoute: 'blocked' },
+      data: { reviewRoute: 'blocked', sources: [] },
       id: blocked.id,
       overrideAccess: true,
     })
 
-    await expect(
-      updateEditorDraftVisibility({
-        actorId: editor.id,
-        draftId: blocked.id,
-        payload,
-        visibility: 'public',
-      }),
-    ).rejects.toThrow('Blocked drafts')
+    await updateEditorDraftVisibility({
+      actorId: editor.id,
+      draftId: blocked.id,
+      payload,
+      visibility: 'public',
+    })
+    expect((await getPublicAIDraftById(blocked.id))?.sources).toEqual([])
 
     const unsafe = await createPreparedDraft({
       categoryId: technologyCategoryId,
@@ -437,14 +398,13 @@ describe('simple AI draft editor workflow', () => {
       overrideAccess: true,
     })
 
-    await expect(
-      updateEditorDraftVisibility({
-        actorId: editor.id,
-        draftId: unsafe.id,
-        payload,
-        visibility: 'public',
-      }),
-    ).rejects.toThrow('safe http or https source')
+    await updateEditorDraftVisibility({
+      actorId: editor.id,
+      draftId: unsafe.id,
+      payload,
+      visibility: 'public',
+    })
+    expect((await getPublicAIDraftById(unsafe.id))?.sources).toEqual([])
   })
 
   it('lets Editors verify draft sources while blocking members and unsafe URLs', async () => {
@@ -557,12 +517,12 @@ describe('simple AI draft editor workflow', () => {
     ).rejects.toThrow()
   })
 
-  it('closes public feedback when the last safe source is removed', async () => {
+  it('keeps public feedback open when the last optional reference is removed', async () => {
     const draft = await createPreparedDraft({
       categoryId: technologyCategoryId,
       categoryName: `Editor Technology ${suffix}`,
       categorySlug: `editor-technology-${suffix}`,
-      headword: `source removal closes public ${suffix}`,
+      headword: `optional reference removal ${suffix}`,
     })
     const sourceId = sourceIds[sourceIds.length - 1]!
 
@@ -581,8 +541,8 @@ describe('simple AI draft editor workflow', () => {
       payload,
       sourceId,
     })
-    expect(removed.draft.publicVisibility).toBe('private')
-    expect(await getPublicAIDraftById(draft.id)).toBeNull()
+    expect(removed.draft.publicVisibility).toBe('public')
+    expect((await getPublicAIDraftById(draft.id))?.id).toBe(draft.id)
   })
 
   it('hides an unusable draft without deleting its provenance', async () => {

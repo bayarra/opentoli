@@ -119,12 +119,12 @@ explicit Publish, secondary Hide, and automatic attribution.
 - Authenticated users can submit comments or translation suggestions that enter a pending moderation queue.
 - Anonymous users attempting to contribute are directed to register or sign in.
 - Public feedback cannot directly modify a draft, select a translation, or publish a Term.
-- Blocked, rejected, failed, and private drafts are not publicly visible.
+- Rejected, failed, and private drafts are not publicly visible.
 - Editors can edit and publish from one page without managing routes or review types.
 - Editing saves in the background and Publish is the only primary decision action.
 - Hide removes an unusable draft from the active inbox without deleting its provenance.
 - Publication records the editor and field changes automatically.
-- Blocked or unsourced drafts cannot publish.
+- Internal AI routes and optional references do not add publication stages or override an Editor's explicit Publish action.
 - Keyboard operation and critical accessibility checks pass.
 
 ## M5 - Calibration Batch

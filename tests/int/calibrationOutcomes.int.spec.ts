@@ -163,7 +163,7 @@ describe('M5 calibration outcomes', () => {
       languageAssessment: 'major_edits',
       notes: 'The candidate is useful, but the English/Mongolian explanation needs substantial human editing.',
       outcome: 'accepted_with_edits',
-      sourceAssessment: 'needs_more_sources',
+      sourceAssessment: 'not_checked',
     })
 
     await expect(
@@ -183,7 +183,7 @@ describe('M5 calibration outcomes', () => {
       languageAssessment: 'major_edits',
       modelProvider: 'deterministic',
       outcome: 'accepted_with_edits',
-      sourceAssessment: 'needs_more_sources',
+      sourceAssessment: 'not_checked',
     })
     expect(created.latencyMs).toBeGreaterThan(0)
     expect(created.estimatedCostUsd).toBe(0)
@@ -192,17 +192,15 @@ describe('M5 calibration outcomes', () => {
       actor: editor,
       fields: parseCalibrationOutcomeFields({
         ...fields,
-        notes: 'Updated after a second human pass; source support is now the main blocker.',
-        outcome: 'blocked_for_sources',
-        sourceAssessment: 'unsupported',
+        notes: 'Updated after a second human pass; the wording needs regeneration.',
+        outcome: 'needs_regeneration',
       }),
       payload,
     })
     expect(updated.id).toBe(created.id)
     expect(updated).toMatchObject({
-      notes: 'Updated after a second human pass; source support is now the main blocker.',
-      outcome: 'blocked_for_sources',
-      sourceAssessment: 'unsupported',
+      notes: 'Updated after a second human pass; the wording needs regeneration.',
+      outcome: 'needs_regeneration',
     })
 
     const saved = await payload.find({
