@@ -128,6 +128,26 @@ review whether `салбар` or `брэнч` should be preferred, check the Mon
 examples for naturalness, resolve the route discrepancy, and record the outcome in
 `/workspace/calibration`.
 
+### 2026-06-29 - Branch Decision and Build Draft
+
+| Field | Evidence |
+| --- | --- |
+| `branch` decision | Draft 437 `partially_accepted`; canonical recommendation changed from `салбар` to `мөчир` |
+| `branch` calibration | Outcome 18: `accepted_with_edits`, edit level `rewrite`, language `natural`, domain `accurate` |
+| Processed term | `build` |
+| Job / draft | Job 606 completed on attempt 1; draft 438 `needs_review` |
+| Provider/model | `openai:gpt-5-mini` |
+| Tokens | 3,866 input / 3,242 output |
+| Latency | 40,879 ms |
+| Visibility | `private` |
+| Recommendation | `билд / билдлэх` |
+| Route/risk | `language_review` / `medium` |
+| Remaining queue | 8 jobs, `cache` through `configuration`, untouched |
+
+Before another worker run, an Editor must decide how noun and verb forms should differ, whether
+OpenToli should retain the loanword or use a Mongolian equivalent, and record the factual outcome
+in `/workspace/calibration`.
+
 ### 2026-06-29 - First-Five Checkpoint
 
 | Field | Evidence |
