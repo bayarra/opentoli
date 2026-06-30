@@ -14,7 +14,7 @@ evidence in [`STATUS.md`](STATUS.md).
 - Editors can open safe Agent Job detail pages and queue eligible failed/retry-scheduled jobs for retry without running the worker from the browser.
 - Editors can open/close public feedback and manage optional background references from `/workspace/drafts/[id]`.
 - Editors can edit published wording, translations, examples, categories, contexts, and optional references from `/workspace/terms`.
-- Editors can record M5 calibration outcomes, edit level, language/domain assessments, go/no-go hints, and safe job evidence at `/workspace/calibration`.
+- Editors finish drafts and record compact M5 AI-quality evidence in one Review Queue decision; `/workspace/calibration` is read-only reporting.
 - Public AI drafts remain unverified and redacted.
 - Contributors can comment or suggest translations only after sign-in.
 - Contributors can track their own comments, translation suggestions, moderation status, and outcomes at `/contributions`.
@@ -61,16 +61,16 @@ Remaining API tasks:
    the read contracts settle.
 2. Add logged-in Editor success coverage for `/api/v1/editor/*` over HTTP/browser context before
    mobile work begins.
-3. Agent Jobs now support stable headword, status, batch, and page filters. Add public
+3. System Activity now supports stable headword, status, batch, and page filters. Add public
    dictionary pagination/filter contracts when M7 search and discovery work starts.
 
 ## Remaining Admin-To-Web Moves
 
-- Agent Jobs: safe detail, retry-now, headword/status/batch filtering, pagination, and import-batch
+- System Activity: safe job detail, retry-now, headword/status/batch filtering, pagination, and import-batch
   grouping are done. Add future diagnostics only when they can remain safely redacted.
-- Calibration: outcome recording, aggregate quality/cost metrics, first-five completion, and a
-  generated go/no-go rollup are done inside `/workspace/calibration`. Remaining work is the
-  actual human review of all 50 terms and the written final decision.
+- AI Quality: outcome capture now belongs to the Review Queue decision. Aggregate quality/cost
+  metrics, first-five completion, and the generated go/no-go rollup remain read-only at
+  `/workspace/calibration`. Remaining work is human review of all 50 terms and the final decision.
 - References: optional draft reference management and contributor reference proposals are done.
   Add duplicate detection only when real editorial use requires it.
 - Public draft visibility: done for active drafts explicitly opened by an Editor; references
@@ -96,7 +96,7 @@ Remaining API tasks:
 
 ## Suggested Next Sequence
 
-1. Review `/workspace/drafts/439` through `/workspace/drafts/446` and record each factual outcome in `/workspace/calibration`.
+1. Complete `/workspace/drafts/439` through `/workspace/drafts/446`; each Publish or Hide decision records its AI-quality outcome.
 2. Recheck second-batch quality and disagreement metrics after all ten outcomes exist.
 3. Decide whether the evidence supports `npm run m5:prepare:remaining`; generation completion alone is not approval.
 4. Add logged-in Editor success coverage for `/api/v1/editor/*` before mobile work begins.

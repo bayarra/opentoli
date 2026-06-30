@@ -1328,6 +1328,7 @@ blockquote p {
 }
 
 .review-decision-form input,
+.review-decision-form select,
 .review-decision-form textarea {
   background: #fff;
   border: 1px solid #b8c2d4;
@@ -1338,10 +1339,32 @@ blockquote p {
 }
 
 .review-decision-form input:focus,
+.review-decision-form select:focus,
 .review-decision-form textarea:focus {
   border-color: var(--blue);
   box-shadow: 0 0 0 3px rgba(48, 124, 216, 0.2);
   outline: 0;
+}
+
+.draft-quality-review {
+  background: #f5f8fc;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  display: grid;
+  gap: 14px;
+  margin: 6px 0;
+  padding: 18px;
+}
+
+.draft-quality-review legend {
+  color: var(--navy);
+  font-weight: 850;
+  padding: 0 6px;
+}
+
+.draft-quality-review > p {
+  color: var(--muted);
+  margin: 0;
 }
 
 .review-decision-form button {
@@ -2124,64 +2147,6 @@ blockquote p {
   font-size: 0.9rem;
 }
 
-.calibration-outcome-details {
-  border-top: 1px solid var(--line);
-  padding-top: 16px;
-}
-
-.calibration-outcome-details summary {
-  color: var(--navy);
-  cursor: pointer;
-  font-weight: 800;
-}
-
-.calibration-outcome-form {
-  display: grid;
-  gap: 16px;
-  margin-top: 16px;
-}
-
-.calibration-form-grid {
-  display: grid;
-  gap: 14px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.calibration-outcome-form label {
-  color: var(--ink);
-  display: grid;
-  font-size: 0.9rem;
-  font-weight: 800;
-  gap: 7px;
-}
-
-.calibration-outcome-form select,
-.calibration-outcome-form textarea {
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  color: var(--ink);
-  font: inherit;
-  font-weight: 500;
-  padding: 11px 12px;
-}
-
-.calibration-outcome-form button {
-  background: var(--navy);
-  border: 0;
-  border-radius: 999px;
-  color: #fff;
-  cursor: pointer;
-  font: inherit;
-  font-weight: 800;
-  justify-self: start;
-  padding: 11px 16px;
-}
-
-.calibration-outcome-form button:disabled {
-  cursor: not-allowed;
-  opacity: 0.58;
-}
-
 .published-term-list {
   display: grid;
 }
@@ -2613,7 +2578,6 @@ blockquote p {
   .metric-grid,
   .workspace-shell,
   .workspace-grid,
-  .calibration-form-grid,
   .calibration-item-heading,
   .job-detail-list-wide,
   .workspace-table > div {

@@ -1,5 +1,6 @@
 import { enqueueGenerationJob, processGenerationJob } from '@/ai/pipeline/jobs'
 import { DeterministicAIProvider } from '@/ai/providers/deterministic'
+import { parseDraftQualityFields } from '@/calibration/outcomes'
 import {
   hideEditorDraft,
   parseEditorDraftFields,
@@ -31,6 +32,7 @@ const jobIds: number[] = []
 const draftIds: number[] = []
 const decisionIds: number[] = []
 const reviewIds: number[] = []
+const calibrationOutcomeIds: number[] = []
 const suffix = `${process.pid}-${Date.now()}`
 
 const createPreparedDraft = async ({
@@ -178,6 +180,9 @@ describe('simple AI draft editor workflow', () => {
     for (const id of reviewIds.reverse()) {
       await payload.delete({ collection: 'reviews', id, overrideAccess: true })
     }
+    for (const id of calibrationOutcomeIds.reverse()) {
+      await payload.delete({ collection: 'calibration-outcomes', id, overrideAccess: true })
+    }
     for (const id of draftIds.reverse()) {
       await payload.delete({ collection: 'ai-drafts', id, overrideAccess: true })
     }
@@ -241,7 +246,7 @@ describe('simple AI draft editor workflow', () => {
     )
   })
 
-  it('publishes an unsourced draft with one explicit human action', async () => {
+  it('publishes and records AI quality with one explicit human action', async () => {
     const draft = await createPreparedDraft({
       categoryId: technologyCategoryId,
       categoryName: `Editor Technology ${suffix}`,
@@ -258,6 +263,14 @@ describe('simple AI draft editor workflow', () => {
 
     const result = await publishEditorDraft({
       actorId: editor.id,
+      calibrationOutcome: parseDraftQualityFields(
+        {
+          qualityNotes: 'The AI wording was accepted without edits.',
+          qualityRating: 'used_as_is',
+        },
+        draft.id,
+        'publish',
+      ),
       draftId: draft.id,
       payload,
     })
@@ -270,6 +283,12 @@ describe('simple AI draft editor workflow', () => {
     })
     expect(result.translation.status).toBe('approved')
     expect(result.draft.publicVisibility).toBe('private')
+    expect(result.calibrationOutcome).toMatchObject({
+      editLevel: 'none',
+      outcome: 'accepted_as_is',
+      notes: 'The AI wording was accepted without edits.',
+    })
+    calibrationOutcomeIds.push(result.calibrationOutcome!.id)
 
     const publicTerms = await payload.find({
       collection: 'terms',

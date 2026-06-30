@@ -1,7 +1,7 @@
 import { isEditorUser, relationshipId } from '@/editor/permissions'
 import config from '@/payload.config'
 import type { AiDraft, CalibrationOutcome, GenerationJob, User } from '@/payload-types'
-import { getPayload, type Payload } from 'payload'
+import { getPayload, type Payload, type PayloadRequest } from 'payload'
 
 import { loadM5Manifest, type M5Term, validateM5Manifest } from './m5Manifest'
 import {
@@ -21,7 +21,7 @@ export class CalibrationOutcomeError extends Error {
   }
 }
 
-type CalibrationOutcomeInput = {
+export type CalibrationOutcomeInput = {
   aiDraftId: number
   domainAssessment: CalibrationOutcome['domainAssessment']
   editLevel: CalibrationOutcome['editLevel']
@@ -31,10 +31,40 @@ type CalibrationOutcomeInput = {
   outcome: CalibrationOutcome['outcome']
 }
 
+export const draftQualityRatings = [
+  'used_as_is',
+  'minor_edits',
+  'rewritten',
+  'incorrect',
+] as const
+
+export type DraftQualityRating = (typeof draftQualityRatings)[number]
+
+const relationshipSlug = (value: unknown): string | null => {
+  if (!isRecord(value) || typeof value.slug !== 'string') return null
+  return value.slug
+}
+
+const generationHeadword = (draft: AiDraft): string => {
+  const generationJob = draft.generationJob
+  return isRecord(generationJob) && typeof generationJob.inputHeadword === 'string'
+    ? generationJob.inputHeadword
+    : draft.inputHeadword
+}
+
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value)
 
 const normalizeHeadword = (value: string) => value.trim().toLocaleLowerCase('en-US')
+
+export const isM5CalibrationDraft = async (draft: AiDraft): Promise<boolean> => {
+  const manifest = await loadM5Manifest()
+  const normalizedHeadword = normalizeHeadword(generationHeadword(draft))
+  return (
+    relationshipSlug(draft.inputCategory) === manifest.categorySlug &&
+    manifest.terms.some((term) => normalizeHeadword(term.headwordEn) === normalizedHeadword)
+  )
+}
 
 const numberFrom = (value: unknown, label: string): number => {
   const parsed = typeof value === 'string' ? Number(value) : value
@@ -211,14 +241,48 @@ export const parseCalibrationOutcomeFields = (input: unknown): CalibrationOutcom
   }
 }
 
+export const parseDraftQualityFields = (
+  input: unknown,
+  aiDraftId: number,
+  action: 'hide' | 'publish',
+): CalibrationOutcomeInput => {
+  if (!isRecord(input)) throw new CalibrationOutcomeError('Invalid AI quality rating.')
+
+  const rating = allowedValue(input.qualityRating, draftQualityRatings, 'AI quality rating')
+  const customNotes = typeof input.qualityNotes === 'string' ? input.qualityNotes.trim() : ''
+  const mapping: Record<
+    DraftQualityRating,
+    Pick<CalibrationOutcomeInput, 'editLevel' | 'outcome'>
+  > = {
+    incorrect: { editLevel: 'rewrite', outcome: 'needs_regeneration' },
+    minor_edits: { editLevel: 'minor', outcome: 'accepted_with_edits' },
+    rewritten: { editLevel: 'rewrite', outcome: 'accepted_with_edits' },
+    used_as_is: { editLevel: 'none', outcome: 'accepted_as_is' },
+  }
+  const selected = mapping[rating]
+
+  return {
+    aiDraftId,
+    domainAssessment: 'not_checked',
+    editLevel: selected.editLevel,
+    languageAssessment: 'not_checked',
+    notes:
+      customNotes ||
+      `AI quality recorded with the ${action} decision: ${rating.replaceAll('_', ' ')}.`,
+    outcome: action === 'hide' ? 'rejected' : selected.outcome,
+  }
+}
+
 export const recordCalibrationOutcome = async ({
   actor,
   fields,
   payload: providedPayload,
+  req,
 }: {
   actor: User
   fields: CalibrationOutcomeInput
   payload?: Payload
+  req?: PayloadRequest
 }) => {
   if (!isEditorUser(actor)) {
     throw new CalibrationOutcomeError('Editor access is required.', 403)
@@ -230,6 +294,7 @@ export const recordCalibrationOutcome = async ({
     depth: 1,
     id: fields.aiDraftId,
     overrideAccess: true,
+    req,
   })) as AiDraft
 
   const generationJobId = relationshipId(draft.generationJob)
@@ -242,12 +307,14 @@ export const recordCalibrationOutcome = async ({
     depth: 0,
     id: generationJobId,
     overrideAccess: true,
+    req,
   })) as GenerationJob
 
   const existing = await payload.find({
     collection: 'calibration-outcomes',
     limit: 1,
     overrideAccess: true,
+    req,
     where: { aiDraft: { equals: draft.id } },
   })
 
@@ -282,11 +349,13 @@ export const recordCalibrationOutcome = async ({
         data,
         id: existing.docs[0].id,
         overrideAccess: true,
+        req,
       })
     : await payload.create({
         collection: 'calibration-outcomes',
         data,
         overrideAccess: true,
+        req,
       })
 
   return outcome as CalibrationOutcome

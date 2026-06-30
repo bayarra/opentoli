@@ -1,5 +1,4 @@
 import { WorkspaceShell } from '@/app/(frontend)/components/WorkspaceShell'
-import { CalibrationOutcomeForm } from '@/app/(frontend)/components/CalibrationOutcomeForm'
 import { getM5CalibrationDashboard } from '@/calibration/outcomes'
 import { getEditorWorkspace } from '@/editor/workspace'
 import { getCurrentUser } from '@/lib/currentUser'
@@ -9,7 +8,7 @@ import { redirect } from 'next/navigation'
 
 export const metadata: Metadata = {
   robots: { follow: false, index: false },
-  title: 'M5 Calibration | OpenToli',
+  title: 'AI Quality | OpenToli',
 }
 
 export const dynamic = 'force-dynamic'
@@ -30,7 +29,7 @@ export default async function CalibrationPage() {
       <main className="content-page">
         <div className="empty-state">
           <h1>Editor access required</h1>
-          <p>Calibration status is available only to Editors.</p>
+          <p>AI quality reporting is available only to Editors.</p>
           <div className="empty-actions">
             <Link href="/drafts">View public drafts</Link>
             <Link href="/profile">Profile</Link>
@@ -67,16 +66,15 @@ export default async function CalibrationPage() {
     <WorkspaceShell>
       <main className="content-page workspace-page">
         <div className="page-heading">
-          <p className="eyebrow">M5 calibration</p>
-          <h1>Track the fixed 50-term calibration batch.</h1>
+          <p className="eyebrow">AI quality report</p>
+          <h1>Measure AI quality without creating a second work queue.</h1>
           <p>
-            The calibration flow measures quality and cost before scaling generation. Preparation
-            and worker execution stay controlled; this page makes the run policy, job evidence, and
-            human outcome notes easier to find.
+            This page is read-only. Editors finish terminology and rate AI output in the Review
+            Queue; this report aggregates those decisions, costs, and retained job evidence.
           </p>
         </div>
 
-        <section className="metric-grid" aria-label="Calibration summary">
+        <section className="metric-grid" aria-label="AI quality summary">
           <article>
             <span>Manifest terms</span>
             <strong>{validation.stats.termCount}</strong>
@@ -85,7 +83,7 @@ export default async function CalibrationPage() {
           <article>
             <span>Generated drafts</span>
             <strong>{dashboard.summary.draftsGenerated}</strong>
-            <p>Calibration drafts with retained AI provenance</p>
+            <p>AI drafts with retained generation provenance</p>
           </article>
           <article>
             <span>Queued jobs</span>
@@ -101,7 +99,7 @@ export default async function CalibrationPage() {
 
         <section className="workspace-grid calibration-rollup-grid">
           <div className="workspace-panel">
-            <div className="panel-heading"><div><p className="eyebrow">Aggregate quality</p><h2>Calibration metrics</h2></div></div>
+            <div className="panel-heading"><div><p className="eyebrow">Aggregate quality</p><h2>AI quality metrics</h2></div></div>
             <dl className="job-detail-list job-detail-list-wide">
               <div><dt>First five</dt><dd>{rollup.firstBatch.outcomesRecorded}/{rollup.firstBatch.size}{rollup.firstBatch.complete ? ' complete' : ' reviewed'}</dd></div>
               <div><dt>Acceptance</dt><dd>{rollup.acceptanceRate}%</dd></div>
@@ -183,8 +181,8 @@ export default async function CalibrationPage() {
         <section className="workspace-panel">
           <div className="panel-heading">
             <div>
-              <p className="eyebrow">Review outcomes</p>
-              <h2>Human calibration evidence</h2>
+              <p className="eyebrow">Quality outcomes</p>
+              <h2>Recorded AI quality evidence</h2>
             </div>
           </div>
           <div className="calibration-item-list">
@@ -200,7 +198,11 @@ export default async function CalibrationPage() {
                       {item.subcategory} / {item.context}
                     </p>
                   </div>
-                  {item.draft ? <Link href={`/workspace/drafts/${item.draft.id}`}>Open draft</Link> : null}
+                  {item.draft ? (
+                    <Link href={`/workspace/drafts/${item.draft.id}`}>
+                      {item.outcome ? 'View review record' : 'Review in queue'}
+                    </Link>
+                  ) : null}
                 </div>
 
                 <div className="calibration-evidence">
@@ -225,16 +227,15 @@ export default async function CalibrationPage() {
                   </div>
                 ) : null}
 
-                {item.draft ? (
-                  <details className="calibration-outcome-details">
-                    <summary>{item.outcome ? 'Update outcome' : 'Record outcome'}</summary>
-                    <CalibrationOutcomeForm draftId={item.draft.id} outcome={item.outcome} />
-                  </details>
-                ) : (
+                {!item.draft ? (
                   <p className="muted-copy">
-                    Prepare and run this calibration job before recording a human outcome.
+                    Prepare and run this calibration job before it can enter the Review Queue.
                   </p>
-                )}
+                ) : !item.outcome ? (
+                  <p className="muted-copy">
+                    Complete this draft in the Review Queue to record its AI quality outcome.
+                  </p>
+                ) : null}
               </article>
             ))}
           </div>
@@ -244,7 +245,7 @@ export default async function CalibrationPage() {
           <div className="panel-heading">
             <div>
               <p className="eyebrow">Batches</p>
-              <h2>Calibration batch records</h2>
+              <h2>Evaluation batch records</h2>
             </div>
           </div>
           <div className="batch-list">

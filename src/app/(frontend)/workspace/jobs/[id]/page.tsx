@@ -38,7 +38,7 @@ export default async function AgentJobDetailPage({ params }: JobDetailPageProps)
     <WorkspaceShell>
       <main className="content-page workspace-page">
         <Link className="back-link" href="/workspace/jobs">
-          Back to Agent Jobs
+          Back to System Activity
         </Link>
 
         <header className="reviewer-heading">

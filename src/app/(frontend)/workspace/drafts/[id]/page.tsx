@@ -33,11 +33,11 @@ export default async function AIDraftEditorPage({ params }: EditorPageProps) {
     <WorkspaceShell>
       <main className="content-page reviewer-page">
       <Link className="back-link" href="/workspace/drafts">
-        Back to Draft Inbox
+        Back to Review Queue
       </Link>
       <header className="reviewer-heading">
         <div>
-          <p className="eyebrow">Edit AI Draft</p>
+          <p className="eyebrow">Review AI draft</p>
           <h1>{draft.inputHeadword}</h1>
           <p>{[data.category, data.context].filter(Boolean).join(' / ')}</p>
           <p>
@@ -63,6 +63,7 @@ export default async function AIDraftEditorPage({ params }: EditorPageProps) {
               headwordEn: generated.headwordEn,
               recommendedTranslationMn: generated.recommendedTranslationMn,
             }}
+            qualityReview={data.qualityReview}
           />
         ) : (
           <p>This draft is no longer active.</p>

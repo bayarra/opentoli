@@ -1,6 +1,7 @@
 import { validateGenerationOutputV1 } from '@/ai/schemas/v1'
+import { isM5CalibrationDraft } from '@/calibration/outcomes'
 import config from '@/payload.config'
-import type { AiDraft, Comment, Source, User } from '@/payload-types'
+import type { AiDraft, CalibrationOutcome, Comment, Source, User } from '@/payload-types'
 import { getPayload } from 'payload'
 
 import { isEditorUser } from './permissions'
@@ -56,14 +57,27 @@ export const getEditorDraft = async (id: number, user: User) => {
     return null
   }
 
-  const comments = await payload.find({
-    collection: 'comments',
-    depth: 1,
-    limit: 100,
-    overrideAccess: true,
-    sort: 'createdAt',
-    where: { aiDraft: { equals: draft.id } },
-  })
+  const isCalibrationDraft = await isM5CalibrationDraft(draft as AiDraft)
+  const [comments, calibrationOutcomes] = await Promise.all([
+    payload.find({
+      collection: 'comments',
+      depth: 1,
+      limit: 100,
+      overrideAccess: true,
+      sort: 'createdAt',
+      where: { aiDraft: { equals: draft.id } },
+    }),
+    isCalibrationDraft
+      ? payload.find({
+          collection: 'calibration-outcomes',
+          depth: 0,
+          limit: 1,
+          overrideAccess: true,
+          where: { aiDraft: { equals: draft.id } },
+        })
+      : Promise.resolve({ docs: [] }),
+  ])
+  const calibrationOutcome = calibrationOutcomes.docs[0] as CalibrationOutcome | undefined
 
   return {
     category: relationLabel(draft.inputCategory, 'nameEn'),
@@ -78,6 +92,17 @@ export const getEditorDraft = async (id: number, user: User) => {
     context: relationLabel(draft.inputContext, 'nameEn'),
     draft: draft as AiDraft,
     generated,
+    qualityReview: isCalibrationDraft
+      ? {
+          outcome: calibrationOutcome
+            ? {
+                editLevel: calibrationOutcome.editLevel,
+                notes: calibrationOutcome.notes,
+                outcome: calibrationOutcome.outcome,
+              }
+            : null,
+        }
+      : null,
     references: (draft.sources || []).flatMap((value) => {
       if (!value || typeof value !== 'object') return []
       const reference = value as Source

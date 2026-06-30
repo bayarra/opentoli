@@ -106,11 +106,11 @@ risk routing, background jobs, retries, and generation provenance.
 ## M4 - Public Draft Feedback and Simple Editor Workflow
 
 **Objective:** Let anyone inspect clearly unverified AI drafts, let authenticated
-contributors improve them, and let an Editor edit and publish from one simple Draft Inbox.
+contributors improve them, and let an Editor edit and publish from one simple Review Queue.
 
 **Scope:** Safe public draft projection, `Unverified AI Draft` labeling, basic public
 registration and sign-in, authenticated comments and translation suggestions, moderation,
-rate limits and anti-abuse controls, one Draft Inbox, direct field editing, background save,
+rate limits and anti-abuse controls, one Review Queue, direct field editing, background save,
 explicit Publish, secondary Hide, and automatic attribution.
 
 **Exit criteria:**
@@ -124,6 +124,8 @@ explicit Publish, secondary Hide, and automatic attribution.
 - Editing saves in the background and Publish is the only primary decision action.
 - Hide removes an unusable draft from the active inbox without deleting its provenance.
 - Publication records the editor and field changes automatically.
+- Evaluation drafts capture one compact AI-quality rating with the same Publish or Hide decision.
+- AI Quality reporting is read-only and does not create a second editorial queue.
 - Internal AI routes and optional references do not add publication stages or override an Editor's explicit Publish action.
 - Keyboard operation and critical accessibility checks pass.
 

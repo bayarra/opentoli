@@ -17,8 +17,9 @@ contracts, provider-neutral staged execution, idempotent enqueueing, retry resum
 risk routing, retained provenance, deterministic end-to-end evidence, and a completed live
 OpenAI reference run for `authentication`. M4 now has an explicit safe public projection, registration,
 authenticated pending feedback, moderation, and a deliberately simple Editor experience:
-one Workspace menu, one Draft Inbox, four editable fields, optional references, background save, one
-Publish action, and secondary Hide. Audit and AI provenance remain automatic in the
+one Workspace menu, one Review Queue, four editable fields, optional references, background save,
+one Publish action, and secondary Hide. Evaluation drafts capture a compact AI-quality rating in
+the same decision. Audit and AI provenance remain automatic in the
 background, while unsafe reference URLs are omitted from public projections. Keyboard-only
 critical flows and serious WCAG A/AA violations now have automated browser coverage. Stable
 `/api/v1` read contracts now expose public search, terms, categories, public AI drafts, and
@@ -32,9 +33,9 @@ remain `not_checked`; internal routes remain provenance and do not control Edito
 Editors can now open or close public draft feedback and optionally
 manage background references from OpenToli web instead of Payload admin. Signed-in
 contributors can now track their own comments, translation suggestions, moderation status, and
-outcomes from an OpenToli web dashboard. Editors can record M5 human calibration outcomes,
-edit-level notes, language/domain assessments, go/no-go hints, and safe job evidence from
-`/workspace/calibration`. Editors can also update published canonical terms, translations,
+outcomes from an OpenToli web dashboard. Editors finish terminology and AI-quality capture in the
+Review Queue; `/workspace/calibration` is now a read-only AI Quality report. Editors can also
+update published canonical terms, translations,
 examples, contexts, and optional references from `/workspace/terms` without Payload Admin.
 Contributors can submit structured bilingual examples and reference suggestions alongside
 comments and translation suggestions; Editors moderate all of them in one web queue.
@@ -42,7 +43,7 @@ Calibration reporting now derives first-five completion, quality rates, disagree
 latency, cost, and decision-readiness evidence without automating the final M5 decision.
 Editors can prepare manual or CSV imports, review each parsed row, resolve duplicates, and
 explicitly queue accepted terms from `/workspace/imports` without executing the AI provider.
-Agent Jobs can be searched and filtered by status or import batch, with paginated results
+System Activity can be searched and filtered by job status or import batch, with paginated results
 grouped by batch in both Workspace and the stable Editor API.
 
 ## Milestone Status
@@ -64,6 +65,11 @@ grouped by batch in both Workspace and the stable Editor API.
 
 ### 2026-06-29
 
+- Consolidated editorial completion into one Review Queue: M5 quality rating and optional notes now commit atomically with Publish or Hide.
+- Converted `/workspace/calibration` into the read-only AI Quality report; outcome forms were removed from the report.
+- Renamed normal Editor navigation to Review Queue, Published Terms, Suggestions, Imports, AI Quality, and secondary System Activity.
+- Added compact quality-rating mapping and integration coverage proving one explicit action publishes canonical content and records its evaluation outcome.
+- Passed TypeScript, ESLint, all 49 integration tests, the production build, and all 18 browser tests; no migration was required.
 - Confirmed `build` outcome 19 as `accepted_with_edits` / `rewrite`, with `major_edits` language assessment and `needs_expert_review` domain assessment.
 - Processed all eight remaining second-batch jobs by explicit operator request: jobs 607-614 completed on attempt 1 and created private drafts 439-446 without publishing.
 - Recorded combined evidence for those eight jobs: 26,767 input tokens, 23,404 output tokens, 252,951 ms provider latency, zero blocking issues, and an empty Generation Job queue.
@@ -318,12 +324,12 @@ grouped by batch in both Workspace and the stable Editor API.
 | Migration status          | Pass        | `npm run payload -- migrate:status` reports all ten tracked migrations ran locally                                |
 | Local HTTP smoke          | Pass        | `/`, `/register`, and `/login` return `200`; an unknown draft returns `404`                                            |
 | M4 browser regression     | Pass        | Browser tests cover public/auth/feedback/Editor keyboard flows, optional references, job detail, and serious WCAG A/AA scans              |
-| Web workflow navigation   | Pass        | Global navigation plus Workspace drafts, terms, feedback, imports, filtered jobs, calibration, and admin maintenance build successfully; 18 browser tests pass |
+| Web workflow navigation   | Pass        | Workspace navigation uses Review Queue, Published Terms, Suggestions, Imports, AI Quality, and secondary System Activity |
 | Web account workflow      | Pass        | `/profile`, header account links, Editor Workspace visibility, contributions, and Profile-only logout pass in 18 browser tests |
-| Editor web Workspace      | Pass        | `/workspace` and Workspace menu organize draft, feedback, generation job, calibration, batch, and published-term summaries without raw AI outputs |
+| Editor web Workspace      | Pass        | `/workspace` separates the Review Queue, canonical terms, suggestions, quality reporting, and system activity without raw AI outputs |
 | Feedback Moderation       | Pass        | `/workspace/feedback` and `/api/editor/feedback/[id]` let Editors approve, reject, or hide pending feedback without canonical mutations |
 | Contributor Dashboard     | Pass        | `/contributions` shows signed-in users only their own comments, suggestions, statuses, moderator notes, and safe target links |
-| M5 Calibration Outcomes   | Pass        | `/workspace/calibration` records Editor-only human outcomes with safe job evidence; migration `20260625_044141_m5_calibration_outcomes` is applied |
+| M5 Calibration Outcomes   | Pass        | Review Queue decisions atomically record compact quality outcomes; `/workspace/calibration` reports safe evidence read-only |
 | Published term editing    | Pass        | `/workspace/terms` updates canonical wording and related records transactionally with Editor-only integration coverage |
 | Proposal moderation       | Pass        | Translation, example, and reference proposals stay pending and advisory; migration `20260630_021449_expanded_proposal_moderation` is applied |
 | Calibration reporting     | Pass        | First-five progress, aggregate quality/cost metrics, and non-automatic go/no-go readiness are derived and browser-tested |
@@ -333,26 +339,26 @@ grouped by batch in both Workspace and the stable Editor API.
 
 ## Current Work
 
-M3 and M4 are complete. Normal Editor work for drafts, feedback moderation, optional references,
-published terms, agent-job status, and calibration status now lives under the Workspace menu
+M3 and M4 are complete. Normal Editor work for drafts, suggestions, optional references,
+published terms, AI quality, and system activity now lives under the Workspace menu
 in OpenToli web. Stable `/api/v1` read contracts now cover the public dictionary/draft
 surfaces and Editor Workspace summaries for future mobile use. Editors can inspect safe job
 detail and queue eligible failed/retry-scheduled jobs for retry without starting provider work
 from the browser. Editors can also manage draft public feedback visibility and optional references
 from the web draft page. Contributors can track their own moderated comments, translations,
 examples, and reference proposals from `/contributions` without opening Payload admin.
-`/workspace/calibration` records human outcomes and derives quality, cost, progress, and
-decision-readiness metrics. M5 is in progress: the fixed 50-term manifest is tracked and
+The Review Queue records human outcomes with Publish or Hide. `/workspace/calibration` derives
+read-only quality, cost, progress, and decision-readiness metrics. M5 is in progress: the fixed 50-term manifest is tracked and
 validated, and the first five jobs, Editor decisions, and calibration outcomes are complete.
 Priorities 6-15 have completed generation. `branch` and `build` have recorded rewrite outcomes;
-private drafts 439-446 still require individual human review and calibration. The worker queue is
+private drafts 439-446 still require individual Review Queue decisions. The worker queue is
 empty, and no generated content was published automatically. See
 [`NEXT_TASKS.md`](NEXT_TASKS.md) for the brief next-agent handoff covering admin/web
 separation, remaining admin-to-web moves, and remaining milestones.
 
 ## Next Actions
 
-1. Review private drafts 439-446 (`cache` through `configuration`) and record each factual outcome in `/workspace/calibration`.
+1. Complete private drafts 439-446 (`cache` through `configuration`) in the Review Queue; the same decision records AI-quality evidence.
 2. Recheck aggregate quality and disagreement metrics after all ten second-batch outcomes exist.
 3. Decide whether to prepare priorities 16-50 with `npm run m5:prepare:remaining`; do not infer approval from generation success alone.
 4. Add logged-in Editor success coverage for `/api/v1/editor/*` before mobile work begins.

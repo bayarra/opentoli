@@ -6,6 +6,9 @@
 
 > Amendment (2026-06-29): source and internal-route gating below is superseded by
 > [ADR-0005](0005-optional-reference-provenance.md).
+>
+> Amendment (2026-06-29): the Draft Inbox is named Review Queue. Evaluation outcomes are
+> captured with the same Publish or Hide transaction, while AI Quality is read-only reporting.
 
 ## Context
 
@@ -21,9 +24,12 @@ Use one visible editorial workflow:
 AI Draft -> Editor edits -> Publish
 ```
 
-The editor works from one Draft Inbox. Headword, translation, and explanations save in the
+The editor works from one Review Queue. Headword, translation, and explanations save in the
 background. `Publish` is the only primary decision and is always an explicit human action.
 `Hide` is a secondary inbox-management action that preserves the draft and all provenance.
+When the draft belongs to an active evaluation set, the same page asks one compact quality
+question. The answer and editorial decision commit together. AI Quality aggregates those
+records but does not expose a second outcome form.
 
 Visitors may read explicitly public unverified drafts. Members may submit moderated
 feedback. Editors may edit and publish. Existing granular editorial roles are treated as
@@ -31,14 +37,15 @@ compatibility aliases for Editor rather than separate workflows.
 
 Risk, confidence, critique, route, provider, prompt, source, and generation metadata remain
 available internally for provenance and quality analysis. They do not create visible review
-stages or publication confirmations. Blocked or unsourced drafts cannot publish.
+stages or publication confirmations. Optional references and internal routes do not gate an
+Editor's explicit publication decision.
 
-Publishing atomically records the editor and field changes, materializes canonical content,
-and publishes it. AI and community actions still cannot publish.
+Publishing atomically records the editor, field changes, and any required evaluation outcome,
+materializes canonical content, and publishes it. AI and community actions still cannot publish.
 
 ## Consequences
 
-Editors have one inbox, one editable page, and one main action. Training and operational
+Editors have one queue, one editable page, and one main action. Training and operational
 cost are lower. Advanced multi-reviewer routing and merge tools are deferred until real
 usage demonstrates a need.
 

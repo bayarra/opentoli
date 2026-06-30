@@ -15,7 +15,8 @@ metrics, and review evidence.
 - Validator: [`../src/scripts/validateM5Calibration.ts`](../src/scripts/validateM5Calibration.ts)
 - Prepare script: [`../src/scripts/prepareM5Calibration.ts`](../src/scripts/prepareM5Calibration.ts)
 - Worker: [`../src/scripts/runAIWorker.ts`](../src/scripts/runAIWorker.ts)
-- Web outcome recorder: `/workspace/calibration`
+- Outcome capture: the Publish or Hide decision in `/workspace/drafts/[id]`
+- Read-only quality report: `/workspace/calibration`
 - Aggregate quality, cost, first-five progress, and go/no-go rollup: `/workspace/calibration`
 - Outcome migration: `20260625_044141_m5_calibration_outcomes`
 - Reference cleanup migrations: `20260630_012122_optional_references_cleanup` and `20260630_012522_reference_enums`
@@ -220,8 +221,8 @@ Reviewer notes to resolve before continuing:
 
 ## Review Rubric
 
-For each generated draft, an editor should record the human outcome in
-`/workspace/calibration`:
+For each generated draft, an Editor completes the terminology decision and compact AI-quality
+rating together in `/workspace/drafts/[id]`. `/workspace/calibration` is the read-only report:
 
 | Field | Record |
 | --- | --- |

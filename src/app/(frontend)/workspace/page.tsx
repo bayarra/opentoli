@@ -45,21 +45,21 @@ export default async function WorkspacePage() {
       <main className="content-page workspace-page">
       <div className="page-heading">
         <p className="eyebrow">Editor workspace</p>
-        <h1>Terminology and agent work, without opening admin.</h1>
+        <h1>Review, publish, and maintain terminology.</h1>
         <p>
-          Track drafts, feedback, jobs, batches, and recent publications from OpenToli web. This
-          page intentionally shows safe summaries only; raw prompts, provider output, and private
-          job errors remain outside the normal workflow.
+          Start in the Review Queue for AI drafts. Published Terms maintains canonical entries,
+          Suggestions handles community proposals, and AI Quality reports how well generation is
+          working. System details stay secondary.
         </p>
       </div>
 
       <section className="workspace-actions" aria-label="Workspace actions">
-        <Link href="/workspace/drafts">Open Draft Inbox</Link>
+        <Link href="/workspace/drafts">Open Review Queue</Link>
         <Link href="/workspace/terms">Edit published terms</Link>
-        <Link href="/workspace/feedback">Moderate feedback</Link>
-        <Link href="/workspace/jobs">Agent jobs</Link>
+        <Link href="/workspace/feedback">Review suggestions</Link>
         <Link href="/workspace/imports">Prepare imports</Link>
-        <Link href="/workspace/calibration">Calibration</Link>
+        <Link href="/workspace/calibration">View AI quality</Link>
+        <Link href="/workspace/jobs">System activity</Link>
         <Link href="/drafts">Public drafts</Link>
       </section>
 

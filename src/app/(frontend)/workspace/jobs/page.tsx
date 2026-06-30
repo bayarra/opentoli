@@ -7,7 +7,7 @@ import { redirect } from 'next/navigation'
 
 export const metadata: Metadata = {
   robots: { follow: false, index: false },
-  title: 'Agent Jobs | OpenToli',
+  title: 'System Activity | OpenToli',
 }
 
 export const dynamic = 'force-dynamic'

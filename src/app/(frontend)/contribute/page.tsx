@@ -28,7 +28,7 @@ export default async function ContributePage() {
             </p>
             <p className="muted-copy">
               Use the main menu for Public drafts, Search, Workflow, Contributions, Profile, and
-              the Editor Draft Inbox when your role has access.
+              the Editor Review Queue when your role has access.
             </p>
           </>
         ) : (

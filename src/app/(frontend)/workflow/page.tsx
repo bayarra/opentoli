@@ -24,7 +24,7 @@ const steps = [
   {
     action: 'Edit and publish',
     audience: 'Editors',
-    body: 'Open the Workspace to monitor drafts, feedback, jobs, and batches. From there, use the Draft Inbox to edit the English headword, Mongolian translation, English explanation, and Mongolian explanation, then choose Publish.',
+    body: 'Use the Review Queue as the single place to edit an AI draft, rate its quality, and Publish or Hide. Published Terms contains canonical entries; AI Quality is a read-only report.',
     href: '/workspace',
     link: 'Open Workspace',
   },
@@ -60,8 +60,8 @@ export default function WorkflowPage() {
           <p className="eyebrow">Rule of thumb</p>
           <h2 id="web-first-rule">If it changes terminology, do it in OpenToli web.</h2>
           <p>
-            Contributors should use public draft feedback forms. Editors should use the Draft
-            Inbox. The admin panel should not be the main place for translation suggestions,
+            Contributors should use public draft feedback forms. Editors should use the Review
+            Queue. The admin panel should not be the main place for translation suggestions,
             editorial decisions, or publication.
           </p>
         </div>

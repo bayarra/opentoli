@@ -28,7 +28,7 @@ export default async function PublicDraftsPage() {
         <div className="empty-state">
           <h2>No public drafts are open right now.</h2>
           <p>
-            Editors can open drafts for feedback from the Draft Inbox. Until then,
+            Editors can open drafts for feedback from the Review Queue. Until then,
             contributors can search published terms or read the workflow guide.
           </p>
           <div className="empty-actions">

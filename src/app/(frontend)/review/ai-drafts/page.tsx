@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 
 export const metadata: Metadata = {
   robots: { follow: false, index: false },
-  title: 'Draft Inbox | OpenToli',
+  title: 'Review Queue | OpenToli',
 }
 
 export default function DraftInboxRedirectPage() {

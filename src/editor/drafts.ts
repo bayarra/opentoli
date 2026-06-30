@@ -1,4 +1,9 @@
 import { validateGenerationOutputV1, validateResearchPacketV1 } from '@/ai/schemas/v1'
+import {
+  isM5CalibrationDraft,
+  recordCalibrationOutcome,
+  type CalibrationOutcomeInput,
+} from '@/calibration/outcomes'
 import type { AiDraft, Term, Translation, User } from '@/payload-types'
 import {
   commitTransaction,
@@ -285,25 +290,45 @@ const materializePublishedTerm = async ({
 
 export const publishEditorDraft = async ({
   actorId,
+  calibrationOutcome,
   draftId,
   payload,
 }: {
   actorId: number
+  calibrationOutcome?: CalibrationOutcomeInput
   draftId: number
   payload: Payload
 }) => {
   const { actor, draft } = await loadEditorAndDraft(payload, actorId, draftId)
+  const requiresCalibrationOutcome = await isM5CalibrationDraft(draft)
+  if (requiresCalibrationOutcome && !calibrationOutcome) {
+    throw new EditorWorkflowError('Rate the AI result before completing this calibration draft.')
+  }
+  if (calibrationOutcome && calibrationOutcome.aiDraftId !== draft.id) {
+    throw new EditorWorkflowError('The AI quality rating does not match this draft.')
+  }
+  const outcomes = await fieldOutcomes(
+    payload,
+    draft,
+    parseEditorDraftFields(validateGenerationOutputV1(draft.generatedPayload)),
+  )
+  const modified = Object.keys(outcomes.modifiedFields).length > 0
+  if (calibrationOutcome) {
+    const ratedAsUnchanged =
+      calibrationOutcome.outcome === 'accepted_as_is' && calibrationOutcome.editLevel === 'none'
+    if (modified === ratedAsUnchanged) {
+      throw new EditorWorkflowError(
+        modified
+          ? 'Choose an AI quality rating that reflects your edits.'
+          : 'Choose Used as-is because no draft fields were changed.',
+      )
+    }
+  }
 
   const req = await createLocalReq({ context: { aiDraftDecision: true }, user: actor }, payload)
   await initTransaction(req)
   try {
     const result = await materializePublishedTerm({ actor, draft, payload, req })
-    const outcomes = await fieldOutcomes(
-      payload,
-      draft,
-      parseEditorDraftFields(validateGenerationOutputV1(draft.generatedPayload)),
-    )
-    const modified = Object.keys(outcomes.modifiedFields).length > 0
     const decisionAt = new Date().toISOString()
     const updatedDraft = await payload.update({
       collection: 'ai-drafts',
@@ -357,8 +382,21 @@ export const publishEditorDraft = async ({
       overrideAccess: true,
       req,
     })
+    const recordedCalibrationOutcome = calibrationOutcome
+      ? await recordCalibrationOutcome({
+          actor,
+          fields: calibrationOutcome,
+          payload,
+          req,
+        })
+      : null
     await commitTransaction(req)
-    return { decision, draft: updatedDraft, ...result }
+    return {
+      calibrationOutcome: recordedCalibrationOutcome,
+      decision,
+      draft: updatedDraft,
+      ...result,
+    }
   } catch (error) {
     await killTransaction(req)
     throw error
@@ -390,14 +428,23 @@ export const updateEditorDraftVisibility = async ({
 
 export const hideEditorDraft = async ({
   actorId,
+  calibrationOutcome,
   draftId,
   payload,
 }: {
   actorId: number
+  calibrationOutcome?: CalibrationOutcomeInput
   draftId: number
   payload: Payload
 }) => {
   const { actor, draft } = await loadEditorAndDraft(payload, actorId, draftId)
+  const requiresCalibrationOutcome = await isM5CalibrationDraft(draft)
+  if (requiresCalibrationOutcome && !calibrationOutcome) {
+    throw new EditorWorkflowError('Rate the AI result before completing this calibration draft.')
+  }
+  if (calibrationOutcome && calibrationOutcome.aiDraftId !== draft.id) {
+    throw new EditorWorkflowError('The AI quality rating does not match this draft.')
+  }
   const req = await createLocalReq({ context: { aiDraftDecision: true }, user: actor }, payload)
   await initTransaction(req)
   try {
@@ -408,7 +455,7 @@ export const hideEditorDraft = async ({
       data: {
         decidedAt: decisionAt,
         publicVisibility: 'private',
-        rejectionReasons: ['Hidden from the Draft Inbox by an Editor.'],
+        rejectionReasons: ['Hidden from the Review Queue by an Editor.'],
         reviewOutcome: 'rejected',
         reviewedBy: actor.id,
         status: 'rejected',
@@ -426,17 +473,25 @@ export const hideEditorDraft = async ({
         decisionAt,
         newReviewRoute: draft.reviewRoute,
         newStatus: 'rejected',
-        notes: 'Hidden from the Draft Inbox by an Editor.',
+        notes: 'Hidden from the Review Queue by an Editor.',
         previousReviewRoute: draft.reviewRoute,
         previousStatus: draft.status,
-        rejectionReasons: ['Hidden from the Draft Inbox by an Editor.'],
+        rejectionReasons: ['Hidden from the Review Queue by an Editor.'],
         riskLevel: draft.riskLevel,
       },
       overrideAccess: true,
       req,
     })
+    const recordedCalibrationOutcome = calibrationOutcome
+      ? await recordCalibrationOutcome({
+          actor,
+          fields: calibrationOutcome,
+          payload,
+          req,
+        })
+      : null
     await commitTransaction(req)
-    return { decision, draft: updatedDraft }
+    return { calibrationOutcome: recordedCalibrationOutcome, decision, draft: updatedDraft }
   } catch (error) {
     await killTransaction(req)
     throw error

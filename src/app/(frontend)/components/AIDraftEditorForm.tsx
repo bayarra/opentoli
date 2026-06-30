@@ -13,13 +13,34 @@ type DraftFields = {
 type EditorFormProps = {
   draftId: number
   initial: DraftFields
+  qualityReview: null | {
+    outcome: null | {
+      editLevel: string
+      notes: string
+      outcome: string
+    }
+  }
 }
 
-export function AIDraftEditorForm({ draftId, initial }: EditorFormProps) {
+type QualityRating = 'incorrect' | 'minor_edits' | 'rewritten' | 'used_as_is'
+
+const initialQualityRating = (qualityReview: EditorFormProps['qualityReview']): QualityRating => {
+  const outcome = qualityReview?.outcome
+  if (!outcome || outcome.editLevel === 'none') return 'used_as_is'
+  if (['needs_regeneration', 'rejected'].includes(outcome.outcome)) return 'incorrect'
+  if (outcome.editLevel === 'minor') return 'minor_edits'
+  return 'rewritten'
+}
+
+export function AIDraftEditorForm({ draftId, initial, qualityReview }: EditorFormProps) {
   const [dirty, setDirty] = useState(false)
   const [error, setError] = useState('')
   const [fields, setFields] = useState(initial)
   const [publishing, setPublishing] = useState(false)
+  const [qualityNotes, setQualityNotes] = useState(qualityReview?.outcome?.notes || '')
+  const [qualityRating, setQualityRating] = useState<QualityRating>(() =>
+    initialQualityRating(qualityReview),
+  )
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved'>('idle')
   const revision = useRef(0)
 
@@ -71,7 +92,12 @@ export function AIDraftEditorForm({ draftId, initial }: EditorFormProps) {
       return
     }
     const response = await fetch(`/api/editor/ai-drafts/${draftId}`, {
-      body: JSON.stringify({ action: 'publish' }),
+      body: JSON.stringify({
+        action: 'publish',
+        ...(qualityReview
+          ? { qualityNotes, qualityRating }
+          : {}),
+      }),
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -82,14 +108,19 @@ export function AIDraftEditorForm({ draftId, initial }: EditorFormProps) {
       setPublishing(false)
       return
     }
-    window.location.assign(`/terms/${result.slug}`)
+    window.location.assign('/workspace/drafts?completed=published')
   }
 
   const hide = async () => {
     setPublishing(true)
     setError('')
     const response = await fetch(`/api/editor/ai-drafts/${draftId}`, {
-      body: JSON.stringify({ action: 'hide' }),
+      body: JSON.stringify({
+        action: 'hide',
+        ...(qualityReview
+          ? { qualityNotes, qualityRating }
+          : {}),
+      }),
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
@@ -100,7 +131,7 @@ export function AIDraftEditorForm({ draftId, initial }: EditorFormProps) {
       setPublishing(false)
       return
     }
-    window.location.assign('/workspace/drafts')
+    window.location.assign('/workspace/drafts?completed=hidden')
   }
 
   return (
@@ -154,13 +185,42 @@ export function AIDraftEditorForm({ draftId, initial }: EditorFormProps) {
           value={fields.explanationMn}
         />
       </label>
+      {qualityReview ? (
+        <fieldset className="draft-quality-review">
+          <legend>AI quality</legend>
+          <p>Saved with your Publish or Hide decision. This measures the AI, not the term.</p>
+          <label>
+            How much work did the AI result need?
+            <select
+              disabled={publishing}
+              onChange={(event) => setQualityRating(event.target.value as QualityRating)}
+              value={qualityRating}
+            >
+              <option value="used_as_is">Used as-is</option>
+              <option value="minor_edits">Minor edits</option>
+              <option value="rewritten">Rewritten</option>
+              <option value="incorrect">Incorrect or unusable</option>
+            </select>
+          </label>
+          <label>
+            Quality note (optional)
+            <textarea
+              disabled={publishing}
+              onChange={(event) => setQualityNotes(event.target.value)}
+              placeholder="Briefly note what the AI got right or wrong."
+              rows={3}
+              value={qualityNotes}
+            />
+          </label>
+        </fieldset>
+      ) : null}
       {error ? (
         <p className="form-error" role="alert">
           {error}
         </p>
       ) : null}
       <button disabled={publishing} type="submit">
-        {publishing ? 'Publishing...' : 'Publish'}
+        {publishing ? 'Publishing...' : 'Publish term'}
       </button>
       <details className="editor-more-actions">
         <summary>More</summary>

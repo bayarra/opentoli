@@ -2,11 +2,13 @@ import { enqueueGenerationJob, processGenerationJob } from '@/ai/pipeline/jobs'
 import { DeterministicAIProvider } from '@/ai/providers/deterministic'
 import {
   buildCalibrationRollup,
+  isM5CalibrationDraft,
   parseCalibrationOutcomeFields,
+  parseDraftQualityFields,
   recordCalibrationOutcome,
 } from '@/calibration/outcomes'
 import config from '@/payload.config'
-import type { User } from '@/payload-types'
+import type { AiDraft, User } from '@/payload-types'
 import { getPayload, type Payload } from 'payload'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
@@ -31,6 +33,32 @@ const relationId = (value: unknown): number | null => {
 }
 
 describe('M5 calibration outcomes', () => {
+  it('maps the compact Review Queue rating and detects immutable M5 provenance', async () => {
+    expect(
+      parseDraftQualityFields(
+        { qualityNotes: '', qualityRating: 'rewritten' },
+        42,
+        'publish',
+      ),
+    ).toMatchObject({
+      aiDraftId: 42,
+      domainAssessment: 'not_checked',
+      editLevel: 'rewrite',
+      languageAssessment: 'not_checked',
+      outcome: 'accepted_with_edits',
+    })
+    expect(
+      parseDraftQualityFields({ qualityRating: 'incorrect' }, 42, 'hide'),
+    ).toMatchObject({ editLevel: 'rewrite', outcome: 'rejected' })
+    await expect(
+      isM5CalibrationDraft({
+        generationJob: { inputHeadword: 'cache' },
+        inputCategory: { slug: 'technology-software' },
+        inputHeadword: 'edited headword',
+      } as unknown as AiDraft),
+    ).resolves.toBe(true)
+  })
+
   beforeAll(async () => {
     payload = await getPayload({ config: await config })
 

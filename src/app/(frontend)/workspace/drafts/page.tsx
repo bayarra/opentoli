@@ -7,22 +7,27 @@ import { redirect } from 'next/navigation'
 
 export const metadata: Metadata = {
   robots: { follow: false, index: false },
-  title: 'Draft Inbox | OpenToli',
+  title: 'Review Queue | OpenToli',
 }
 
 export const dynamic = 'force-dynamic'
 
-export default async function DraftInboxPage() {
+export default async function DraftInboxPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ completed?: string }>
+}) {
   const user = await getCurrentUser()
   if (!user) redirect('/login?next=%2Fworkspace%2Fdrafts')
   const drafts = await getDraftInbox(user)
+  const completed = (await searchParams).completed
 
   if (!drafts) {
     return (
       <main className="content-page">
         <div className="empty-state">
           <h1>Editor access required</h1>
-          <p>The Draft Inbox is available only to Editors.</p>
+          <p>The Review Queue is available only to Editors.</p>
           <div className="empty-actions">
             <Link href="/drafts">View public drafts</Link>
             <Link href="/profile">Profile</Link>
@@ -38,14 +43,21 @@ export default async function DraftInboxPage() {
       <header className="reviewer-heading">
         <div>
           <p className="eyebrow">Simple editor workflow</p>
-          <h1>Draft Inbox</h1>
+          <h1>Review Queue</h1>
           <p>
-            Work here, not in Payload admin, for normal terminology decisions. Open a draft, edit
-            the four public fields, then Publish or Hide. References are optional background links.
+            This is the only place to finish AI terminology work. Edit the public wording, rate
+            the AI result when shown, then Publish or Hide. References remain optional.
           </p>
         </div>
         <p>{drafts.length} active drafts</p>
       </header>
+      {completed ? (
+        <p className="form-success" role="status">
+          {completed === 'published'
+            ? 'Term published and AI quality recorded.'
+            : 'Draft hidden and AI quality recorded.'}
+        </p>
+      ) : null}
       <div className="review-queue">
         {drafts.map((draft) => (
           <Link href={`/workspace/drafts/${draft.id}`} key={draft.id}>

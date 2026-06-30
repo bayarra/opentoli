@@ -491,7 +491,7 @@ Public users must register or sign in before commenting or suggesting a translat
 
 ### 6.3 Editors
 
-- Open AI drafts from one Draft Inbox
+- Open AI drafts from one Review Queue
 - Edit the English headword, Mongolian translation, and explanations directly
 - Review optional references and community suggestions on the same page
 - Publish with one explicit human action
@@ -1329,12 +1329,18 @@ separately from the generated draft.
 The visible MVP workflow is intentionally limited to:
 
 ```text
-AI Draft -> Editor edits -> Publish
+AI Draft -> Review Queue -> Editor edits + AI quality rating -> Publish or Hide
 ```
 
-Editors work from one Draft Inbox. Changes save in the background. The page has one
-primary action, `Publish`, plus a secondary `Hide` action for removing an unusable draft
-from the active inbox. Hide preserves the draft and its provenance; it is not deletion.
+Editors work from one Review Queue. Changes save in the background. For calibration drafts,
+one compact AI-quality rating and optional note are saved atomically with the editorial
+decision. The page has one primary action, `Publish`, plus a secondary `Hide` action for
+removing an unusable draft from the active queue. Hide preserves the draft and its
+provenance; it is not deletion.
+
+The separate AI Quality page is a read-only report of recorded decisions, retained job
+evidence, cost, and aggregate metrics. It is not another task inbox and cannot publish,
+hide, or update an outcome. Published Terms is the maintenance surface after publication.
 
 AI risk, confidence, critique, and routing metadata may be retained internally for quality
 analysis, but they must not create separate inboxes, reviewer types, reroute controls,
@@ -1389,6 +1395,10 @@ Track:
 - Quality by category and risk level
 - Duplicate-detection accuracy
 - Cost and processing time per review-ready and published term
+
+Capture the human AI-quality outcome as part of the Review Queue decision whenever a draft
+belongs to an active evaluation set. Reporting pages aggregate this evidence but do not ask
+Editors to repeat or complete editorial work.
 
 ## 14. Headword Collection Strategy
 
