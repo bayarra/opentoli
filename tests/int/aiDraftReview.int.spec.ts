@@ -3,6 +3,7 @@ import { DeterministicAIProvider } from '@/ai/providers/deterministic'
 import { validateGenerationOutputV1 } from '@/ai/schemas/v1'
 import { parseDraftQualityFields } from '@/calibration/outcomes'
 import {
+  editorFieldsFromGeneration,
   hideEditorDraft,
   parseEditorDraftFields,
   publishEditorDraft,
@@ -221,6 +222,35 @@ describe('simple AI draft editor workflow', () => {
       id: technologyCategoryId,
       overrideAccess: true,
     })
+  })
+
+  it('opens AI drafts after removing duplicate generated alternatives', async () => {
+    const draft = await createPreparedDraft({
+      categoryId: technologyCategoryId,
+      categoryName: `Editor Technology ${suffix}`,
+      categorySlug: `editor-technology-${suffix}`,
+      headword: `duplicate alternative ${suffix}`,
+    })
+    const generated = validateGenerationOutputV1(draft.generatedPayload)
+    const duplicate = {
+      translationMn: generated.recommendedTranslationMn,
+      type: 'alternative' as const,
+    }
+    const fields = editorFieldsFromGeneration({
+      ...generated,
+      alternativeTranslations: [duplicate, duplicate, ...generated.alternativeTranslations],
+    })
+
+    expect(fields.alternativeTranslations).not.toContainEqual(
+      expect.objectContaining({ translationMn: generated.recommendedTranslationMn }),
+    )
+    expect(
+      new Set(
+        fields.alternativeTranslations.map((candidate) =>
+          candidate.translationMn.toLocaleLowerCase('mn-MN'),
+        ),
+      ).size,
+    ).toBe(fields.alternativeTranslations.length)
   })
 
   it('lets an Editor save direct field edits while members cannot edit', async () => {

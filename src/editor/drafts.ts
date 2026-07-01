@@ -1,7 +1,9 @@
 import {
+  getReviewableAlternativeTranslations,
   validateGenerationOutputV1,
   validateResearchPacketV1,
   type GenerationOutputV1,
+  type ReviewableAlternativeTranslation,
 } from '@/ai/schemas/v1'
 import {
   isM5CalibrationDraft,
@@ -28,12 +30,8 @@ const editableFieldNames = [
   'examples',
 ] as const
 
-type DraftAlternative = Omit<GenerationOutputV1['alternativeTranslations'][number], 'type'> & {
-  type: Exclude<GenerationOutputV1['alternativeTranslations'][number]['type'], 'rejected'>
-}
-
 export type EditorDraftFields = {
-  alternativeTranslations: DraftAlternative[]
+  alternativeTranslations: ReviewableAlternativeTranslation[]
   examples: GenerationOutputV1['examples']
   explanationEn: string
   explanationMn: string
@@ -112,7 +110,7 @@ export const parseEditorDraftFields = (value: unknown): EditorDraftFields => {
         `Alternative ${index + 1} Mongolian wording`,
         300,
       ),
-      type: type as DraftAlternative['type'],
+      type: type as ReviewableAlternativeTranslation['type'],
       usageNote: optionalText(item.usageNote, `alternative ${index + 1} usage note`),
     }
   })
@@ -140,9 +138,7 @@ export const parseEditorDraftFields = (value: unknown): EditorDraftFields => {
 export const editorFieldsFromGeneration = (generated: GenerationOutputV1): EditorDraftFields =>
   parseEditorDraftFields({
     ...generated,
-    alternativeTranslations: generated.alternativeTranslations.filter(
-      (item) => item.type !== 'rejected',
-    ),
+    alternativeTranslations: getReviewableAlternativeTranslations(generated),
   })
 
 const loadEditorAndDraft = async (payload: Payload, actorId: number, draftId: number) => {
@@ -203,9 +199,7 @@ const fieldOutcomes = async (payload: Payload, draft: AiDraft, fields: EditorDra
   const original = await originalGeneration(payload, draft)
   const originalEditable = {
     ...original,
-    alternativeTranslations: original.alternativeTranslations.filter(
-      (item) => item.type !== 'rejected',
-    ),
+    alternativeTranslations: getReviewableAlternativeTranslations(original),
   }
   const acceptedFields: string[] = []
   const modifiedFields: Record<string, { from: unknown; to: unknown }> = {}
@@ -396,9 +390,7 @@ const materializePublishedTerm = async ({
   }
 
   const alternativeTranslations: Translation[] = []
-  for (const candidate of generated.alternativeTranslations.filter(
-    (item) => item.type !== 'rejected',
-  )) {
+  for (const candidate of getReviewableAlternativeTranslations(generated)) {
     const existingAlternative = await payload.find({
       collection: 'translations',
       depth: 0,

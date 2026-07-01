@@ -1,4 +1,4 @@
-import { validateGenerationOutputV1 } from '@/ai/schemas/v1'
+import { getReviewableAlternativeTranslations, validateGenerationOutputV1 } from '@/ai/schemas/v1'
 import config from '@/payload.config'
 import type { AiDraft, Comment, Source, User } from '@/payload-types'
 import { getPayload } from 'payload'
@@ -63,14 +63,12 @@ export const getPublicAIDraftById = async (id: number) => {
   })
 
   return {
-    alternatives: generated.alternativeTranslations
-      .filter((candidate) => candidate.type !== 'rejected')
-      .map((candidate) => ({
-        context: candidate.context,
-        translationMn: candidate.translationMn,
-        type: candidate.type,
-        usageNote: candidate.usageNote,
-      })),
+    alternatives: getReviewableAlternativeTranslations(generated).map((candidate) => ({
+      context: candidate.context,
+      translationMn: candidate.translationMn,
+      type: candidate.type,
+      usageNote: candidate.usageNote,
+    })),
     category: relationName(draft.inputCategory),
     comments: (approvedComments.docs as Comment[]).map((comment) => ({
       author: contributorName(comment),

@@ -67,6 +67,32 @@ export type GenerationOutputV1 = {
   humanReviewRequired: true
 }
 
+export type ReviewableAlternativeTranslation = Omit<
+  GenerationOutputV1['alternativeTranslations'][number],
+  'type'
+> & {
+  type: Exclude<GenerationOutputV1['alternativeTranslations'][number]['type'], 'rejected'>
+}
+
+const normalizedTranslation = (value: string) => value.trim().toLocaleLowerCase('mn-MN')
+
+export const getReviewableAlternativeTranslations = (
+  generated: GenerationOutputV1,
+): ReviewableAlternativeTranslation[] => {
+  const seen = new Set([normalizedTranslation(generated.recommendedTranslationMn)])
+  const alternatives: ReviewableAlternativeTranslation[] = []
+
+  for (const candidate of generated.alternativeTranslations) {
+    if (candidate.type === 'rejected') continue
+    const normalized = normalizedTranslation(candidate.translationMn)
+    if (seen.has(normalized)) continue
+    seen.add(normalized)
+    alternatives.push({ ...candidate, type: candidate.type })
+  }
+
+  return alternatives
+}
+
 export type CritiqueOutputV1 = {
   schemaVersion: typeof AI_SCHEMA_VERSION
   summary: string

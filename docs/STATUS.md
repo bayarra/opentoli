@@ -65,6 +65,11 @@ grouped by batch in both Workspace and the stable Editor API.
 
 ### 2026-06-30
 
+- Prevented repeated AI candidate wording from crashing the Review Queue or corrupting the
+  recommended translation during publication; public, Editor, and canonical projections now
+  consistently omit rejected candidates and deduplicate against the recommendation.
+- Passed TypeScript, ESLint, and all 50 integration tests after adding the duplicate-candidate
+  regression case.
 - Aligned AI drafts across Review Queue, Community Review, and Published Terms: AI still generates
   alternatives and bilingual examples, while Editors choose the subset published as canonical records.
 - Added background editing for draft alternatives and examples and atomic publication of the kept
@@ -325,7 +330,7 @@ grouped by batch in both Workspace and the stable Editor API.
 | Production build           | Pass           | Next.js generated all current public and Payload routes                                                                              |
 | HTTP smoke test            | Pass           | `/` and `/search?q=authentication` returned `200`                                                                                    |
 | Hydration smoke test       | Pass           | Clean Chrome profile produced no hydration warning                                                                                   |
-| Database integration       | Pass           | 49 integration tests in 16 files pass against isolated `opentoli_test` without touching development content                          |
+| Database integration       | Pass           | 50 integration tests in 16 files pass against isolated `opentoli_test` without touching development content                          |
 | API v1 read contracts      | Pass           | Public search, term, category, public draft redaction, and Editor auth-denial contract tests pass                                    |
 | Agent Job Detail           | Pass           | Safe job detail and retry-now tests cover redaction, Editor authorization, retryable states, and route auth denial                   |
 | Optional References        | Pass           | Editor reference add/edit/remove and verification work without gating publication; unsafe URLs stay redacted                         |

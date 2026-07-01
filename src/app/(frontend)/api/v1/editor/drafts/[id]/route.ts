@@ -1,4 +1,5 @@
 import { apiError, apiNotFound, apiOk, parsePositiveInteger, requireEditor } from '@/api/v1/http'
+import { getReviewableAlternativeTranslations } from '@/ai/schemas/v1'
 import { getEditorDraft } from '@/editor/data'
 
 type RouteProps = { params: Promise<{ id: string }> }
@@ -41,9 +42,8 @@ export async function GET(request: Request, { params }: RouteProps) {
       updatedAt: data.draft.updatedAt,
     },
     generated: {
-      alternatives: data.generated.alternativeTranslations.map((candidate) => ({
+      alternatives: getReviewableAlternativeTranslations(data.generated).map((candidate) => ({
         context: candidate.context || null,
-        rejectionReason: candidate.rejectionReason || null,
         translationMn: candidate.translationMn,
         type: candidate.type,
         usageNote: candidate.usageNote || null,
