@@ -144,7 +144,7 @@ export default async function PublicDraftPage({ params }: DraftPageProps) {
             ))}
           </div>
         ) : (
-          <p className="muted-copy">No approved feedback yet.</p>
+          <p className="muted-copy">No community contributions yet.</p>
         )}
       </section>
     </main>

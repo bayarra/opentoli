@@ -28,7 +28,7 @@ export default async function ContributionsPage() {
         <p className="eyebrow">My contributions</p>
         <h1>Track your comments and terminology proposals.</h1>
         <p>
-          Contributions are moderated proposals. They never directly change canonical terms,
+          Contributions are public community input. They never directly change canonical terms,
           translations, examples, or AI drafts.
         </p>
       </div>

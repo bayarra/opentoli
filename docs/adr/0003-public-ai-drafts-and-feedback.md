@@ -1,8 +1,12 @@
-# ADR-0003: Public AI Drafts and Moderated Feedback
+# ADR-0003: Public AI Drafts and Authenticated Community Feedback
 
 - Status: Accepted
 - Date: 2026-06-20
 - Owners: Project maintainers
+
+> Amendment (2026-06-30): authenticated community contributions now appear immediately.
+> Editors retain a post-publication Hide action; community input remains advisory and cannot
+> mutate canonical terminology.
 
 ## Context
 
@@ -26,16 +30,17 @@ private review notes, contact information, and abuse-prevention metadata. Unveri
 pages use `noindex` and are excluded from the canonical sitemap.
 
 Anyone may view an explicitly public AI draft without an account. Commenting and suggesting
-a translation require a registered, authenticated user. Every submission starts as
-pending, is rate limited and screened for abuse, and cannot directly modify AI Drafts,
-Terms, or Translations. Only approved feedback is publicly displayed.
+terminology require a registered, authenticated user. Every contribution is attributed,
+rate limited, duplicate screened, validated, and displayed immediately. It cannot directly
+modify AI Drafts, Terms, Translations, Examples, or References. Editors may hide unsafe or
+abusive content after publication.
 
 ## Consequences
 
 OpenToli gains an early public feedback loop and can collect language evidence during
 calibration. The application must build a safe projection rather than opening the AI
-Draft collection directly, and it must operate moderation, spam controls, privacy
-retention, and accessibility for public forms.
+Draft collection directly, and it must operate rate limits, validation, post-publication
+Hide controls, privacy retention, and accessibility for public forms.
 
 Reviewers remain responsible for interpreting feedback. Votes, comment volume, and AI
 confidence remain advisory and cannot authorize publication.
@@ -45,7 +50,8 @@ confidence remain advisory and cannot authorize publication.
 - Keep all AI drafts private: rejected because it prevents the requested open feedback loop.
 - Expose complete AI Draft and Generation Job records: rejected because raw evidence can contain sensitive or unsafe internal data.
 - Allow anonymous submissions: rejected because authentication provides accountability, ownership, and stronger abuse controls.
-- Publish authenticated submissions immediately: rejected because authentication does not guarantee accuracy or appropriate content.
+- Require approval for every authenticated contribution: rejected because community input is
+  clearly separate from canonical terminology and the extra queue adds unnecessary friction.
 
 ## References
 

@@ -8,6 +8,7 @@ import * as migration_20260630_012122_optional_references_cleanup from './202606
 import * as migration_20260630_012522_reference_enums from './20260630_012522_reference_enums';
 import * as migration_20260630_021449_expanded_proposal_moderation from './20260630_021449_expanded_proposal_moderation';
 import * as migration_20260630_023959_web_import_preparation from './20260630_023959_web_import_preparation';
+import * as migration_20260630_201433_immediate_community_contributions from './20260630_201433_immediate_community_contributions';
 
 export const migrations = [
   {
@@ -59,5 +60,10 @@ export const migrations = [
     up: migration_20260630_023959_web_import_preparation.up,
     down: migration_20260630_023959_web_import_preparation.down,
     name: '20260630_023959_web_import_preparation'
+  },
+  {
+    up: migration_20260630_201433_immediate_community_contributions.up,
+    down: migration_20260630_201433_immediate_community_contributions.down,
+    name: '20260630_201433_immediate_community_contributions'
   },
 ];

@@ -1006,9 +1006,11 @@ Comment status options:
 
 `term_id` or `ai_draft_id` is required, and `user_id` must identify the authenticated
 contributor. Abuse-prevention metadata is private. Contributor submissions always start as
-`pending`. Translation, bilingual example, and reference suggestions are proposals rather
-than direct edits to a Term, Translation, Example, Reference, or AI Draft. Structured
-reference URLs must use HTTP(S).
+public community input (`approved` is the legacy storage value for visible content).
+Translation, bilingual example, and reference suggestions are advisory rather than direct edits
+to a Term, Translation, Example, Reference, or AI Draft. Structured reference URLs must use
+HTTP(S). Editors may change unsafe content to `hidden`; the other status values remain for
+historical compatibility.
 
 ### 10.8 Votes Collection
 
@@ -1143,7 +1145,7 @@ Role options:
 ### Public Users
 
 Can read and search published terms, view explicitly public AI drafts, browse categories,
-and view approved discussions, references, and revision summaries. Authentication is required
+and view community discussions, references, and revision summaries. Authentication is required
 to submit comments, translation suggestions, bilingual examples, or reference proposals.
 
 ### Contributors
@@ -1160,7 +1162,7 @@ Can perform linguistic review, mark preferred terminology, add language notes, a
 
 ### Moderators
 
-Can approve or reject submissions, choose recommended translations, merge duplicates, manage comments, archive terms, and change workflow status.
+Can choose recommended translations, merge duplicates, hide unsafe community content, archive terms, and change workflow status.
 
 ### Administrators
 
@@ -1256,7 +1258,7 @@ Draft and full provenance are saved to AI Drafts
 ↓
 Safe draft projection is optionally opened for public feedback with an Unverified AI Draft label
 ↓
-Comments and translation suggestions enter moderation
+Authenticated comments and suggestions appear as advisory community input
 ↓
 Human language or domain review
 ↓
@@ -1365,9 +1367,10 @@ drafts are never publicly visible. Internal AI review routes do not override an 
 explicit public-visibility choice.
 
 Comments, translation suggestions, bilingual examples, and reference suggestions require
-an authenticated contributor and are stored as pending proposals. They do not immediately
-appear publicly and cannot directly update an AI draft, Translation, Example, Reference, or
-Term. Approved feedback remains advisory evidence for reviewers.
+an authenticated contributor and appear publicly immediately as attributed community input.
+They cannot directly update an AI draft, Translation, Example, Reference, or Term. Editors may
+hide unsafe or abusive contributions. Authentication, rate limits, duplicate detection, field
+validation, and safe-URL validation remain required.
 
 An AI-prepared term may become a canonical published Term only when an Editor explicitly
 uses `Publish` after:
@@ -1616,7 +1619,7 @@ Later features:
 - Related terms
 - Review badges
 - Public AI draft detail pages with an `Unverified AI Draft` warning
-- Authenticated, moderated comment and translation-suggestion forms
+- Authenticated immediate-public comment and terminology-suggestion forms
 - Responsive layout
 - SEO metadata
 

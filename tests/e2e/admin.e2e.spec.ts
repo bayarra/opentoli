@@ -91,12 +91,14 @@ test.describe('Admin Panel', () => {
     await expect(page.getByRole('heading', { name: /Review, publish, and maintain/ })).toBeVisible()
     await expect(workspaceNav.getByRole('link', { name: 'Review Queue' })).toBeVisible()
     await expect(workspaceNav.getByRole('link', { name: 'Published Terms' })).toBeVisible()
+    await expect(workspaceNav.getByRole('link', { name: 'Community', exact: true })).toBeVisible()
     await expect(workspaceNav.getByRole('link', { name: 'System Activity' })).toBeVisible()
     await expect(workspaceNav.getByRole('link', { name: 'Imports' })).toBeVisible()
     await expect(workspaceNav.getByRole('link', { name: 'AI Quality' })).toBeVisible()
+    await expect(workspaceNav.getByRole('link', { name: 'Community Review' })).toBeVisible()
     await expect(workspaceActions.getByRole('link', { name: 'Open Review Queue' })).toBeVisible()
     await expect(workspaceActions.getByRole('link', { name: 'Edit published terms' })).toBeVisible()
-    await expect(workspaceActions.getByRole('link', { name: 'Review suggestions' })).toBeVisible()
+    await expect(workspaceActions.getByRole('link', { name: 'Community activity' })).toBeVisible()
     await expect(workspaceActions.getByRole('link', { name: 'System activity' })).toBeVisible()
     await expect(workspaceActions.getByRole('link', { name: 'Prepare imports' })).toBeVisible()
     await expect(workspaceActions.getByRole('link', { name: 'View AI quality' })).toBeVisible()
@@ -115,13 +117,13 @@ test.describe('Admin Panel', () => {
     await expect(page.getByRole('button', { name: 'Prepare for review' })).toBeVisible()
   })
 
-  test('opens Feedback Moderation from the web Workspace', async () => {
+  test('opens Community Activity from the web Workspace', async () => {
     await page.goto('http://localhost:3000/workspace')
-    await page.getByRole('link', { name: 'Review suggestions' }).click()
+    await page.getByRole('link', { name: 'Community activity' }).click()
 
     await expect(page).toHaveURL('http://localhost:3000/workspace/feedback', { timeout: 20_000 })
     await expect(
-      page.getByRole('heading', { name: /Review comments and contributor proposals/ }),
+      page.getByRole('heading', { name: /Watch public contributions/ }),
     ).toBeVisible()
   })
 

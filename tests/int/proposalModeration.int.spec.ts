@@ -1,4 +1,4 @@
-import { getPendingFeedback, moderateFeedback } from '@/editor/feedback'
+import { getCommunityActivity, moderateFeedback } from '@/editor/feedback'
 import { getUserContributions } from '@/lib/contributions'
 import { getPublishedTermBySlug } from '@/lib/publicTerms'
 import config from '@/payload.config'
@@ -16,7 +16,7 @@ let termSlug: string
 const commentIds: number[] = []
 const suffix = `${process.pid}-${Date.now()}`
 
-describe('expanded contribution proposal moderation', () => {
+describe('immediate community contributions', () => {
   beforeAll(async () => {
     payload = await getPayload({ config: await config })
     editor = await payload.create({ collection: 'users', data: { email: `proposal-editor-${suffix}@opentoli.local`, name: 'Proposal Editor', password: `proposal-editor-${suffix}-password`, role: 'reviewer' }, overrideAccess: true })
@@ -39,7 +39,7 @@ describe('expanded contribution proposal moderation', () => {
     for (const id of [contributor?.id, editor?.id].filter(Boolean)) await payload.delete({ collection: 'users', id: id as number, overrideAccess: true })
   })
 
-  it('moderates structured example and reference proposals without mutating canonical records', async () => {
+  it('publishes authenticated proposals immediately without mutating canonical records', async () => {
     await expect(payload.create({ collection: 'comments', data: { body: 'Incomplete bilingual example.', commentType: 'example_suggestion', status: 'pending', suggestedExampleEn: 'English only.', term: termId, user: contributor.id }, draft: false, overrideAccess: false, user: contributor })).rejects.toThrow('requires English and Mongolian')
     await expect(payload.create({ collection: 'comments', data: { body: 'Unsafe reference.', commentType: 'reference_note', status: 'pending', suggestedReferenceTitle: 'Unsafe', suggestedReferenceUrl: 'javascript:alert(1)', term: termId, user: contributor.id }, draft: false, overrideAccess: false, user: contributor })).rejects.toThrow('must use http or https')
 
@@ -47,16 +47,17 @@ describe('expanded contribution proposal moderation', () => {
     commentIds.push(example.id)
     const reference = await payload.create({ collection: 'comments', data: { body: 'This documentation gives useful background.', commentType: 'reference_note', status: 'pending', suggestedReferenceTitle: 'Example documentation', suggestedReferenceUrl: 'https://example.com/reference-proposal', term: termId, user: contributor.id }, draft: false, overrideAccess: false, user: contributor })
     commentIds.push(reference.id)
-    expect(example.status).toBe('pending')
+    expect(example.status).toBe('approved')
+    expect(reference.status).toBe('approved')
     expect(reference.suggestedReferenceUrl).toBe('https://example.com/reference-proposal')
 
-    const pending = await getPendingFeedback(editor)
-    expect(pending).toEqual(expect.arrayContaining([
+    const activity = await getCommunityActivity(editor)
+    expect(activity).toEqual(expect.arrayContaining([
       expect.objectContaining({ id: example.id, suggestedExampleEn: 'The client sends a request.' }),
       expect.objectContaining({ id: reference.id, suggestedReferenceTitle: 'Example documentation' }),
     ]))
-    await expect(moderateFeedback({ actor: contributor, commentId: example.id, payload, status: 'approved' })).rejects.toThrow('Editor')
-    await moderateFeedback({ actor: editor, commentId: example.id, payload, status: 'approved' })
+    await expect(moderateFeedback({ actor: contributor, commentId: reference.id, payload, status: 'hidden' })).rejects.toThrow('Editor')
+    await moderateFeedback({ actor: editor, commentId: reference.id, payload, status: 'hidden' })
 
     const publicTerm = await getPublishedTermBySlug(termSlug)
     expect(publicTerm?.comments).toHaveLength(1)
@@ -64,7 +65,7 @@ describe('expanded contribution proposal moderation', () => {
     const contributions = await getUserContributions(contributor)
     expect(contributions).toEqual(expect.arrayContaining([
       expect.objectContaining({ id: example.id, status: 'approved', suggestedExampleEn: 'The client sends a request.' }),
-      expect.objectContaining({ id: reference.id, status: 'pending', suggestedReferenceTitle: 'Example documentation' }),
+      expect.objectContaining({ id: reference.id, status: 'hidden', suggestedReferenceTitle: 'Example documentation' }),
     ]))
 
     const examples = await payload.count({ collection: 'examples', overrideAccess: true, where: { term: { equals: termId } } })

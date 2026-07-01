@@ -13,7 +13,7 @@ export class FeedbackModerationError extends Error {
   }
 }
 
-const allowedStatuses = ['approved', 'rejected', 'hidden'] as const
+const allowedStatuses = ['hidden'] as const
 
 type ModerationStatus = (typeof allowedStatuses)[number]
 
@@ -60,7 +60,7 @@ const targetFor = (comment: Comment) => {
   return { href: null, label: 'Unknown target', type: 'Unknown' }
 }
 
-export const getPendingFeedback = async (user: User) => {
+export const getCommunityActivity = async (user: User) => {
   if (!isEditorUser(user)) return null
 
   const payload = await getPayload({ config: await config })
@@ -70,7 +70,7 @@ export const getPendingFeedback = async (user: User) => {
     limit: 100,
     overrideAccess: true,
     sort: 'createdAt',
-    where: { status: { equals: 'pending' } },
+    where: { status: { equals: 'approved' } },
   })
 
   return (feedback.docs as Comment[]).map((comment) => {
@@ -82,6 +82,7 @@ export const getPendingFeedback = async (user: User) => {
       commentType: comment.commentType,
       createdAt: comment.createdAt,
       id: comment.id,
+      status: comment.status,
       suggestedTranslationMn: comment.suggestedTranslationMn || null,
       suggestedExampleEn: comment.suggestedExampleEn || null,
       suggestedExampleMn: comment.suggestedExampleMn || null,
@@ -109,7 +110,7 @@ export const moderateFeedback = async ({
     throw new FeedbackModerationError('Sign in as an Editor to moderate feedback.', 403)
   }
   if (!allowedStatuses.includes(status)) {
-    throw new FeedbackModerationError('Choose approve, reject, or hide.')
+    throw new FeedbackModerationError('Choose Hide.')
   }
 
   const existing = await payload
@@ -121,8 +122,11 @@ export const moderateFeedback = async ({
     })
     .catch(() => null)
   if (!existing) throw new FeedbackModerationError('Feedback was not found.', 404)
-  if (existing.status !== 'pending') {
-    throw new FeedbackModerationError('Only pending feedback can be moderated.', 409)
+  if (existing.status !== 'approved' || status !== 'hidden') {
+    throw new FeedbackModerationError(
+      'Community contributions are public immediately and can only be hidden.',
+      409,
+    )
   }
 
   return payload.update({

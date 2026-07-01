@@ -238,7 +238,7 @@ describe('public AI draft feedback', () => {
     ).rejects.toThrow()
   })
 
-  it('keeps authenticated feedback pending until a moderator approves it', async () => {
+  it('publishes authenticated contributions immediately and lets an Editor hide them', async () => {
     await expect(
       payload.create({
         collection: 'comments',
@@ -253,7 +253,22 @@ describe('public AI draft feedback', () => {
       }),
     ).rejects.toThrow()
 
-    const comment = await payload.create({
+    const generalComment = await payload.create({
+      collection: 'comments',
+      data: {
+        aiDraft: aiDraftId,
+        body: 'This authenticated comment should appear immediately.',
+        commentType: 'general',
+        status: 'pending',
+        user: contributor.id,
+      },
+      overrideAccess: false,
+      user: contributor,
+    })
+    commentIds.push(generalComment.id)
+    expect(generalComment.status).toBe('approved')
+
+    const suggestion = await payload.create({
       collection: 'comments',
       data: {
         aiDraft: aiDraftId,
@@ -266,23 +281,24 @@ describe('public AI draft feedback', () => {
       overrideAccess: false,
       user: contributor,
     })
-    commentIds.push(comment.id)
-    expect(comment.status).toBe('pending')
-    expect(typeof comment.user === 'object' ? comment.user.id : comment.user).toBe(contributor.id)
+    commentIds.push(suggestion.id)
+    expect(suggestion.status).toBe('approved')
+    expect(typeof suggestion.user === 'object' ? suggestion.user.id : suggestion.user).toBe(contributor.id)
 
-    const anonymousBeforeApproval = await payload.find({
+    const publicContributions = await payload.find({
       collection: 'comments',
       overrideAccess: false,
       where: { aiDraft: { equals: aiDraftId } },
     })
-    expect(anonymousBeforeApproval.docs).toHaveLength(0)
+    expect(publicContributions.docs).toHaveLength(2)
+    expect((await getPublicAIDraftById(aiDraftId))?.comments).toHaveLength(2)
 
     await expect(
       payload.create({
         collection: 'comments',
         data: {
           aiDraft: aiDraftId,
-          body: comment.body,
+          body: suggestion.body,
           commentType: 'general',
           status: 'pending',
           user: contributor.id,
@@ -307,26 +323,35 @@ describe('public AI draft feedback', () => {
       }),
     ).rejects.toThrow('requires Mongolian wording')
 
-    const approved = await moderateFeedback({
-      actor: moderator,
-      commentId: comment.id,
-      payload,
-      status: 'approved',
-    })
-    expect(approved.moderatedBy).toBeTruthy()
-    expect(approved.moderatedAt).toBeTruthy()
+    await expect(
+      moderateFeedback({
+        actor: contributor,
+        commentId: generalComment.id,
+        payload,
+        status: 'hidden',
+      }),
+    ).rejects.toThrow('Editor')
 
-    const anonymousAfterApproval = await payload.find({
+    const hidden = await moderateFeedback({
+      actor: moderator,
+      commentId: generalComment.id,
+      payload,
+      status: 'hidden',
+    })
+    expect(hidden.moderatedBy).toBeTruthy()
+    expect(hidden.moderatedAt).toBeTruthy()
+
+    const publicAfterHide = await payload.find({
       collection: 'comments',
       overrideAccess: false,
       where: { aiDraft: { equals: aiDraftId } },
     })
-    expect(anonymousAfterApproval.docs).toHaveLength(1)
+    expect(publicAfterHide.docs).toHaveLength(1)
     expect((await getPublicAIDraftById(aiDraftId))?.comments).toHaveLength(1)
   })
 
   it('throttles contribution bursts and hides a private draft', async () => {
-    for (let index = 0; index < 4; index += 1) {
+    for (let index = 0; index < 3; index += 1) {
       const comment = await payload.create({
         collection: 'comments',
         data: {

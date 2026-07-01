@@ -48,7 +48,7 @@ export default async function WorkspacePage() {
         <h1>Review, publish, and maintain terminology.</h1>
         <p>
           Start in the Review Queue for AI drafts. Published Terms maintains canonical entries,
-          Suggestions handles community proposals, and AI Quality reports how well generation is
+          Community shows member discussion and suggestions, and AI Quality reports how generation is
           working. System details stay secondary.
         </p>
       </div>
@@ -56,11 +56,11 @@ export default async function WorkspacePage() {
       <section className="workspace-actions" aria-label="Workspace actions">
         <Link href="/workspace/drafts">Open Review Queue</Link>
         <Link href="/workspace/terms">Edit published terms</Link>
-        <Link href="/workspace/feedback">Review suggestions</Link>
+        <Link href="/workspace/feedback">Community activity</Link>
         <Link href="/workspace/imports">Prepare imports</Link>
         <Link href="/workspace/calibration">View AI quality</Link>
         <Link href="/workspace/jobs">System activity</Link>
-        <Link href="/drafts">Public drafts</Link>
+        <Link href="/drafts">Community review</Link>
       </section>
 
       <section className="metric-grid" aria-label="Workspace summary">
@@ -70,9 +70,9 @@ export default async function WorkspacePage() {
           <p>{workspace.counts.publicDrafts} open for public feedback</p>
         </article>
         <article>
-          <span>Pending feedback</span>
-          <strong>{workspace.counts.pendingFeedback}</strong>
-          <p>Comments and translation suggestions waiting for moderation</p>
+          <span>Community contributions</span>
+          <strong>{workspace.counts.communityContributions}</strong>
+          <p>Public comments and terminology suggestions from signed-in members</p>
         </article>
         <article>
           <span>AI jobs</span>

@@ -30,7 +30,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
               <Link href="/">Home</Link>
               <Link href="/search">Search</Link>
               <Link href="/workflow">Workflow</Link>
-              <Link href="/drafts">Public drafts</Link>
+              <Link href="/drafts">Community review</Link>
               <AccountNav />
             </nav>
           </div>

@@ -5,7 +5,7 @@ import Link from 'next/link'
 export const metadata: Metadata = {
   description: 'Public unverified AI drafts open for community feedback.',
   robots: { follow: true, index: false },
-  title: 'Public Drafts | OpenToli',
+  title: 'Community Review | OpenToli',
 }
 
 export const dynamic = 'force-dynamic'
@@ -16,17 +16,17 @@ export default async function PublicDraftsPage() {
   return (
     <main className="content-page">
       <div className="page-heading">
-        <p className="eyebrow">Public drafts</p>
+        <p className="eyebrow">Community review</p>
         <h1>Unverified AI drafts open for feedback.</h1>
         <p>
-          These drafts are not published terms. Members can comment or suggest Mongolian wording;
-          editors decide what becomes canonical later.
+          Editors opened these unverified drafts to gather community input. Signed-in members can
+          post comments and suggestions immediately; Editors decide what becomes canonical later.
         </p>
       </div>
 
       {drafts.length === 0 ? (
         <div className="empty-state">
-          <h2>No public drafts are open right now.</h2>
+          <h2>No drafts are open for community review right now.</h2>
           <p>
             Editors can open drafts for feedback from the Review Queue. Until then,
             contributors can search published terms or read the workflow guide.

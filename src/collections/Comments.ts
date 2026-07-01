@@ -116,7 +116,7 @@ export const Comments: CollectionConfig = {
           }
 
           data.user = req.user.id
-          data.status = 'pending'
+          data.status = 'approved'
           data.moderatedAt = null
           data.moderatedBy = null
           data.moderatorNote = null

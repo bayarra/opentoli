@@ -109,14 +109,15 @@ risk routing, background jobs, retries, and generation provenance.
 contributors improve them, and let an Editor edit and publish from one simple Review Queue.
 
 **Scope:** Safe public draft projection, `Unverified AI Draft` labeling, basic public
-registration and sign-in, authenticated comments and translation suggestions, moderation,
-rate limits and anti-abuse controls, one Review Queue, direct field editing, background save,
+registration and sign-in, immediate authenticated comments and translation suggestions,
+rate limits, post-publication Hide controls, one Review Queue, direct field editing, background save,
 explicit Publish, secondary Hide, and automatic attribution.
 
 **Exit criteria:**
 
 - Anyone can view an explicitly public AI draft without receiving raw or private generation evidence.
-- Authenticated users can submit comments or translation suggestions that enter a pending moderation queue.
+- Authenticated users can post attributed comments or suggestions that appear immediately as advisory community input.
+- Editors can hide unsafe or abusive contributions after publication.
 - Anonymous users attempting to contribute are directed to register or sign in.
 - Public feedback cannot directly modify a draft, select a translation, or publish a Term.
 - Rejected, failed, and private drafts are not publicly visible.
@@ -176,11 +177,11 @@ ranking; normalization; category, context, and review filters; pagination; analy
 ## M8 - Community Accounts and Contributions
 
 **Objective:** Add richer identity, ownership, reputation, and contribution tools on top of
-the authenticated moderated feedback path delivered in M4.
+the authenticated community contribution path delivered in M4.
 
 **Scope:** Contributor profiles, attributed term submissions, translation and explanation
 suggestions, examples, references, comments, votes, contributor dashboard, history,
-reputation signals, and expanded moderation tooling.
+reputation signals, and expanded post-publication safety tooling.
 
 **Exit criteria:**
 

@@ -117,7 +117,7 @@ export default async function TermPage({ params }: TermPageProps) {
       <section className="term-section feedback-section">
         <p className="eyebrow">Community proposals</p>
         <h2>Suggest an improvement</h2>
-        <p>Suggest wording, a bilingual example, or a useful reference. Every proposal is moderated and never changes this term automatically.</p>
+        <p>Post wording, a bilingual example, or a useful reference. It appears immediately as community input and never changes this term automatically.</p>
         <FeedbackForm targetPath={`/terms/${term.slug}`} termId={term.id} />
       </section>
 

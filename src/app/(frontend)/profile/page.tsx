@@ -57,7 +57,7 @@ export default async function ProfilePage() {
             </div>
           </dl>
           <div className="account-actions">
-            <Link href="/drafts">Public drafts</Link>
+            <Link href="/drafts">Community review</Link>
             <Link href="/contributions">My contributions</Link>
             {isEditorUser(user) ? <Link href="/workspace">Workspace</Link> : null}
           </div>
@@ -68,14 +68,14 @@ export default async function ProfilePage() {
           <h2 id="profile-next-heading">What can I do?</h2>
           {isEditorUser(user) ? (
             <p>
-              Open the Workspace to monitor drafts, feedback, jobs, and batches. Use the Draft
-              Inbox from there to edit public fields, then Publish or Hide from the web editor.
+              Open the Workspace to monitor drafts, community activity, jobs, and batches. Use the
+              Review Queue to edit public fields, then Publish or Hide from the web editor.
               Admin remains for maintenance and data repair only.
             </p>
           ) : (
             <p>
-              Open a public draft to comment or suggest a better Mongolian translation. Your
-              suggestion enters moderation and never changes canonical content directly.
+              Open Community review to comment or suggest a better Mongolian translation. Your
+              contribution appears immediately but never changes canonical content directly.
             </p>
           )}
           <LogoutButton className="secondary-button" />

@@ -17,7 +17,7 @@ const steps = [
   {
     action: 'Comment and suggest wording',
     audience: 'Members',
-    body: 'Sign in, open a public draft, then leave a comment or suggested Mongolian translation. Suggestions are moderated proposals; they do not directly edit a term.',
+    body: 'Sign in, open a draft under Community Review, then post a comment or terminology suggestion. It appears immediately as community input but never edits canonical content directly.',
     href: '/drafts',
     link: 'View public drafts',
   },

@@ -1,6 +1,6 @@
 # OpenToli Project Status
 
-**Last updated:** 2026-06-29
+**Last updated:** 2026-06-30
 **Current milestone:** M5 - Calibration Batch
 **Milestone status:** `IN_PROGRESS`
 **Delivery state:** Second M5 generation batch complete; eight private drafts await human review and calibration
@@ -15,8 +15,8 @@ Publication guards, clean migrations, seeding, integration tests, and browser ch
 M3 has private AI Draft and Generation Job persistence, versioned structured-output
 contracts, provider-neutral staged execution, idempotent enqueueing, retry resumption,
 risk routing, retained provenance, deterministic end-to-end evidence, and a completed live
-OpenAI reference run for `authentication`. M4 now has an explicit safe public projection, registration,
-authenticated pending feedback, moderation, and a deliberately simple Editor experience:
+OpenAI reference run for `authentication`. M4 now has an explicit safe public projection,
+registration, immediate attributed community contributions, post-publication Hide controls, and a deliberately simple Editor experience:
 one Workspace menu, one Review Queue, four editable fields, optional references, background save,
 one Publish action, and secondary Hide. Evaluation drafts capture a compact AI-quality rating in
 the same decision. Audit and AI provenance remain automatic in the
@@ -32,13 +32,13 @@ changes. Their calibration outcomes preserve those facts while language and doma
 remain `not_checked`; internal routes remain provenance and do not control Editor actions.
 Editors can now open or close public draft feedback and optionally
 manage background references from OpenToli web instead of Payload admin. Signed-in
-contributors can now track their own comments, translation suggestions, moderation status, and
-outcomes from an OpenToli web dashboard. Editors finish terminology and AI-quality capture in the
+contributors can now track their own comments and suggestions from an OpenToli web dashboard.
+Editors finish terminology and AI-quality capture in the
 Review Queue; `/workspace/calibration` is now a read-only AI Quality report. Editors can also
 update published canonical terms, translations,
 examples, contexts, and optional references from `/workspace/terms` without Payload Admin.
-Contributors can submit structured bilingual examples and reference suggestions alongside
-comments and translation suggestions; Editors moderate all of them in one web queue.
+Contributors can post comments, translations, bilingual examples, and reference suggestions
+immediately as advisory community input; Editors can hide unsafe or abusive content.
 Calibration reporting now derives first-five completion, quality rates, disagreement, token,
 latency, cost, and decision-readiness evidence without automating the final M5 decision.
 Editors can prepare manual or CSV imports, review each parsed row, resolve duplicates, and
@@ -63,11 +63,20 @@ grouped by batch in both Workspace and the stable Editor API.
 
 ## Achievements
 
+### 2026-06-30
+
+- Unified all authenticated community contributions under one immediate-public flow; comments and structured terminology suggestions no longer require approval.
+- Kept community input non-canonical: contributions cannot mutate Terms, Translations, Examples, References, or AI Drafts.
+- Converted `/workspace/feedback` into Community Activity with Hide as the only Editor moderation action.
+- Added and locally applied migration `20260630_201433_immediate_community_contributions` to publish existing pending contributions and clear obsolete moderation metadata; the development database now has zero pending contributions.
+- Renamed Public Drafts to Community Review so its optional purpose is explicit.
+- Passed TypeScript, ESLint, all 49 integration tests, the production build, and all 18 browser tests (serial browser rerun); all 11 migrations are applied locally.
+
 ### 2026-06-29
 
 - Consolidated editorial completion into one Review Queue: M5 quality rating and optional notes now commit atomically with Publish or Hide.
 - Converted `/workspace/calibration` into the read-only AI Quality report; outcome forms were removed from the report.
-- Renamed normal Editor navigation to Review Queue, Published Terms, Suggestions, Imports, AI Quality, and secondary System Activity.
+- Renamed normal Editor navigation to Review Queue, Published Terms, Community, Imports, AI Quality, and secondary System Activity.
 - Added compact quality-rating mapping and integration coverage proving one explicit action publishes canonical content and records its evaluation outcome.
 - Passed TypeScript, ESLint, all 49 integration tests, the production build, and all 18 browser tests; no migration was required.
 - Confirmed `build` outcome 19 as `accepted_with_edits` / `rewrite`, with `major_edits` language assessment and `needs_expert_review` domain assessment.
@@ -312,7 +321,7 @@ grouped by batch in both Workspace and the stable Editor API.
 | API v1 read contracts     | Pass        | Public search, term, category, public draft redaction, and Editor auth-denial contract tests pass                     |
 | Agent Job Detail          | Pass        | Safe job detail and retry-now tests cover redaction, Editor authorization, retryable states, and route auth denial     |
 | Optional References       | Pass        | Editor reference add/edit/remove and verification work without gating publication; unsafe URLs stay redacted          |
-| Public draft feedback     | Pass        | 4 scenarios verify projection redaction, registration roles, pending moderation, throttling, and resolved-draft hiding |
+| Community review          | Pass        | Authenticated contributions appear immediately, remain advisory, are rate limited, and can be hidden by an Editor     |
 | Simple Editor workflow    | Pass        | Tests cover background save, member denial, explicit Editor publication, optional references, Hide, and provenance |
 | OpenAI adapter contract   | Pass        | 3 mocked tests verify strict Responses API requests, parsing, usage, and failures                                      |
 | OpenAI live calibration   | Pass        | Job 33 completed with `openai:gpt-5-mini`: 3,365 input tokens, 3,025 output tokens, 35,002 ms latency, no validation errors |
@@ -321,17 +330,17 @@ grouped by batch in both Workspace and the stable Editor API.
 | M5 first worker job       | Pass        | Job 131 for `application` completed; draft 189 retained as private blocked/high-risk review evidence                  |
 | M5 first-five checkpoint  | Pass        | Five completed jobs, five explicit Editor acceptances, and five factual calibration outcomes; preliminary signal `continue` |
 | M5 second batch checkpoint | Pending review | Jobs 605-614 complete; `branch` and `build` outcomes recorded; private drafts 439-446 await human outcomes            |
-| Migration status          | Pass        | `npm run payload -- migrate:status` reports all ten tracked migrations ran locally                                |
+| Migration status          | Pass        | `npm run payload -- migrate:status` reports all 11 tracked migrations ran locally                                 |
 | Local HTTP smoke          | Pass        | `/`, `/register`, and `/login` return `200`; an unknown draft returns `404`                                            |
 | M4 browser regression     | Pass        | Browser tests cover public/auth/feedback/Editor keyboard flows, optional references, job detail, and serious WCAG A/AA scans              |
-| Web workflow navigation   | Pass        | Workspace navigation uses Review Queue, Published Terms, Suggestions, Imports, AI Quality, and secondary System Activity |
+| Web workflow navigation   | Pass        | Workspace navigation uses Review Queue, Published Terms, Community, Imports, AI Quality, and secondary System Activity |
 | Web account workflow      | Pass        | `/profile`, header account links, Editor Workspace visibility, contributions, and Profile-only logout pass in 18 browser tests |
 | Editor web Workspace      | Pass        | `/workspace` separates the Review Queue, canonical terms, suggestions, quality reporting, and system activity without raw AI outputs |
-| Feedback Moderation       | Pass        | `/workspace/feedback` and `/api/editor/feedback/[id]` let Editors approve, reject, or hide pending feedback without canonical mutations |
+| Community Activity        | Pass        | `/workspace/feedback` shows live attributed contributions and lets Editors hide abuse without canonical mutations     |
 | Contributor Dashboard     | Pass        | `/contributions` shows signed-in users only their own comments, suggestions, statuses, moderator notes, and safe target links |
 | M5 Calibration Outcomes   | Pass        | Review Queue decisions atomically record compact quality outcomes; `/workspace/calibration` reports safe evidence read-only |
 | Published term editing    | Pass        | `/workspace/terms` updates canonical wording and related records transactionally with Editor-only integration coverage |
-| Proposal moderation       | Pass        | Translation, example, and reference proposals stay pending and advisory; migration `20260630_021449_expanded_proposal_moderation` is applied |
+| Community proposals       | Pass        | Translation, example, and reference suggestions appear immediately but remain advisory and structurally validated     |
 | Calibration reporting     | Pass        | First-five progress, aggregate quality/cost metrics, and non-automatic go/no-go readiness are derived and browser-tested |
 | Import preparation        | Pass        | Manual/CSV rows are validated, reviewed, and explicitly queued without provider execution; migration is applied locally |
 | Agent Job organization    | Pass        | Headword/status/batch filters, pagination, and safe Import Batch grouping pass integration and browser coverage |
@@ -339,14 +348,14 @@ grouped by batch in both Workspace and the stable Editor API.
 
 ## Current Work
 
-M3 and M4 are complete. Normal Editor work for drafts, suggestions, optional references,
+M3 and M4 are complete. Normal Editor work for drafts, community activity, optional references,
 published terms, AI quality, and system activity now lives under the Workspace menu
 in OpenToli web. Stable `/api/v1` read contracts now cover the public dictionary/draft
 surfaces and Editor Workspace summaries for future mobile use. Editors can inspect safe job
 detail and queue eligible failed/retry-scheduled jobs for retry without starting provider work
 from the browser. Editors can also manage draft public feedback visibility and optional references
-from the web draft page. Contributors can track their own moderated comments, translations,
-examples, and reference proposals from `/contributions` without opening Payload admin.
+from the web draft page. Contributors can track their own attributed comments, translations,
+examples, and reference suggestions from `/contributions` without opening Payload admin.
 The Review Queue records human outcomes with Publish or Hide. `/workspace/calibration` derives
 read-only quality, cost, progress, and decision-readiness metrics. M5 is in progress: the fixed 50-term manifest is tracked and
 validated, and the first five jobs, Editor decisions, and calibration outcomes are complete.
@@ -377,7 +386,7 @@ No active blocker is recorded.
 | Conflicting status fields permit accidental publication | Data exposure                             | Formal publication state machine required in M0                                                |
 | Search leaks drafts                                     | Unreviewed content becomes public         | Public-query and authorization tests required in M2 and M7                                     |
 | Content work outpaces reviewer capacity                 | Large unreviewed backlog                  | Batches of 100 to 200 after calibration                                                        |
-| Public feedback attracts spam or abuse                  | Moderation load and unsafe public content | Authentication, pending-by-default submissions, rate limits, screening, and moderator controls |
+| Community input attracts spam or abuse                  | Unsafe public content                     | Authentication, rate limits, duplicate and URL validation, attribution, and Editor Hide controls |
 
 ## Update Log Template
 

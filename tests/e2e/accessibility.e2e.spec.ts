@@ -35,7 +35,7 @@ test.describe('M4 accessibility', () => {
     await expectNoSeriousAccessibilityViolations(page)
   })
 
-  test('supports keyboard sign-in and moderated feedback submission', async ({ page }) => {
+  test('supports keyboard sign-in and immediate community contribution', async ({ page }) => {
     await page.goto(`${serverURL}/login?next=${encodeURIComponent(`/drafts/${fixture.draftId}`)}`)
     const email = page.getByLabel('Email')
     await focusByTab(page, email)
@@ -59,7 +59,7 @@ test.describe('M4 accessibility', () => {
     await expect(page.getByRole('textbox', { name: 'Comment', exact: true })).toBeFocused()
     await page.keyboard.type('This suggestion was submitted with the keyboard.')
     await page.keyboard.press('Tab')
-    await expect(page.getByRole('button', { name: 'Submit for moderation' })).toBeFocused()
+    await expect(page.getByRole('button', { name: 'Post contribution' })).toBeFocused()
     const submitted = page.waitForResponse(
       (response) =>
         response.url().endsWith('/api/comments') && response.request().method() === 'POST',
@@ -67,7 +67,7 @@ test.describe('M4 accessibility', () => {
     await page.keyboard.press('Space')
     expect((await submitted).ok()).toBe(true)
     await expect(
-      page.getByText('Thanks. Your feedback is pending moderation.', { exact: true }),
+      page.getByText('Your contribution is now public.', { exact: true }),
     ).toBeVisible()
   })
 

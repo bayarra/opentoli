@@ -7,12 +7,10 @@ type FeedbackModerationFormProps = {
   commentId: number
 }
 
-type Action = 'approved' | 'rejected' | 'hidden'
+type Action = 'hidden'
 
 const actionLabels: Record<Action, string> = {
-  approved: 'Approve',
   hidden: 'Hide',
-  rejected: 'Reject',
 }
 
 export function FeedbackModerationForm({ commentId }: FeedbackModerationFormProps) {
@@ -59,7 +57,7 @@ export function FeedbackModerationForm({ commentId }: FeedbackModerationFormProp
         </p>
       ) : null}
       <div>
-        {(Object.keys(actionLabels) as Action[]).map((status) => (
+        {(['hidden'] as Action[]).map((status) => (
           <button disabled={Boolean(submitting)} key={status} onClick={() => void moderate(status)} type="button">
             {submitting === status ? `${actionLabels[status]}...` : actionLabels[status]}
           </button>

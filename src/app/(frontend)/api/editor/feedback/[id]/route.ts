@@ -34,7 +34,7 @@ export async function POST(request: Request, { params }: RouteProps) {
       commentId: await commentIdFrom(params),
       moderatorNote: typeof input.moderatorNote === 'string' ? input.moderatorNote : undefined,
       payload,
-      status: input.status as 'approved' | 'rejected' | 'hidden',
+      status: input.status as 'hidden',
     })
 
     return Response.json({

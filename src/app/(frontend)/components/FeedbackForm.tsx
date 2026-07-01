@@ -125,7 +125,7 @@ export function FeedbackForm({ draftId, targetPath, termId }: FeedbackFormProps)
       </label>
       {submitted ? (
         <p className="form-success" role="status">
-          Thanks. Your feedback is pending moderation.
+          Your contribution is now public.
         </p>
       ) : null}
       {error ? (
@@ -134,7 +134,7 @@ export function FeedbackForm({ draftId, targetPath, termId }: FeedbackFormProps)
         </p>
       ) : null}
       <button disabled={submitting} type="submit">
-        {submitting ? 'Submitting...' : 'Submit for moderation'}
+        {submitting ? 'Posting...' : 'Post contribution'}
       </button>
     </form>
   )

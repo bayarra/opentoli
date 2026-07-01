@@ -34,6 +34,7 @@ export const getEditorWorkspace = async (user: User) => {
     activeDrafts,
     publicDrafts,
     resolvedDrafts,
+    communityContributions,
     pendingFeedback,
     publishedTerms,
     jobCounts,
@@ -60,6 +61,11 @@ export const getEditorWorkspace = async (user: User) => {
       collection: 'ai-drafts',
       overrideAccess: true,
       where: { status: { in: [...resolvedDraftStatuses] } },
+    }),
+    payload.count({
+      collection: 'comments',
+      overrideAccess: true,
+      where: { status: { equals: 'approved' } },
     }),
     payload.count({
       collection: 'comments',
@@ -121,6 +127,7 @@ export const getEditorWorkspace = async (user: User) => {
     })),
     counts: {
       activeDrafts: activeDrafts.totalDocs,
+      communityContributions: communityContributions.totalDocs,
       completedJobs: jobCountsByStatus.completed,
       failedJobs: jobCountsByStatus.failed,
       pendingFeedback: pendingFeedback.totalDocs,

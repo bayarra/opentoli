@@ -17,8 +17,8 @@ evidence in [`STATUS.md`](STATUS.md).
 - Editors finish drafts and record compact M5 AI-quality evidence in one Review Queue decision; `/workspace/calibration` is read-only reporting.
 - Public AI drafts remain unverified and redacted.
 - Contributors can comment or suggest translations only after sign-in.
-- Contributors can track their own comments, translation suggestions, moderation status, and outcomes at `/contributions`.
-- Contributors can propose bilingual examples and references on public drafts or published terms; Editors moderate them in `/workspace/feedback`.
+- Contributors can track their own attributed comments and suggestions at `/contributions`.
+- Authenticated comments, translations, bilingual examples, and references appear immediately as advisory community input; Editors can Hide abuse in `/workspace/feedback`.
 - No AI output may publish without an explicit Editor `Publish` action.
 
 ## API, Web, and Admin Separation
@@ -77,7 +77,7 @@ Remaining API tasks:
   and internal AI routes do not gate visibility.
 - Published terms: core web editing is done. Add revision comparison or specialized context management only when editorial use demonstrates a need.
 - Contributions: own-proposal tracking plus translation, example, and reference proposals are done. Remaining work is term submissions, votes, ownership controls, saved terms, and profile history when M8 starts.
-- Moderation: comments, translations, bilingual examples, and reference proposals share one web queue. Future proposal types should reuse this boundary.
+- Community: all authenticated contribution types share one immediate-public flow. `/workspace/feedback` is a live activity view with Hide as its only moderation action.
 - Imports: manual/CSV parsing, duplicate detection, row review, and explicit queueing are done in
   `/workspace/imports`. Queueing never executes the provider; the CLI worker remains controlled.
 
@@ -105,7 +105,7 @@ Remaining API tasks:
 ## Guardrails
 
 - Public draft APIs must use the ADR-0003 redacted projection.
-- Authenticated suggestions and comments never mutate canonical content directly.
+- Authenticated suggestions and comments appear immediately but never mutate canonical content directly.
 - Worker/provider execution should stay controlled; avoid browser buttons that can accidentally
   spend money or run batches without an explicit policy.
 - Keep tests proportional: API contract tests for new endpoints, browser tests for new web flows,

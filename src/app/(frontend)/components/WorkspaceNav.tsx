@@ -7,14 +7,14 @@ const primaryItems = [
   { href: '/workspace', label: 'Overview' },
   { href: '/workspace/drafts', label: 'Review Queue' },
   { href: '/workspace/terms', label: 'Published Terms' },
-  { href: '/workspace/feedback', label: 'Suggestions' },
+  { href: '/workspace/feedback', label: 'Community' },
   { href: '/workspace/imports', label: 'Imports' },
   { href: '/workspace/calibration', label: 'AI Quality' },
   { href: '/workspace/jobs', label: 'System Activity' },
 ] as const
 
 const referenceItems = [
-  { href: '/drafts', label: 'Public Drafts' },
+  { href: '/drafts', label: 'Community Review' },
   { href: '/workflow', label: 'Workflow Guide' },
   { href: '/admin', label: 'Admin Maintenance' },
 ] as const

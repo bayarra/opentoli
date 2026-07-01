@@ -21,7 +21,7 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
       <div className="account-card">
         <p className="eyebrow">Join the review</p>
         <h1>Create an account</h1>
-        <p>Accounts keep suggestions attributable while every contribution remains moderated.</p>
+        <p>Accounts keep public comments and terminology suggestions attributable.</p>
         <AuthForm mode="register" nextPath={safeNextPath(next)} />
       </div>
     </main>

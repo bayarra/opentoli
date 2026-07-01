@@ -1,6 +1,6 @@
 import { FeedbackModerationForm } from '@/app/(frontend)/components/FeedbackModerationForm'
 import { WorkspaceShell } from '@/app/(frontend)/components/WorkspaceShell'
-import { getPendingFeedback } from '@/editor/feedback'
+import { getCommunityActivity } from '@/editor/feedback'
 import { getCurrentUser } from '@/lib/currentUser'
 import type { Metadata } from 'next'
 import Link from 'next/link'
@@ -8,7 +8,7 @@ import { redirect } from 'next/navigation'
 
 export const metadata: Metadata = {
   robots: { follow: false, index: false },
-  title: 'Feedback Moderation | OpenToli',
+  title: 'Community Activity | OpenToli',
 }
 
 export const dynamic = 'force-dynamic'
@@ -19,17 +19,17 @@ export default async function FeedbackModerationPage() {
   const user = await getCurrentUser()
   if (!user) redirect('/login?next=%2Fworkspace%2Ffeedback')
 
-  const feedback = await getPendingFeedback(user)
+  const feedback = await getCommunityActivity(user)
 
   if (!feedback) {
     return (
       <main className="content-page">
         <div className="empty-state">
           <h1>Editor access required</h1>
-          <p>Feedback moderation is available only to Editors.</p>
+          <p>Community activity is available only to Editors.</p>
           <div className="empty-actions">
             <Link href="/workspace">Workspace</Link>
-            <Link href="/drafts">Public drafts</Link>
+            <Link href="/drafts">Community review</Link>
           </div>
         </div>
       </main>
@@ -43,19 +43,19 @@ export default async function FeedbackModerationPage() {
         Back to Workspace
       </Link>
       <div className="page-heading">
-        <p className="eyebrow">Feedback moderation</p>
-        <h1>Review comments and contributor proposals in OpenToli web.</h1>
+        <p className="eyebrow">Community activity</p>
+        <h1>Watch public contributions and hide abuse.</h1>
         <p>
-          Approving feedback can make it visible as public evidence. Rejecting or hiding keeps it
-          out of public pages. None of these actions directly edits a term, translation, or AI
-          draft.
+          Every signed-in contribution appears immediately as community input. Editors do not
+          approve submissions; they can only hide unsafe or abusive content. Contributions never
+          edit canonical terminology directly.
         </p>
       </div>
 
       {feedback.length === 0 ? (
         <div className="empty-state">
-          <h2>No pending feedback.</h2>
-          <p>New comments and translation suggestions will appear here before they become public.</p>
+          <h2>No community activity.</h2>
+          <p>Comments and terminology suggestions will appear here after members post them.</p>
         </div>
       ) : (
         <div className="moderation-list">
@@ -65,7 +65,8 @@ export default async function FeedbackModerationPage() {
                 <p className="eyebrow">{label(item.commentType)}</p>
                 <h2>{item.target.label}</h2>
                 <p>
-                  {item.target.type} / submitted by {item.author} / {item.createdAt.slice(0, 10)}
+                  Public contribution / {item.target.type} / submitted by {item.author} /{' '}
+                  {item.createdAt.slice(0, 10)}
                 </p>
                 {item.target.href ? <Link href={item.target.href}>Open target</Link> : null}
               </div>
