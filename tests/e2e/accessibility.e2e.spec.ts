@@ -66,9 +66,7 @@ test.describe('M4 accessibility', () => {
     )
     await page.keyboard.press('Space')
     expect((await submitted).ok()).toBe(true)
-    await expect(
-      page.getByText('Your contribution is now public.', { exact: true }),
-    ).toBeVisible()
+    await expect(page.getByText('Your contribution is now public.', { exact: true })).toBeVisible()
   })
 
   test('supports keyboard editing and secondary Editor actions', async ({ browser }) => {
@@ -90,6 +88,19 @@ test.describe('M4 accessibility', () => {
     )
     await page.keyboard.type(' revised')
     expect((await saved).ok()).toBe(true)
+    await expect(page.getByRole('status')).toHaveText('Changes saved')
+
+    const alternative = page.getByLabel('Mongolian alternative').first()
+    await focusByTab(page, alternative)
+    await page.keyboard.press('End')
+    const alternativeSaved = page.waitForResponse(
+      (response) =>
+        response.url().includes(`/api/editor/ai-drafts/${fixture.draftId}`) &&
+        response.request().method() === 'PATCH',
+    )
+    await page.keyboard.type(' edited')
+    await expect(alternative).toBeFocused()
+    expect((await alternativeSaved).ok()).toBe(true)
     await expect(page.getByRole('status')).toHaveText('Changes saved')
 
     const more = page.locator('summary', { hasText: 'More' })

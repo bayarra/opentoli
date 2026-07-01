@@ -32,7 +32,9 @@ export default async function TermPage({ params }: TermPageProps) {
         </div>
         <div className="recommended-translation">
           <span>Recommended Mongolian</span>
-          <strong lang="mn">{recommendedTranslation?.translationMn || 'Translation pending'}</strong>
+          <strong lang="mn">
+            {recommendedTranslation?.translationMn || 'Translation pending'}
+          </strong>
         </div>
       </header>
 
@@ -73,6 +75,7 @@ export default async function TermPage({ params }: TermPageProps) {
                 <strong lang="mn">{translation.translationMn}</strong>
                 <span>{translation.translationType.replaceAll('_', ' ')}</span>
                 {translation.explanationEn ? <p>{translation.explanationEn}</p> : null}
+                {translation.usageNote ? <p>{translation.usageNote}</p> : null}
               </div>
             ))}
           </div>
@@ -117,11 +120,47 @@ export default async function TermPage({ params }: TermPageProps) {
       <section className="term-section feedback-section">
         <p className="eyebrow">Community proposals</p>
         <h2>Suggest an improvement</h2>
-        <p>Post wording, a bilingual example, or a useful reference. It appears immediately as community input and never changes this term automatically.</p>
+        <p>
+          Post wording, a bilingual example, or a useful reference. It appears immediately as
+          community input and never changes this term automatically.
+        </p>
         <FeedbackForm targetPath={`/terms/${term.slug}`} termId={term.id} />
       </section>
 
-      {comments.length > 0 ? <section className="term-section"><p className="eyebrow">Approved discussion</p><div className="comment-list">{comments.map((comment) => <article key={comment.id}><div><strong>OpenToli contributor</strong><span>{comment.createdAt.slice(0, 10)}</span></div>{comment.suggestedTranslationMn ? <p lang="mn"><strong>{comment.suggestedTranslationMn}</strong></p> : null}{comment.suggestedExampleEn && comment.suggestedExampleMn ? <blockquote><p>{comment.suggestedExampleEn}</p><p lang="mn">{comment.suggestedExampleMn}</p></blockquote> : null}{comment.suggestedReferenceTitle && comment.suggestedReferenceUrl ? <p><a href={comment.suggestedReferenceUrl} rel="noreferrer" target="_blank">{comment.suggestedReferenceTitle}</a></p> : null}<p>{comment.body}</p></article>)}</div></section> : null}
+      {comments.length > 0 ? (
+        <section className="term-section">
+          <p className="eyebrow">Approved discussion</p>
+          <div className="comment-list">
+            {comments.map((comment) => (
+              <article key={comment.id}>
+                <div>
+                  <strong>OpenToli contributor</strong>
+                  <span>{comment.createdAt.slice(0, 10)}</span>
+                </div>
+                {comment.suggestedTranslationMn ? (
+                  <p lang="mn">
+                    <strong>{comment.suggestedTranslationMn}</strong>
+                  </p>
+                ) : null}
+                {comment.suggestedExampleEn && comment.suggestedExampleMn ? (
+                  <blockquote>
+                    <p>{comment.suggestedExampleEn}</p>
+                    <p lang="mn">{comment.suggestedExampleMn}</p>
+                  </blockquote>
+                ) : null}
+                {comment.suggestedReferenceTitle && comment.suggestedReferenceUrl ? (
+                  <p>
+                    <a href={comment.suggestedReferenceUrl} rel="noreferrer" target="_blank">
+                      {comment.suggestedReferenceTitle}
+                    </a>
+                  </p>
+                ) : null}
+                <p>{comment.body}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : null}
     </main>
   )
 }

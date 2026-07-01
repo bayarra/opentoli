@@ -9,6 +9,10 @@
 >
 > Amendment (2026-06-29): the Draft Inbox is named Review Queue. Evaluation outcomes are
 > captured with the same Publish or Hide transaction, while AI Quality is read-only reporting.
+>
+> Amendment (2026-06-30): AI continues to generate alternatives and examples. The Review Queue
+> exposes the same non-rejected content as Community Review and lets Editors choose the subset
+> that `Publish` materializes as canonical Translations and Examples.
 
 ## Context
 
@@ -24,8 +28,9 @@ Use one visible editorial workflow:
 AI Draft -> Editor edits -> Publish
 ```
 
-The editor works from one Review Queue. Headword, translation, and explanations save in the
-background. `Publish` is the only primary decision and is always an explicit human action.
+The editor works from one Review Queue. Headword, recommended translation, explanations,
+alternative translations, and bilingual examples save in the background. `Publish` is the only
+primary decision and is always an explicit human action.
 `Hide` is a secondary inbox-management action that preserves the draft and all provenance.
 When the draft belongs to an active evaluation set, the same page asks one compact quality
 question. The answer and editorial decision commit together. AI Quality aggregates those
@@ -41,7 +46,8 @@ stages or publication confirmations. Optional references and internal routes do 
 Editor's explicit publication decision.
 
 Publishing atomically records the editor, field changes, and any required evaluation outcome,
-materializes canonical content, and publishes it. AI and community actions still cannot publish.
+materializes the Editor-kept recommended translation, alternatives, and examples as canonical
+content, and publishes it. AI and community actions still cannot publish.
 
 ## Consequences
 

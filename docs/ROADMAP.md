@@ -110,8 +110,9 @@ contributors improve them, and let an Editor edit and publish from one simple Re
 
 **Scope:** Safe public draft projection, `Unverified AI Draft` labeling, basic public
 registration and sign-in, immediate authenticated comments and translation suggestions,
-rate limits, post-publication Hide controls, one Review Queue, direct field editing, background save,
-explicit Publish, secondary Hide, and automatic attribution.
+rate limits, post-publication Hide controls, one Review Queue, direct editing of generated
+translations, explanations, alternatives, and examples, background save, explicit Publish,
+secondary Hide, and automatic attribution.
 
 **Exit criteria:**
 
@@ -122,6 +123,8 @@ explicit Publish, secondary Hide, and automatic attribution.
 - Public feedback cannot directly modify a draft, select a translation, or publish a Term.
 - Rejected, failed, and private drafts are not publicly visible.
 - Editors can edit and publish from one page without managing routes or review types.
+- AI may generate alternatives and examples; Editors choose the subset that becomes canonical.
+- Review Queue, Community Review, and Published Terms present the same terminology subsets.
 - Editing saves in the background and Publish is the only primary decision action.
 - Hide removes an unusable draft from the active inbox without deleting its provenance.
 - Publication records the editor and field changes automatically.

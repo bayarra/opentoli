@@ -1,10 +1,14 @@
-import { validateGenerationOutputV1, validateResearchPacketV1 } from '@/ai/schemas/v1'
+import {
+  validateGenerationOutputV1,
+  validateResearchPacketV1,
+  type GenerationOutputV1,
+} from '@/ai/schemas/v1'
 import {
   isM5CalibrationDraft,
   recordCalibrationOutcome,
   type CalibrationOutcomeInput,
 } from '@/calibration/outcomes'
-import type { AiDraft, Term, Translation, User } from '@/payload-types'
+import type { AiDraft, Example, Term, Translation, User } from '@/payload-types'
 import {
   commitTransaction,
   createLocalReq,
@@ -20,10 +24,22 @@ const editableFieldNames = [
   'recommendedTranslationMn',
   'explanationEn',
   'explanationMn',
+  'alternativeTranslations',
+  'examples',
 ] as const
-type EditableFieldName = (typeof editableFieldNames)[number]
 
-export type EditorDraftFields = Record<EditableFieldName, string>
+type DraftAlternative = Omit<GenerationOutputV1['alternativeTranslations'][number], 'type'> & {
+  type: Exclude<GenerationOutputV1['alternativeTranslations'][number]['type'], 'rejected'>
+}
+
+export type EditorDraftFields = {
+  alternativeTranslations: DraftAlternative[]
+  examples: GenerationOutputV1['examples']
+  explanationEn: string
+  explanationMn: string
+  headwordEn: string
+  recommendedTranslationMn: string
+}
 
 export class EditorWorkflowError extends Error {
   constructor(
@@ -35,25 +51,99 @@ export class EditorWorkflowError extends Error {
   }
 }
 
-const requiredText = (value: unknown, label: string): string => {
+const requiredText = (value: unknown, label: string, maxLength = 5000): string => {
   if (typeof value !== 'string' || value.trim().length < 2) {
     throw new EditorWorkflowError(`${label} is required.`)
   }
-  return value.trim()
+  const text = value.trim()
+  if (text.length > maxLength) throw new EditorWorkflowError(`${label} is too long.`)
+  return text
 }
+
+const optionalText = (value: unknown, label: string, maxLength = 2000) => {
+  if (value === undefined || value === null || value === '') return undefined
+  if (typeof value !== 'string') throw new EditorWorkflowError(`Invalid ${label}.`)
+  const text = value.trim()
+  if (text.length > maxLength) throw new EditorWorkflowError(`${label} is too long.`)
+  return text || undefined
+}
+
+const recordArray = (value: unknown, label: string, max: number) => {
+  if (!Array.isArray(value) || value.length > max) {
+    throw new EditorWorkflowError(`Invalid ${label}.`)
+  }
+  if (!value.every((item) => item && typeof item === 'object' && !Array.isArray(item))) {
+    throw new EditorWorkflowError(`Invalid ${label}.`)
+  }
+  return value as Array<Record<string, unknown>>
+}
+
+const alternativeTypes = [
+  'alternative',
+  'context_specific',
+  'formal',
+  'literal',
+  'borrowed',
+] as const
 
 export const parseEditorDraftFields = (value: unknown): EditorDraftFields => {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
     throw new EditorWorkflowError('Draft fields are required.')
   }
   const input = value as Record<string, unknown>
+  const recommendedTranslationMn = requiredText(
+    input.recommendedTranslationMn,
+    'Mongolian translation',
+    300,
+  )
+  const alternativeTranslations = recordArray(
+    input.alternativeTranslations,
+    'alternative translations',
+    20,
+  ).map((item, index) => {
+    const type = item.type
+    if (typeof type !== 'string' || !alternativeTypes.includes(type as never)) {
+      throw new EditorWorkflowError(`Invalid alternative ${index + 1} type.`)
+    }
+    return {
+      context: optionalText(item.context, `alternative ${index + 1} context`, 500),
+      translationMn: requiredText(
+        item.translationMn,
+        `Alternative ${index + 1} Mongolian wording`,
+        300,
+      ),
+      type: type as DraftAlternative['type'],
+      usageNote: optionalText(item.usageNote, `alternative ${index + 1} usage note`),
+    }
+  })
+  const normalizedTranslations = [
+    recommendedTranslationMn,
+    ...alternativeTranslations.map((item) => item.translationMn),
+  ].map((item) => item.toLocaleLowerCase('mn-MN'))
+  if (new Set(normalizedTranslations).size !== normalizedTranslations.length) {
+    throw new EditorWorkflowError('Recommended and alternative translations must be unique.')
+  }
+
   return {
+    alternativeTranslations,
+    examples: recordArray(input.examples, 'examples', 20).map((item, index) => ({
+      exampleEn: requiredText(item.exampleEn, `Example ${index + 1} English text`, 2000),
+      exampleMn: requiredText(item.exampleMn, `Example ${index + 1} Mongolian text`, 2000),
+    })),
     explanationEn: requiredText(input.explanationEn, 'English explanation'),
     explanationMn: requiredText(input.explanationMn, 'Mongolian explanation'),
-    headwordEn: requiredText(input.headwordEn, 'English headword'),
-    recommendedTranslationMn: requiredText(input.recommendedTranslationMn, 'Mongolian translation'),
+    headwordEn: requiredText(input.headwordEn, 'English headword', 300),
+    recommendedTranslationMn,
   }
 }
+
+export const editorFieldsFromGeneration = (generated: GenerationOutputV1): EditorDraftFields =>
+  parseEditorDraftFields({
+    ...generated,
+    alternativeTranslations: generated.alternativeTranslations.filter(
+      (item) => item.type !== 'rejected',
+    ),
+  })
 
 const loadEditorAndDraft = async (payload: Payload, actorId: number, draftId: number) => {
   const actor = await payload.findByID({
@@ -91,13 +181,43 @@ const originalGeneration = async (payload: Payload, draft: AiDraft) => {
   }
 }
 
+const comparableField = (field: (typeof editableFieldNames)[number], value: unknown) => {
+  if (field === 'alternativeTranslations') {
+    return (value as GenerationOutputV1['alternativeTranslations']).map((item) => ({
+      context: item.context,
+      translationMn: item.translationMn,
+      type: item.type,
+      usageNote: item.usageNote,
+    }))
+  }
+  if (field === 'examples') {
+    return (value as GenerationOutputV1['examples']).map((item) => ({
+      exampleEn: item.exampleEn,
+      exampleMn: item.exampleMn,
+    }))
+  }
+  return value
+}
+
 const fieldOutcomes = async (payload: Payload, draft: AiDraft, fields: EditorDraftFields) => {
   const original = await originalGeneration(payload, draft)
+  const originalEditable = {
+    ...original,
+    alternativeTranslations: original.alternativeTranslations.filter(
+      (item) => item.type !== 'rejected',
+    ),
+  }
   const acceptedFields: string[] = []
-  const modifiedFields: Record<string, { from: string; to: string }> = {}
+  const modifiedFields: Record<string, { from: unknown; to: unknown }> = {}
   for (const field of editableFieldNames) {
-    if (fields[field] === original[field]) acceptedFields.push(field)
-    else modifiedFields[field] = { from: original[field], to: fields[field] }
+    if (
+      JSON.stringify(comparableField(field, fields[field])) ===
+      JSON.stringify(comparableField(field, originalEditable[field]))
+    ) {
+      acceptedFields.push(field)
+    } else {
+      modifiedFields[field] = { from: originalEditable[field], to: fields[field] }
+    }
   }
   return { acceptedFields, modifiedFields }
 }
@@ -149,7 +269,12 @@ const materializePublishedTerm = async ({
   draft: AiDraft
   payload: Payload
   req: Awaited<ReturnType<typeof createLocalReq>>
-}): Promise<{ term: Term; translation: Translation }> => {
+}): Promise<{
+  alternativeTranslations: Translation[]
+  examples: Example[]
+  term: Term
+  translation: Translation
+}> => {
   const generated = validateGenerationOutputV1(draft.generatedPayload)
   const research = validateResearchPacketV1(draft.researchPayload)
   const categoryId = relationshipId(draft.inputCategory)
@@ -270,6 +395,93 @@ const materializePublishedTerm = async ({
     })
   }
 
+  const alternativeTranslations: Translation[] = []
+  for (const candidate of generated.alternativeTranslations.filter(
+    (item) => item.type !== 'rejected',
+  )) {
+    const existingAlternative = await payload.find({
+      collection: 'translations',
+      depth: 0,
+      limit: 1,
+      overrideAccess: true,
+      req,
+      where: {
+        and: [
+          { term: { equals: term.id } },
+          { translationMn: { equals: candidate.translationMn } },
+        ],
+      },
+    })
+    const data = {
+      explanationEn: candidate.context,
+      register: candidate.type === 'borrowed' ? ('technical' as const) : ('general' as const),
+      reviewedBy: actor.id,
+      reviewStatus: 'human_reviewed' as const,
+      status: 'approved' as const,
+      term: term.id,
+      translationMn: candidate.translationMn,
+      translationType: candidate.type === 'borrowed' ? ('alternative' as const) : candidate.type,
+      usageNote: candidate.usageNote,
+    }
+    alternativeTranslations.push(
+      existingAlternative.docs[0]
+        ? await payload.update({
+            collection: 'translations',
+            data,
+            id: existingAlternative.docs[0].id,
+            overrideAccess: true,
+            req,
+          })
+        : await payload.create({
+            collection: 'translations',
+            data: { ...data, createdBy: actor.id },
+            overrideAccess: true,
+            req,
+          }),
+    )
+  }
+
+  const examples: Example[] = []
+  for (const candidate of generated.examples) {
+    const existingExample = await payload.find({
+      collection: 'examples',
+      depth: 0,
+      limit: 1,
+      overrideAccess: true,
+      req,
+      where: {
+        and: [
+          { term: { equals: term.id } },
+          { exampleEn: { equals: candidate.exampleEn } },
+          { exampleMn: { equals: candidate.exampleMn } },
+        ],
+      },
+    })
+    const data = {
+      exampleEn: candidate.exampleEn,
+      exampleMn: candidate.exampleMn,
+      reviewStatus: 'human_reviewed' as const,
+      status: 'approved' as const,
+      term: term.id,
+    }
+    examples.push(
+      existingExample.docs[0]
+        ? await payload.update({
+            collection: 'examples',
+            data,
+            id: existingExample.docs[0].id,
+            overrideAccess: true,
+            req,
+          })
+        : await payload.create({
+            collection: 'examples',
+            data: { ...data, createdBy: actor.id },
+            overrideAccess: true,
+            req,
+          }),
+    )
+  }
+
   term = await payload.update({
     collection: 'terms',
     data: {
@@ -285,7 +497,7 @@ const materializePublishedTerm = async ({
     overrideAccess: false,
     req,
   })
-  return { term, translation }
+  return { alternativeTranslations, examples, term, translation }
 }
 
 export const publishEditorDraft = async ({
@@ -310,7 +522,7 @@ export const publishEditorDraft = async ({
   const outcomes = await fieldOutcomes(
     payload,
     draft,
-    parseEditorDraftFields(validateGenerationOutputV1(draft.generatedPayload)),
+    editorFieldsFromGeneration(validateGenerationOutputV1(draft.generatedPayload)),
   )
   const modified = Object.keys(outcomes.modifiedFields).length > 0
   if (calibrationOutcome) {

@@ -1,5 +1,6 @@
 import { enqueueGenerationJob, processGenerationJob } from '@/ai/pipeline/jobs'
 import { DeterministicAIProvider } from '@/ai/providers/deterministic'
+import { validateGenerationOutputV1 } from '@/ai/schemas/v1'
 import { parseDraftQualityFields } from '@/calibration/outcomes'
 import {
   hideEditorDraft,
@@ -9,12 +10,9 @@ import {
   updateEditorDraftVisibility,
 } from '@/editor/drafts'
 import { getDraftInbox } from '@/editor/data'
-import {
-  addDraftReference,
-  removeDraftReference,
-  updateDraftReference,
-} from '@/editor/references'
+import { addDraftReference, removeDraftReference, updateDraftReference } from '@/editor/references'
 import { getPublicAIDraftById } from '@/lib/publicAIDrafts'
+import { getPublishedTermBySlug } from '@/lib/publicTerms'
 import config from '@/payload.config'
 import type { User } from '@/payload-types'
 import { getPayload, type Payload } from 'payload'
@@ -192,8 +190,25 @@ describe('simple AI draft editor workflow', () => {
     for (const id of referenceIds.reverse()) {
       await payload.delete({ collection: 'sources', id, overrideAccess: true }).catch(() => null)
     }
-    for (const id of translationIds.reverse()) {
-      await payload.delete({ collection: 'translations', id, overrideAccess: true })
+    const examples = await payload.find({
+      collection: 'examples',
+      depth: 0,
+      limit: 500,
+      overrideAccess: true,
+      where: { term: { in: termIds } },
+    })
+    for (const example of examples.docs) {
+      await payload.delete({ collection: 'examples', id: example.id, overrideAccess: true })
+    }
+    const translations = await payload.find({
+      collection: 'translations',
+      depth: 0,
+      limit: 500,
+      overrideAccess: true,
+      where: { term: { in: termIds } },
+    })
+    for (const translation of translations.docs) {
+      await payload.delete({ collection: 'translations', id: translation.id, overrideAccess: true })
     }
     for (const id of termIds.reverse()) {
       await payload.delete({ collection: 'terms', id, overrideAccess: true })
@@ -215,7 +230,20 @@ describe('simple AI draft editor workflow', () => {
       categorySlug: `editor-technology-${suffix}`,
       headword: `simple editing ${suffix}`,
     })
+    const generated = validateGenerationOutputV1(draft.generatedPayload)
     const fields = parseEditorDraftFields({
+      alternativeTranslations: [
+        {
+          ...generated.alternativeTranslations[0],
+          translationMn: `human alternative ${suffix}`,
+        },
+      ],
+      examples: [
+        {
+          exampleEn: 'A human-edited English example.',
+          exampleMn: 'A human-edited Mongolian example.',
+        },
+      ],
       explanationEn: 'A human-edited English explanation.',
       explanationMn: 'A human-edited Mongolian explanation.',
       headwordEn: draft.inputHeadword,
@@ -236,6 +264,8 @@ describe('simple AI draft editor workflow', () => {
 
     expect(saved.status).toBe('editing')
     expect(saved.modifiedFields).toMatchObject({
+      alternativeTranslations: { to: [{ translationMn: `human alternative ${suffix}` }] },
+      examples: { to: [{ exampleEn: 'A human-edited English example.' }] },
       recommendedTranslationMn: { to: `human edited translation ${suffix}` },
     })
     expect(validateSavedTranslation(saved.generatedPayload)).toBe(
@@ -243,6 +273,12 @@ describe('simple AI draft editor workflow', () => {
     )
     expect((await getPublicAIDraftById(draft.id))?.recommendedTranslationMn).toBe(
       `human edited translation ${suffix}`,
+    )
+    expect((await getPublicAIDraftById(draft.id))?.alternatives[0]?.translationMn).toBe(
+      `human alternative ${suffix}`,
+    )
+    expect((await getPublicAIDraftById(draft.id))?.examples[0]?.exampleEn).toBe(
+      'A human-edited English example.',
     )
   })
 
@@ -282,6 +318,8 @@ describe('simple AI draft editor workflow', () => {
       workflowStatus: 'approved',
     })
     expect(result.translation.status).toBe('approved')
+    expect(result.alternativeTranslations).toHaveLength(1)
+    expect(result.examples).toHaveLength(1)
     expect(result.draft.publicVisibility).toBe('private')
     expect(result.calibrationOutcome).toMatchObject({
       editLevel: 'none',
@@ -296,6 +334,9 @@ describe('simple AI draft editor workflow', () => {
       where: { id: { equals: result.term.id } },
     })
     expect(publicTerms.docs).toHaveLength(1)
+    const publicTerm = await getPublishedTermBySlug(result.term.slug)
+    expect(publicTerm?.translations).toHaveLength(2)
+    expect(publicTerm?.examples).toHaveLength(1)
   })
 
   it('keeps the internal AI route as provenance without blocking an Editor', async () => {

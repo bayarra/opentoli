@@ -1340,6 +1340,12 @@ decision. The page has one primary action, `Publish`, plus a secondary `Hide` ac
 removing an unusable draft from the active queue. Hide preserves the draft and its
 provenance; it is not deletion.
 
+AI continues to generate a recommended translation, alternative translations, bilingual
+examples, and explanations. The Review Queue exposes the same useful, non-rejected draft
+content shown by Community Review. Editors may edit, add, or remove alternatives and examples;
+only the subset left in the Review Queue is materialized as canonical content by `Publish`.
+The original provider output remains retained as generation provenance.
+
 The separate AI Quality page is a read-only report of recorded decisions, retained job
 evidence, cost, and aggregate metrics. It is not another task inbox and cannot publish,
 hide, or update an outcome. Published Terms is the maintenance surface after publication.
@@ -1360,6 +1366,8 @@ The public projection may include the headword, candidate translations, draft
 explanations, examples, optional references, risk-neutral review status, and approved public
 feedback. It must exclude raw provider output, prompts, job errors, private reviewer notes,
 contact details, abuse-prevention metadata, and other internal generation evidence.
+Alternatives marked rejected by the AI are retained internally but excluded from the public
+and editable projections.
 
 Public AI draft pages are excluded from the canonical sitemap and use `noindex` until a
 human-reviewed publication decision is made. Rejected, failed, or explicitly private
@@ -1376,6 +1384,7 @@ An AI-prepared term may become a canonical published Term only when an Editor ex
 uses `Publish` after:
 
 - A human has selected or edited the recommended translation
+- A human has kept, edited, added, or removed the alternative translations and examples
 - Required English and Mongolian explanations have been reviewed
 - AI provider, model, prompt version, schema version, and any supplied reference inputs are retained
 

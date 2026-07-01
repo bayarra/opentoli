@@ -1383,6 +1383,27 @@ blockquote p {
   opacity: 0.62;
 }
 
+.draft-editor-subset {
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 16px;
+  padding-top: 22px;
+}
+
+.draft-editor-subset h2,
+.draft-editor-subset p {
+  margin-bottom: 6px;
+}
+
+.draft-editor-subset > div > p:last-child {
+  color: var(--muted);
+}
+
+.review-decision-form button.secondary-button {
+  background: #eef3f9;
+  color: var(--navy);
+}
+
 .editor-save-state {
   color: var(--muted);
   font-size: 0.86rem;
@@ -1710,7 +1731,11 @@ blockquote p {
   background: #101b2b;
   border-radius: 14px;
   color: #edf5ff;
-  font: 500 0.85rem/1.65 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font:
+    500 0.85rem/1.65 ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
   margin: 18px 0 0;
   overflow-x: auto;
   padding: 18px;

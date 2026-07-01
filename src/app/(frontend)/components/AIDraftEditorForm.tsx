@@ -4,11 +4,20 @@ import type { FormEvent } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 type DraftFields = {
+  alternativeTranslations: Array<{
+    context?: string
+    translationMn: string
+    type: 'alternative' | 'borrowed' | 'context_specific' | 'formal' | 'literal'
+    usageNote?: string
+  }>
+  examples: Array<{ exampleEn: string; exampleMn: string }>
   explanationEn: string
   explanationMn: string
   headwordEn: string
   recommendedTranslationMn: string
 }
+
+type DraftTextField = 'explanationEn' | 'explanationMn' | 'headwordEn' | 'recommendedTranslationMn'
 
 type EditorFormProps = {
   draftId: number
@@ -31,6 +40,12 @@ const initialQualityRating = (qualityReview: EditorFormProps['qualityReview']): 
   if (outcome.editLevel === 'minor') return 'minor_edits'
   return 'rewritten'
 }
+
+const fieldsAreComplete = (fields: DraftFields) =>
+  fields.alternativeTranslations.every((item) => item.translationMn.trim().length >= 2) &&
+  fields.examples.every(
+    (item) => item.exampleEn.trim().length >= 2 && item.exampleMn.trim().length >= 2,
+  )
 
 export function AIDraftEditorForm({ draftId, initial, qualityReview }: EditorFormProps) {
   const [dirty, setDirty] = useState(false)
@@ -71,16 +86,20 @@ export function AIDraftEditorForm({ draftId, initial, qualityReview }: EditorFor
   }, [draftId, fields])
 
   useEffect(() => {
-    if (!dirty) return
+    if (!dirty || !fieldsAreComplete(fields)) return
     const timeout = window.setTimeout(() => void save(), 800)
     return () => window.clearTimeout(timeout)
-  }, [dirty, save])
+  }, [dirty, fields, save])
 
-  const updateField = (field: keyof DraftFields, value: string) => {
+  const updateFields = (update: (current: DraftFields) => DraftFields) => {
     revision.current += 1
-    setFields((current) => ({ ...current, [field]: value }))
+    setFields(update)
     setDirty(true)
     setSaveState('idle')
+  }
+
+  const updateField = (field: DraftTextField, value: string) => {
+    updateFields((current) => ({ ...current, [field]: value }))
   }
 
   const publish = async (event: FormEvent<HTMLFormElement>) => {
@@ -94,9 +113,7 @@ export function AIDraftEditorForm({ draftId, initial, qualityReview }: EditorFor
     const response = await fetch(`/api/editor/ai-drafts/${draftId}`, {
       body: JSON.stringify({
         action: 'publish',
-        ...(qualityReview
-          ? { qualityNotes, qualityRating }
-          : {}),
+        ...(qualityReview ? { qualityNotes, qualityRating } : {}),
       }),
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
@@ -117,9 +134,7 @@ export function AIDraftEditorForm({ draftId, initial, qualityReview }: EditorFor
     const response = await fetch(`/api/editor/ai-drafts/${draftId}`, {
       body: JSON.stringify({
         action: 'hide',
-        ...(qualityReview
-          ? { qualityNotes, qualityRating }
-          : {}),
+        ...(qualityReview ? { qualityNotes, qualityRating } : {}),
       }),
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
@@ -185,6 +200,178 @@ export function AIDraftEditorForm({ draftId, initial, qualityReview }: EditorFor
           value={fields.explanationMn}
         />
       </label>
+      <section className="draft-editor-subset" aria-labelledby="draft-alternatives-heading">
+        <div>
+          <p className="eyebrow">Alternatives</p>
+          <h2 id="draft-alternatives-heading">Alternative translations</h2>
+          <p>Edit, remove, or add alternatives for the published term.</p>
+        </div>
+        <div className="repeatable-list">
+          {fields.alternativeTranslations.map((alternative, index) => (
+            <article key={index}>
+              <span className="status-badge">{alternative.type.replaceAll('_', ' ')}</span>
+              <label>
+                Mongolian alternative
+                <input
+                  disabled={publishing}
+                  lang="mn"
+                  onChange={(event) =>
+                    updateFields((current) => ({
+                      ...current,
+                      alternativeTranslations: current.alternativeTranslations.map(
+                        (item, itemIndex) =>
+                          itemIndex === index
+                            ? { ...item, translationMn: event.target.value }
+                            : item,
+                      ),
+                    }))
+                  }
+                  required
+                  value={alternative.translationMn}
+                />
+              </label>
+              <label>
+                Context (optional)
+                <input
+                  disabled={publishing}
+                  onChange={(event) =>
+                    updateFields((current) => ({
+                      ...current,
+                      alternativeTranslations: current.alternativeTranslations.map(
+                        (item, itemIndex) =>
+                          itemIndex === index ? { ...item, context: event.target.value } : item,
+                      ),
+                    }))
+                  }
+                  value={alternative.context || ''}
+                />
+              </label>
+              <label>
+                Usage note (optional)
+                <textarea
+                  disabled={publishing}
+                  onChange={(event) =>
+                    updateFields((current) => ({
+                      ...current,
+                      alternativeTranslations: current.alternativeTranslations.map(
+                        (item, itemIndex) =>
+                          itemIndex === index ? { ...item, usageNote: event.target.value } : item,
+                      ),
+                    }))
+                  }
+                  rows={2}
+                  value={alternative.usageNote || ''}
+                />
+              </label>
+              <button
+                className="secondary-button"
+                disabled={publishing}
+                onClick={() =>
+                  updateFields((current) => ({
+                    ...current,
+                    alternativeTranslations: current.alternativeTranslations.filter(
+                      (_, itemIndex) => itemIndex !== index,
+                    ),
+                  }))
+                }
+                type="button"
+              >
+                Remove alternative
+              </button>
+            </article>
+          ))}
+        </div>
+        <button
+          className="secondary-button"
+          disabled={publishing}
+          onClick={() =>
+            updateFields((current) => ({
+              ...current,
+              alternativeTranslations: [
+                ...current.alternativeTranslations,
+                { translationMn: '', type: 'alternative' },
+              ],
+            }))
+          }
+          type="button"
+        >
+          Add alternative
+        </button>
+      </section>
+
+      <section className="draft-editor-subset" aria-labelledby="draft-examples-heading">
+        <div>
+          <p className="eyebrow">Examples</p>
+          <h2 id="draft-examples-heading">Bilingual examples</h2>
+        </div>
+        <div className="repeatable-list">
+          {fields.examples.map((example, index) => (
+            <article key={index}>
+              <label>
+                English example
+                <textarea
+                  disabled={publishing}
+                  onChange={(event) =>
+                    updateFields((current) => ({
+                      ...current,
+                      examples: current.examples.map((item, itemIndex) =>
+                        itemIndex === index ? { ...item, exampleEn: event.target.value } : item,
+                      ),
+                    }))
+                  }
+                  required
+                  rows={2}
+                  value={example.exampleEn}
+                />
+              </label>
+              <label>
+                Mongolian example
+                <textarea
+                  disabled={publishing}
+                  lang="mn"
+                  onChange={(event) =>
+                    updateFields((current) => ({
+                      ...current,
+                      examples: current.examples.map((item, itemIndex) =>
+                        itemIndex === index ? { ...item, exampleMn: event.target.value } : item,
+                      ),
+                    }))
+                  }
+                  required
+                  rows={2}
+                  value={example.exampleMn}
+                />
+              </label>
+              <button
+                className="secondary-button"
+                disabled={publishing}
+                onClick={() =>
+                  updateFields((current) => ({
+                    ...current,
+                    examples: current.examples.filter((_, itemIndex) => itemIndex !== index),
+                  }))
+                }
+                type="button"
+              >
+                Remove example
+              </button>
+            </article>
+          ))}
+        </div>
+        <button
+          className="secondary-button"
+          disabled={publishing}
+          onClick={() =>
+            updateFields((current) => ({
+              ...current,
+              examples: [...current.examples, { exampleEn: '', exampleMn: '' }],
+            }))
+          }
+          type="button"
+        >
+          Add example
+        </button>
+      </section>
       {qualityReview ? (
         <fieldset className="draft-quality-review">
           <legend>AI quality</legend>

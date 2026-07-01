@@ -17,7 +17,7 @@ contracts, provider-neutral staged execution, idempotent enqueueing, retry resum
 risk routing, retained provenance, deterministic end-to-end evidence, and a completed live
 OpenAI reference run for `authentication`. M4 now has an explicit safe public projection,
 registration, immediate attributed community contributions, post-publication Hide controls, and a deliberately simple Editor experience:
-one Workspace menu, one Review Queue, four editable fields, optional references, background save,
+one Workspace menu, one Review Queue, one structured term editor, optional references, background save,
 one Publish action, and secondary Hide. Evaluation drafts capture a compact AI-quality rating in
 the same decision. Audit and AI provenance remain automatic in the
 background, while unsafe reference URLs are omitted from public projections. Keyboard-only
@@ -55,7 +55,7 @@ grouped by batch in both Workspace and the stable Editor API.
 | M2  | Editorial data core                          | `DONE`        | Attributed reviewer/moderator workflow and public vertical slice verified |
 | M3  | AI preparation pipeline                      | `DONE`        | Live OpenAI job 33 completed; draft 22 retained; idempotency verified     |
 | M4  | Public draft feedback and simple editor flow | `DONE`        | All exit criteria pass with 27 integration and 15 browser tests           |
-| M5  | Calibration batch                            | `IN_PROGRESS` | Seven outcomes complete; eight second-batch drafts awaiting review |
+| M5  | Calibration batch                            | `IN_PROGRESS` | Seven outcomes complete; eight second-batch drafts awaiting review        |
 | M6  | Public dictionary                            | `PLANNED`     | Required pages are documented                                             |
 | M7  | Search and discovery                         | `PLANNED`     | Ranking and filters are documented                                        |
 | M8  | Community accounts and contributions         | `PLANNED`     | Rich contributor features extend the basic authenticated M4 feedback path |
@@ -65,6 +65,14 @@ grouped by batch in both Workspace and the stable Editor API.
 
 ### 2026-06-30
 
+- Aligned AI drafts across Review Queue, Community Review, and Published Terms: AI still generates
+  alternatives and bilingual examples, while Editors choose the subset published as canonical records.
+- Added background editing for draft alternatives and examples and atomic publication of the kept
+  subset without changing the AI generation schema or adding a migration.
+- Added integration coverage for edited public draft projections and canonical materialization of
+  alternative Translations and Examples.
+- Passed TypeScript, ESLint, all 49 integration tests, the production build, and all 18 browser
+  tests after aligning the three terminology surfaces.
 - Unified all authenticated community contributions under one immediate-public flow; comments and structured terminology suggestions no longer require approval.
 - Kept community input non-canonical: contributions cannot mutate Terms, Translations, Examples, References, or AI Drafts.
 - Converted `/workspace/feedback` into Community Activity with Hide as the only Editor moderation action.
@@ -308,43 +316,43 @@ grouped by batch in both Workspace and the stable Editor API.
 
 ## Verification
 
-| Check                     | Result      | Evidence                                                                                                               |
-| ------------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------- |
-| Payload type generation   | Pass        | `npm run generate:types`                                                                                               |
-| TypeScript                | Pass        | `npm run typecheck`                                                                                                    |
-| ESLint                    | Pass        | `npm run lint`                                                                                                         |
-| Slug normalization tests  | Pass        | 2 tests in `formatSlug.int.spec.ts`                                                                                    |
-| Production build          | Pass        | Next.js generated all current public and Payload routes                                                                |
-| HTTP smoke test           | Pass        | `/` and `/search?q=authentication` returned `200`                                                                      |
-| Hydration smoke test      | Pass        | Clean Chrome profile produced no hydration warning                                                                     |
-| Database integration      | Pass        | 48 integration tests in 16 files pass against isolated `opentoli_test` without touching development content           |
-| API v1 read contracts     | Pass        | Public search, term, category, public draft redaction, and Editor auth-denial contract tests pass                     |
-| Agent Job Detail          | Pass        | Safe job detail and retry-now tests cover redaction, Editor authorization, retryable states, and route auth denial     |
-| Optional References       | Pass        | Editor reference add/edit/remove and verification work without gating publication; unsafe URLs stay redacted          |
-| Community review          | Pass        | Authenticated contributions appear immediately, remain advisory, are rate limited, and can be hidden by an Editor     |
-| Simple Editor workflow    | Pass        | Tests cover background save, member denial, explicit Editor publication, optional references, Hide, and provenance |
-| OpenAI adapter contract   | Pass        | 3 mocked tests verify strict Responses API requests, parsing, usage, and failures                                      |
-| OpenAI live calibration   | Pass        | Job 33 completed with `openai:gpt-5-mini`: 3,365 input tokens, 3,025 output tokens, 35,002 ms latency, no validation errors |
-| M5 manifest validation    | Pass        | `npm run m5:validate` passed for 50 terms and 8 reference groups                                                       |
-| M5 first enqueue          | Pass        | First run created 5 Terms, 7 References, and 5 Generation Jobs; second run reused all records without provider calls   |
-| M5 first worker job       | Pass        | Job 131 for `application` completed; draft 189 retained as private blocked/high-risk review evidence                  |
-| M5 first-five checkpoint  | Pass        | Five completed jobs, five explicit Editor acceptances, and five factual calibration outcomes; preliminary signal `continue` |
-| M5 second batch checkpoint | Pending review | Jobs 605-614 complete; `branch` and `build` outcomes recorded; private drafts 439-446 await human outcomes            |
-| Migration status          | Pass        | `npm run payload -- migrate:status` reports all 11 tracked migrations ran locally                                 |
-| Local HTTP smoke          | Pass        | `/`, `/register`, and `/login` return `200`; an unknown draft returns `404`                                            |
-| M4 browser regression     | Pass        | Browser tests cover public/auth/feedback/Editor keyboard flows, optional references, job detail, and serious WCAG A/AA scans              |
-| Web workflow navigation   | Pass        | Workspace navigation uses Review Queue, Published Terms, Community, Imports, AI Quality, and secondary System Activity |
-| Web account workflow      | Pass        | `/profile`, header account links, Editor Workspace visibility, contributions, and Profile-only logout pass in 18 browser tests |
-| Editor web Workspace      | Pass        | `/workspace` separates the Review Queue, canonical terms, suggestions, quality reporting, and system activity without raw AI outputs |
-| Community Activity        | Pass        | `/workspace/feedback` shows live attributed contributions and lets Editors hide abuse without canonical mutations     |
-| Contributor Dashboard     | Pass        | `/contributions` shows signed-in users only their own comments, suggestions, statuses, moderator notes, and safe target links |
-| M5 Calibration Outcomes   | Pass        | Review Queue decisions atomically record compact quality outcomes; `/workspace/calibration` reports safe evidence read-only |
-| Published term editing    | Pass        | `/workspace/terms` updates canonical wording and related records transactionally with Editor-only integration coverage |
-| Community proposals       | Pass        | Translation, example, and reference suggestions appear immediately but remain advisory and structurally validated     |
-| Calibration reporting     | Pass        | First-five progress, aggregate quality/cost metrics, and non-automatic go/no-go readiness are derived and browser-tested |
-| Import preparation        | Pass        | Manual/CSV rows are validated, reviewed, and explicitly queued without provider execution; migration is applied locally |
-| Agent Job organization    | Pass        | Headword/status/batch filters, pagination, and safe Import Batch grouping pass integration and browser coverage |
-| Historical full rollback  | Known issue | M2 `editorial_core` down migration has an existing lock-relation drop-order defect                                     |
+| Check                      | Result         | Evidence                                                                                                                             |
+| -------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Payload type generation    | Pass           | `npm run generate:types`                                                                                                             |
+| TypeScript                 | Pass           | `npm run typecheck`                                                                                                                  |
+| ESLint                     | Pass           | `npm run lint`                                                                                                                       |
+| Slug normalization tests   | Pass           | 2 tests in `formatSlug.int.spec.ts`                                                                                                  |
+| Production build           | Pass           | Next.js generated all current public and Payload routes                                                                              |
+| HTTP smoke test            | Pass           | `/` and `/search?q=authentication` returned `200`                                                                                    |
+| Hydration smoke test       | Pass           | Clean Chrome profile produced no hydration warning                                                                                   |
+| Database integration       | Pass           | 49 integration tests in 16 files pass against isolated `opentoli_test` without touching development content                          |
+| API v1 read contracts      | Pass           | Public search, term, category, public draft redaction, and Editor auth-denial contract tests pass                                    |
+| Agent Job Detail           | Pass           | Safe job detail and retry-now tests cover redaction, Editor authorization, retryable states, and route auth denial                   |
+| Optional References        | Pass           | Editor reference add/edit/remove and verification work without gating publication; unsafe URLs stay redacted                         |
+| Community review           | Pass           | Authenticated contributions appear immediately, remain advisory, are rate limited, and can be hidden by an Editor                    |
+| Simple Editor workflow     | Pass           | Tests cover editing and publishing generated translations, alternatives, examples, references, Hide, and provenance                  |
+| OpenAI adapter contract    | Pass           | 3 mocked tests verify strict Responses API requests, parsing, usage, and failures                                                    |
+| OpenAI live calibration    | Pass           | Job 33 completed with `openai:gpt-5-mini`: 3,365 input tokens, 3,025 output tokens, 35,002 ms latency, no validation errors          |
+| M5 manifest validation     | Pass           | `npm run m5:validate` passed for 50 terms and 8 reference groups                                                                     |
+| M5 first enqueue           | Pass           | First run created 5 Terms, 7 References, and 5 Generation Jobs; second run reused all records without provider calls                 |
+| M5 first worker job        | Pass           | Job 131 for `application` completed; draft 189 retained as private blocked/high-risk review evidence                                 |
+| M5 first-five checkpoint   | Pass           | Five completed jobs, five explicit Editor acceptances, and five factual calibration outcomes; preliminary signal `continue`          |
+| M5 second batch checkpoint | Pending review | Jobs 605-614 complete; `branch` and `build` outcomes recorded; private drafts 439-446 await human outcomes                           |
+| Migration status           | Pass           | `npm run payload -- migrate:status` reports all 11 tracked migrations ran locally                                                    |
+| Local HTTP smoke           | Pass           | `/`, `/register`, and `/login` return `200`; an unknown draft returns `404`                                                          |
+| M4 browser regression      | Pass           | Browser tests cover public/auth/feedback/Editor keyboard flows, optional references, job detail, and serious WCAG A/AA scans         |
+| Web workflow navigation    | Pass           | Workspace navigation uses Review Queue, Published Terms, Community, Imports, AI Quality, and secondary System Activity               |
+| Web account workflow       | Pass           | `/profile`, header account links, Editor Workspace visibility, contributions, and Profile-only logout pass in 18 browser tests       |
+| Editor web Workspace       | Pass           | `/workspace` separates the Review Queue, canonical terms, suggestions, quality reporting, and system activity without raw AI outputs |
+| Community Activity         | Pass           | `/workspace/feedback` shows live attributed contributions and lets Editors hide abuse without canonical mutations                    |
+| Contributor Dashboard      | Pass           | `/contributions` shows signed-in users only their own comments, suggestions, statuses, moderator notes, and safe target links        |
+| M5 Calibration Outcomes    | Pass           | Review Queue decisions atomically record compact quality outcomes; `/workspace/calibration` reports safe evidence read-only          |
+| Published term editing     | Pass           | `/workspace/terms` updates canonical wording and related records transactionally with Editor-only integration coverage               |
+| Community proposals        | Pass           | Translation, example, and reference suggestions appear immediately but remain advisory and structurally validated                    |
+| Calibration reporting      | Pass           | First-five progress, aggregate quality/cost metrics, and non-automatic go/no-go readiness are derived and browser-tested             |
+| Import preparation         | Pass           | Manual/CSV rows are validated, reviewed, and explicitly queued without provider execution; migration is applied locally              |
+| Agent Job organization     | Pass           | Headword/status/batch filters, pagination, and safe Import Batch grouping pass integration and browser coverage                      |
+| Historical full rollback   | Known issue    | M2 `editorial_core` down migration has an existing lock-relation drop-order defect                                                   |
 
 ## Current Work
 
@@ -379,14 +387,14 @@ No active blocker is recorded.
 
 ## Risks
 
-| Risk                                                    | Impact                                    | Current mitigation                                                                             |
-| ------------------------------------------------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| AI output sounds natural but is technically wrong       | Loss of trust                             | Explicit Editor publication, human calibration, and retained provenance                        |
-| AI pipeline cost grows during batch generation          | Budget pressure                           | Calibration batch, idempotent jobs, and cost metrics                                           |
-| Conflicting status fields permit accidental publication | Data exposure                             | Formal publication state machine required in M0                                                |
-| Search leaks drafts                                     | Unreviewed content becomes public         | Public-query and authorization tests required in M2 and M7                                     |
-| Content work outpaces reviewer capacity                 | Large unreviewed backlog                  | Batches of 100 to 200 after calibration                                                        |
-| Community input attracts spam or abuse                  | Unsafe public content                     | Authentication, rate limits, duplicate and URL validation, attribution, and Editor Hide controls |
+| Risk                                                    | Impact                            | Current mitigation                                                                               |
+| ------------------------------------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------ |
+| AI output sounds natural but is technically wrong       | Loss of trust                     | Explicit Editor publication, human calibration, and retained provenance                          |
+| AI pipeline cost grows during batch generation          | Budget pressure                   | Calibration batch, idempotent jobs, and cost metrics                                             |
+| Conflicting status fields permit accidental publication | Data exposure                     | Formal publication state machine required in M0                                                  |
+| Search leaks drafts                                     | Unreviewed content becomes public | Public-query and authorization tests required in M2 and M7                                       |
+| Content work outpaces reviewer capacity                 | Large unreviewed backlog          | Batches of 100 to 200 after calibration                                                          |
+| Community input attracts spam or abuse                  | Unsafe public content             | Authentication, rate limits, duplicate and URL validation, attribution, and Editor Hide controls |
 
 ## Update Log Template
 

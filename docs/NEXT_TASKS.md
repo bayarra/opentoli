@@ -13,6 +13,8 @@ evidence in [`STATUS.md`](STATUS.md).
 - Stable `/api/v1` read contracts now exist for public dictionary/draft data and Editor Workspace summaries.
 - Editors can open safe Agent Job detail pages and queue eligible failed/retry-scheduled jobs for retry without running the worker from the browser.
 - Editors can open/close public feedback and manage optional background references from `/workspace/drafts/[id]`.
+- AI keeps generating alternatives and bilingual examples. Review Queue, Community Review, and
+  Published Terms show the same useful subsets; Editors choose what becomes canonical.
 - Editors can edit published wording, translations, examples, categories, contexts, and optional references from `/workspace/terms`.
 - Editors finish drafts and record compact M5 AI-quality evidence in one Review Queue decision; `/workspace/calibration` is read-only reporting.
 - Public AI drafts remain unverified and redacted.
@@ -38,21 +40,21 @@ evidence in [`STATUS.md`](STATUS.md).
 Completed read contracts:
 
 - Public reads:
-   - `GET /api/v1/search`
-   - `GET /api/v1/terms/[slug]`
-   - `GET /api/v1/categories`
-   - `GET /api/v1/categories/[slug]`
-   - `GET /api/v1/drafts`
-   - `GET /api/v1/drafts/[id]`
+  - `GET /api/v1/search`
+  - `GET /api/v1/terms/[slug]`
+  - `GET /api/v1/categories`
+  - `GET /api/v1/categories/[slug]`
+  - `GET /api/v1/drafts`
+  - `GET /api/v1/drafts/[id]`
 - Editor reads:
-   - `GET /api/v1/editor/workspace`
-   - `GET /api/v1/editor/drafts`
-   - `GET /api/v1/editor/drafts/[id]`
-   - `GET /api/v1/editor/feedback`
-   - `GET /api/v1/editor/jobs`
-   - `GET /api/v1/editor/calibration`
-   - `GET /api/v1/editor/imports`
-   - `GET /api/v1/editor/imports/[id]`
+  - `GET /api/v1/editor/workspace`
+  - `GET /api/v1/editor/drafts`
+  - `GET /api/v1/editor/drafts/[id]`
+  - `GET /api/v1/editor/feedback`
+  - `GET /api/v1/editor/jobs`
+  - `GET /api/v1/editor/calibration`
+  - `GET /api/v1/editor/imports`
+  - `GET /api/v1/editor/imports/[id]`
 - Contract tests cover public response shape, public AI draft redaction, and Editor auth denial.
 
 Remaining API tasks:

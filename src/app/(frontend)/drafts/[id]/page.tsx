@@ -76,12 +76,13 @@ export default async function PublicDraftPage({ params }: DraftPageProps) {
 
       {draft.alternatives.length > 0 ? (
         <section className="term-section">
-          <p className="eyebrow">Candidate alternatives</p>
+          <p className="eyebrow">Alternatives</p>
           <div className="alternative-list">
             {draft.alternatives.map((candidate, index) => (
               <div key={`${candidate.translationMn}-${index}`}>
                 <strong lang="mn">{candidate.translationMn}</strong>
                 <span>{candidate.type.replaceAll('_', ' ')}</span>
+                {candidate.context ? <p>{candidate.context}</p> : null}
                 {candidate.usageNote ? <p>{candidate.usageNote}</p> : null}
               </div>
             ))}
@@ -91,7 +92,7 @@ export default async function PublicDraftPage({ params }: DraftPageProps) {
 
       {draft.examples.length > 0 ? (
         <section className="term-section">
-          <p className="eyebrow">Draft examples</p>
+          <p className="eyebrow">Examples</p>
           {draft.examples.map((example, index) => (
             <blockquote key={`${example.exampleEn}-${index}`}>
               <p>{example.exampleEn}</p>
@@ -137,8 +138,19 @@ export default async function PublicDraftPage({ params }: DraftPageProps) {
                     <strong>{comment.suggestedTranslationMn}</strong>
                   </p>
                 ) : null}
-                {comment.suggestedExampleEn && comment.suggestedExampleMn ? <blockquote><p>{comment.suggestedExampleEn}</p><p lang="mn">{comment.suggestedExampleMn}</p></blockquote> : null}
-                {comment.suggestedReferenceTitle && comment.suggestedReferenceUrl ? <p><a href={comment.suggestedReferenceUrl} rel="noreferrer" target="_blank">{comment.suggestedReferenceTitle}</a></p> : null}
+                {comment.suggestedExampleEn && comment.suggestedExampleMn ? (
+                  <blockquote>
+                    <p>{comment.suggestedExampleEn}</p>
+                    <p lang="mn">{comment.suggestedExampleMn}</p>
+                  </blockquote>
+                ) : null}
+                {comment.suggestedReferenceTitle && comment.suggestedReferenceUrl ? (
+                  <p>
+                    <a href={comment.suggestedReferenceUrl} rel="noreferrer" target="_blank">
+                      {comment.suggestedReferenceTitle}
+                    </a>
+                  </p>
+                ) : null}
                 <p>{comment.body}</p>
               </article>
             ))}
